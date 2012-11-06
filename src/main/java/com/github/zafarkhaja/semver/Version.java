@@ -33,11 +33,12 @@ import java.util.regex.Pattern;
  */
 public class Version implements Comparable<Version> {
     
-    private int major;
-    private int minor;
-    private int patch;
-    private String preRelease;
-    private String build;
+    private int majorVersion;
+    private int minorVersion;
+    private int patchVersion;
+    
+    private String preReleaseVersion;
+    private String buildVersion;
     
     private static final String NORMAL_VERSION = 
         "((?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+))";
@@ -59,73 +60,73 @@ public class Version implements Comparable<Version> {
                 "Illegal version format"
             );
         }
-        major = Integer.parseInt(matcher.group("major"));
-        minor = Integer.parseInt(matcher.group("minor"));
-        patch = Integer.parseInt(matcher.group("patch"));
+        majorVersion = Integer.parseInt(matcher.group("major"));
+        minorVersion = Integer.parseInt(matcher.group("minor"));
+        patchVersion = Integer.parseInt(matcher.group("patch"));
         
-        preRelease = matcher.group("preRelease");
-        build      = matcher.group("build");
+        preReleaseVersion = matcher.group("preRelease");
+        buildVersion      = matcher.group("build");
     }
     
-    public int getMajor() {
-        return major;
+    public int getMajorVersion() {
+        return majorVersion;
     }
     
-    public int getMinor() {
-        return minor;
+    public int getMinorVersion() {
+        return minorVersion;
     }
     
-    public int getPatch() {
-        return patch;
+    public int getPatchVersion() {
+        return patchVersion;
     }
     
-    public String getPreRelease() {
-        return preRelease;
+    public String getPreReleaseVersion() {
+        return preReleaseVersion;
     }
     
-    public String getBuild() {
-        return build;
+    public String getBuildVersion() {
+        return buildVersion;
     }
     
-    public void bumpMajor() {
-        major = major + 1;
-        minor = 0;
-        patch = 0;
+    public void bumpMajorVersion() {
+        majorVersion = majorVersion + 1;
+        minorVersion = 0;
+        patchVersion = 0;
     }
     
-    public void bumpMinor() {
-        minor = minor + 1;
-        patch = 0;
+    public void bumpMinorVersion() {
+        minorVersion = minorVersion + 1;
+        patchVersion = 0;
     }
     
-    public void bumpPatch() {
-        patch = patch + 1;
+    public void bumpPatchVersion() {
+        patchVersion = patchVersion + 1;
     }
     
     @Override
     public int compareTo(Version other) {
         int result = compareNormalVersions(other);
-        if (result == 0 && preRelease != null) {
+        if (result == 0 && preReleaseVersion != null) {
             result = compareAlphaNumericVersions(
-                preRelease, 
-                other.getPreRelease()
+                preReleaseVersion, 
+                other.getPreReleaseVersion()
             );
         }
-        if (result == 0 && build != null) {
+        if (result == 0 && buildVersion != null) {
             result = compareAlphaNumericVersions(
-                build, 
-                other.getBuild()
+                buildVersion, 
+                other.getBuildVersion()
             );
         }
         return result;
     }
     
     private int compareNormalVersions(Version other) {
-        int result = compareInts(major, other.getMajor());
+        int result = compareInts(majorVersion, other.getMajorVersion());
         if (result == 0) {
-            result = compareInts(minor, other.getMinor());
+            result = compareInts(minorVersion, other.getMinorVersion());
             if (result == 0) {
-                result = compareInts(patch, other.getPatch());
+                result = compareInts(patchVersion, other.getPatchVersion());
             }
         }
         return result;
@@ -148,8 +149,7 @@ public class Version implements Comparable<Version> {
     
     private int compareIdentifierArrays(String[] thisArr, String[] otherArr) {
         int result = 0;
-        int loopCount = getSmallestArrayLength(thisArr, otherArr);
-        for (int i = 0; i < loopCount; i++) {
+        for (int i = 0; i < getSmallestArrayLength(thisArr, otherArr); i++) {
             result = compareIdentifiers(thisArr[i], otherArr[i]);
             if (result != 0) {
                 break;
@@ -173,6 +173,10 @@ public class Version implements Comparable<Version> {
                 Integer.parseInt(otherIdent)
             );
         } else if (isInt(thisIdent) || isInt(otherIdent)) {
+            /**
+             * Numeric identifiers always have lower precedence 
+             * than non-numeric identifiers.
+             */
             return isInt(thisIdent) ? -1 : 1;
         } else {
             return thisIdent.compareTo(otherIdent);

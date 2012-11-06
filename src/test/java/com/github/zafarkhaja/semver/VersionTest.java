@@ -36,17 +36,17 @@ public class VersionTest {
     @Test public void
     mustConsistOfMajorMinorAndPatchVersions() {
         Version version = new Version("1.2.3");
-        assertNotNull(version.getMajor());
-        assertNotNull(version.getMinor());
-        assertNotNull(version.getPatch());
+        assertNotNull(version.getMajorVersion());
+        assertNotNull(version.getMinorVersion());
+        assertNotNull(version.getPatchVersion());
     }
     
     @Test public void
     mustTakeTheFormOfXDotYDotZWhereXyzAreNonNegativeIntegers() {
         Version version = new Version("1.2.3");
-        assertEquals(1, version.getMajor());
-        assertEquals(2, version.getMinor());
-        assertEquals(3, version.getPatch());
+        assertEquals(1, version.getMajorVersion());
+        assertEquals(2, version.getMinorVersion());
+        assertEquals(3, version.getPatchVersion());
     }
     
     @Test public void
@@ -65,54 +65,54 @@ public class VersionTest {
     @Test public void
     mustIncreaseEachElementNumericallyByIncrementsOfOne() {
         Version version = new Version("1.2.3");
-        version.bumpPatch();
-        assertEquals(4, version.getPatch());
-        version.bumpMinor();
-        assertEquals(3, version.getMinor());
-        version.bumpMajor();
-        assertEquals(2, version.getMajor());
+        version.bumpPatchVersion();
+        assertEquals(4, version.getPatchVersion());
+        version.bumpMinorVersion();
+        assertEquals(3, version.getMinorVersion());
+        version.bumpMajorVersion();
+        assertEquals(2, version.getMajorVersion());
     }
     
     @Test public void
     mustResetToZeroMinorAndPatchVersionsWhenMajorVersionIsIncremented() {
         Version version = new Version("1.2.3");
-        version.bumpMajor();
-        assertEquals(2, version.getMajor());
-        assertEquals(0, version.getMinor());
-        assertEquals(0, version.getPatch());
+        version.bumpMajorVersion();
+        assertEquals(2, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals(0, version.getPatchVersion());
     }
     
     @Test public void
     mustResetToZeroPatchVersionWhenMinorVersionIsIncremented() {
         Version version = new Version("1.2.3");
-        version.bumpMinor();
-        assertEquals(1, version.getMajor());
-        assertEquals(3, version.getMinor());
-        assertEquals(0, version.getPatch());
+        version.bumpMinorVersion();
+        assertEquals(1, version.getMajorVersion());
+        assertEquals(3, version.getMinorVersion());
+        assertEquals(0, version.getPatchVersion());
     }
     
     @Test public void
     mayHavePreReleaseVersionFollowingPatchVersionAppendedWithDash() {
         Version version = new Version("1.2.3-alpha");
-        assertEquals("alpha", version.getPreRelease());
+        assertEquals("alpha", version.getPreReleaseVersion());
     }
     
     @Test public void
     preReleaseVersionMustCompriseDotSeparatedIdentifiersOfAlphaNumericsAndDash() {
         Version version = new Version("1.0.0-x.7.z.92");
-        assertEquals("x.7.z.92", version.getPreRelease());
+        assertEquals("x.7.z.92", version.getPreReleaseVersion());
     }
     
     @Test public void
     mayHaveBuildVersionFollowingPatchOrPreReleaseVersionsAppendedWithPlus() {
         Version version = new Version("1.2.3+build");
-        assertEquals("build", version.getBuild());
+        assertEquals("build", version.getBuildVersion());
     }
     
     @Test public void
     buildVersionMustCompriseDotSeparatedIdentifiersOfAlphaNumericsAndDash() {
         Version version = new Version("1.3.7+build.11.e0f985a");
-        assertEquals("build.11.e0f985a", version.getBuild());
+        assertEquals("build.11.e0f985a", version.getBuildVersion());
     }
     
     @Test public void
