@@ -104,6 +104,32 @@ public class Version implements Comparable<Version> {
     }
     
     @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (null == other || this.getClass() != other.getClass()) {
+            return false;
+        }
+        return compareTo((Version) other) == 0 ? true : false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + majorVersion;
+        hash = 97 * hash + minorVersion;
+        hash = 97 * hash + patchVersion;
+        hash = 97 * hash + (
+            preReleaseVersion != null ? preReleaseVersion.hashCode(): 0
+        );
+        hash = 97 * hash + (
+            buildVersion != null ? buildVersion.hashCode() : 0
+        );
+        return hash;
+    }
+    
+    @Override
     public int compareTo(Version other) {
         int result = compareNormalVersions(other);
         if (result == 0 && preReleaseVersion != null) {

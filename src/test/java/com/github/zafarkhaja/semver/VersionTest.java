@@ -157,4 +157,68 @@ public class VersionTest {
         Version version2 = new Version("1.3.7-beta+build.a");
         assertEquals(-1, version1.compareTo(version2));
     }
+    
+    @Test public void
+    shouldOverrideEqualsMethodForConvenience() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("2.3.7");
+        Version version3 = new Version("1.3.7");
+        assertTrue(version1.equals(version1));
+        assertTrue(version1.equals(version2));
+        assertFalse(version1.equals(version3));
+    }
+    
+    @Test public void
+    equalsMethodShouldBeReflexive() {
+        Version version1 = new Version("2.3.7");
+        assertTrue(version1.equals(version1));
+    }
+    
+    @Test public void
+    equalsMethodShouldBeSymmetric() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("2.3.7");
+        assertTrue(version1.equals(version2));
+        assertTrue(version2.equals(version1));
+    }
+    
+    @Test public void
+    equalsMethodShouldBeTransitive() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("2.3.7");
+        Version version3 = new Version("2.3.7");
+        assertTrue(version1.equals(version2));
+        assertTrue(version2.equals(version3));
+        assertTrue(version1.equals(version3));
+    }
+    
+    @Test public void
+    equalsMethodShouldBeConsistent() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("2.3.7");
+        assertTrue(version1.equals(version2));
+        assertTrue(version1.equals(version2));
+        assertTrue(version1.equals(version2));
+    }
+    
+    @Test public void
+    equalsMethodShouldReturnFalseIfOtherVersionIsNotInstanceOfVersion() {
+        Version version1 = new Version("2.3.7");
+        assertFalse(version1.equals(new String("2.3.7")));
+    }
+    
+    @Test public void
+    equalsMethodShouldReturnFalseIfOtherVersionIsNull() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = null;
+        assertFalse(version1.equals(version2));
+    }
+    
+    @Test public void
+    hashCodeMethodShouldReturnSameHashCodeIfVersionsAreEqual() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("2.3.7");
+        assertTrue(version1.equals(version2));
+        assertEquals(version1.hashCode(), version2.hashCode());
+    }
 }
