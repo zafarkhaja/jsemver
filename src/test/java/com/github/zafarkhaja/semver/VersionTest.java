@@ -159,6 +159,42 @@ public class VersionTest {
     }
     
     @Test public void
+    shouldHaveGreaterThanConvenienceMethodReturningBoolean() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("1.3.7");
+        assertTrue(version1.greaterThan(version2));
+        assertFalse(version2.greaterThan(version1));
+        assertFalse(version1.greaterThan(version1));
+    }
+    
+    @Test public void
+    shouldHaveGreaterThanOrEqualsToConvenienceMethodReturningBoolean() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("1.3.7");
+        assertTrue(version1.greaterThanOrEqualsTo(version2));
+        assertFalse(version2.greaterThanOrEqualsTo(version1));
+        assertTrue(version1.greaterThanOrEqualsTo(version1));
+    }
+    
+    @Test public void
+    shouldHaveLessThanConvenienceMethodReturningBoolean() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("1.3.7");
+        assertFalse(version1.lessThan(version2));
+        assertTrue(version2.lessThan(version1));
+        assertFalse(version1.lessThan(version1));
+    }
+    
+    @Test public void
+    shouldHaveLessThanOrEqualsToConvenienceMethodReturningBoolean() {
+        Version version1 = new Version("2.3.7");
+        Version version2 = new Version("1.3.7");
+        assertFalse(version1.lessThanOrEqualsTo(version2));
+        assertTrue(version2.lessThanOrEqualsTo(version1));
+        assertTrue(version1.lessThanOrEqualsTo(version1));
+    }
+    
+    @Test public void
     shouldOverrideEqualsMethodForConvenience() {
         Version version1 = new Version("2.3.7");
         Version version2 = new Version("2.3.7");

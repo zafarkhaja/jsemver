@@ -103,6 +103,22 @@ public class Version implements Comparable<Version> {
         patchVersion = patchVersion + 1;
     }
     
+    public boolean greaterThan(Version other) {
+        return compareTo(other) > 0 ? true : false;
+    }
+    
+    public boolean greaterThanOrEqualsTo(Version other) {
+        return compareTo(other) >= 0 ? true : false;
+    }
+    
+    public boolean lessThan(Version other) {
+        return compareTo(other) < 0 ? true : false;
+    }
+    
+    public boolean lessThanOrEqualsTo(Version other) {
+        return compareTo(other) <= 0 ? true : false;
+    }
+    
     @Override
     public boolean equals(Object other) {
         if (this == other) {
