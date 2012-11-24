@@ -148,17 +148,11 @@ public class Version implements Comparable<Version> {
     @Override
     public int compareTo(Version other) {
         int result = compareNormalVersions(other);
-        if (result == 0 && preReleaseVersion != null) {
-            result = compareAlphaNumericVersions(
-                preReleaseVersion, 
-                other.getPreReleaseVersion()
-            );
+        if (result == 0) {
+            result = comparePreReleaseVersions(other);
         }
-        if (result == 0 && buildVersion != null) {
-            result = compareAlphaNumericVersions(
-                buildVersion, 
-                other.getBuildVersion()
-            );
+        if (result == 0) {
+            result = compareBuildVersions(other);
         }
         return result;
     }
@@ -176,6 +170,40 @@ public class Version implements Comparable<Version> {
     
     private int compareInts(int thisOp, int otherOp) {
         return (thisOp == otherOp) ? 0 : ((thisOp > otherOp) ? 1 : -1); 
+    }
+    
+    private int comparePreReleaseVersions(Version other) {
+        int result;
+        if (preReleaseVersion == null && 
+                other.getPreReleaseVersion() == null) {
+            result = 0;
+        } else if (preReleaseVersion == null || 
+                other.getPreReleaseVersion() == null) {
+            result = preReleaseVersion == null ? 1 : -1;
+        } else {
+            result = compareAlphaNumericVersions(
+                preReleaseVersion,
+                other.getPreReleaseVersion()
+            );
+        }
+        return result;
+    }
+    
+    private int compareBuildVersions(Version other) {
+        int result;
+        if (buildVersion == null && 
+                other.getBuildVersion()== null) {
+            result = 0;
+        } else if (buildVersion == null || 
+                other.getBuildVersion()== null) {
+            result = buildVersion == null ? -1 : 1;
+        } else {
+            result = compareAlphaNumericVersions(
+                buildVersion,
+                other.getBuildVersion()
+            );    
+        }
+        return result;
     }
     
     private int compareAlphaNumericVersions(String thisOp, String otherOp) {

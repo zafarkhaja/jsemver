@@ -138,10 +138,26 @@ public class VersionTest {
     }
     
     @Test public void
+    preReleaseVersionShouldHaveLowerPrecedenceThanAssociatedNormalVersion() {
+        Version version1 = new Version("1.3.7");
+        Version version2 = new Version("1.3.7-alpha");
+        assertEquals(1, version1.compareTo(version2));
+        assertEquals(-1, version2.compareTo(version1));
+    }
+    
+    @Test public void
     shouldCompareBuildVersionsIfNormalAndPreReleaseVersionsAreEqual() {
         Version version1 = new Version("1.3.7-beta+build.1");
         Version version2 = new Version("1.3.7-beta+build.2");
         assertEquals(-1, version1.compareTo(version2));
+    }
+    
+    @Test public void
+    buildVersionShouldHaveHigherPrecedenceThanAssociatedNormalVersion() {
+        Version version1 = new Version("1.3.7");
+        Version version2 = new Version("1.3.7+build");
+        assertEquals(-1, version1.compareTo(version2));
+        assertEquals(1, version2.compareTo(version1));
     }
     
     @Test public void
