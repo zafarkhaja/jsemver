@@ -173,40 +173,31 @@ public class Version implements Comparable<Version> {
     }
     
     private int comparePreReleaseVersions(Version other) {
-        int result;
-        if (preReleaseVersion == null && 
-                other.getPreReleaseVersion() == null) {
-            result = 0;
-        } else if (preReleaseVersion == null || 
-                other.getPreReleaseVersion() == null) {
-            result = preReleaseVersion == null ? 1 : -1;
+        if (preReleaseVersion == null ^ other.getPreReleaseVersion() == null) {
+            return preReleaseVersion == null ? 1 : -1;
         } else {
-            result = compareAlphaNumericVersions(
+            return compareAlphaNumericVersions(
                 preReleaseVersion,
                 other.getPreReleaseVersion()
             );
         }
-        return result;
     }
     
     private int compareBuildVersions(Version other) {
-        int result;
-        if (buildVersion == null && 
-                other.getBuildVersion()== null) {
-            result = 0;
-        } else if (buildVersion == null || 
-                other.getBuildVersion()== null) {
-            result = buildVersion == null ? -1 : 1;
+        if (buildVersion == null ^ other.getBuildVersion() == null) {
+            return buildVersion == null ? -1 : 1;
         } else {
-            result = compareAlphaNumericVersions(
+            return compareAlphaNumericVersions(
                 buildVersion,
                 other.getBuildVersion()
             );    
         }
-        return result;
     }
     
     private int compareAlphaNumericVersions(String thisOp, String otherOp) {
+        if (thisOp == null && otherOp == null) {
+            return 0;
+        }
         String[] thisIdents  = thisOp.split("\\.");
         String[] otherIdents = otherOp.split("\\.");
         
