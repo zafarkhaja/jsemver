@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
  */
 public class Version implements Comparable<Version> {
     
+    private String rawVersion;
+    
     private int majorVersion;
     private int minorVersion;
     private int patchVersion;
@@ -60,6 +62,8 @@ public class Version implements Comparable<Version> {
                 "Illegal version format"
             );
         }
+        rawVersion = version;
+        
         majorVersion = Integer.parseInt(matcher.group("major"));
         minorVersion = Integer.parseInt(matcher.group("minor"));
         patchVersion = Integer.parseInt(matcher.group("patch"));
@@ -143,6 +147,11 @@ public class Version implements Comparable<Version> {
             buildVersion != null ? buildVersion.hashCode() : 0
         );
         return hash;
+    }
+    
+    @Override
+    public String toString() {
+        return rawVersion;
     }
     
     @Override

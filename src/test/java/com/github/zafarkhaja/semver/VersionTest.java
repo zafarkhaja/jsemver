@@ -273,4 +273,11 @@ public class VersionTest {
         assertTrue(version1.equals(version2));
         assertEquals(version1.hashCode(), version2.hashCode());
     }
+    
+    @Test public void
+    shouldOverrideToStringMethod() {
+        String versionString = "1.2.3-beta+build";
+        Version version = new Version(versionString);
+        assertEquals(versionString, version.toString());
+    }
 }
