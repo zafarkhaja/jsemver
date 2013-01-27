@@ -51,7 +51,7 @@ public class VersionTest {
     
     @Test public void
     shouldAcceptOnlyNonNegativeMajorMinorAndPatchVersions() {
-        String[] versionStrings = new String[] {"-1.2.3", "1.-2.3", "1.2.-3"};
+        String[] versionStrings = {"-1.2.3", "1.-2.3", "1.2.-3"};
         for (String illegalVersion : versionStrings) {
             try {
                 Version version = new Version(illegalVersion);
@@ -279,5 +279,27 @@ public class VersionTest {
         String versionString = "1.2.3-beta+build";
         Version version = new Version(versionString);
         assertEquals(versionString, version.toString());
+    }
+    
+    @Test public void
+    shouldCorrectlyCompareAllVersionsFromSpecification() {
+        String[] versionStrings = {
+            "1.0.0-alpha", 
+            "1.0.0-alpha.1", 
+            "1.0.0-beta.2", 
+            "1.0.0-beta.11", 
+            "1.0.0-rc.1", 
+            "1.0.0-rc.1+build.1", 
+            "1.0.0", 
+            "1.0.0+0.3.7", 
+            "1.3.7+build", 
+            "1.3.7+build.2.b8f12d7", 
+            "1.3.7+build.11.e0f985a"
+        };
+        for (int i = 1; i < versionStrings.length; i++) {
+            Version version1 = new Version(versionStrings[i-1]);
+            Version version2 = new Version(versionStrings[i]);
+            assertTrue(version1.lessThan(version2));
+        }
     }
 }
