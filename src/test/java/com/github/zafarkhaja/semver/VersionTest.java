@@ -34,9 +34,9 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Enclosed.class)
 public class VersionTest {
-    
+
     public static class CoreFunctionalityTest {
-        
+
         @Test
         public void mayHavePreReleaseFollowingPatchAppendedWithHyphen() {
             Version v = Version.valueOf("1.2.3-alpha");
@@ -121,16 +121,16 @@ public class VersionTest {
         @Test
         public void shouldCorrectlyCompareAllVersionsFromSpecification() {
             String[] versions = {
-                "1.0.0-alpha", 
-                "1.0.0-alpha.1", 
-                "1.0.0-beta.2", 
-                "1.0.0-beta.11", 
-                "1.0.0-rc.1", 
-                "1.0.0-rc.1+build.1", 
-                "1.0.0", 
-                "1.0.0+0.3.7", 
-                "1.3.7+build", 
-                "1.3.7+build.2.b8f12d7", 
+                "1.0.0-alpha",
+                "1.0.0-alpha.1",
+                "1.0.0-beta.2",
+                "1.0.0-beta.11",
+                "1.0.0-rc.1",
+                "1.0.0-rc.1+build.1",
+                "1.0.0",
+                "1.0.0+0.3.7",
+                "1.3.7+build",
+                "1.3.7+build.2.b8f12d7",
                 "1.3.7+build.11.e0f985a"
             };
             for (int i = 1; i < versions.length; i++) {
@@ -139,7 +139,7 @@ public class VersionTest {
                 assertTrue(v1.lessThan(v2));
             }
         }
-        
+
         @Test
         public void shouldHaveStaticFactoryMethod() {
             Version v = Version.valueOf("1.0.0-rc.1+build.1");
@@ -151,9 +151,9 @@ public class VersionTest {
             assertEquals("build.1", v.getBuildVersion());
         }
     }
-    
+
     public static class EqualsMethodTest {
-        
+
         @Test
         public void shouldBeReflexive() {
             Version v1 = Version.valueOf("2.3.7");
@@ -200,9 +200,9 @@ public class VersionTest {
             assertFalse(v1.equals(v2));
         }
     }
-    
+
     public static class HashCodeMethodTest {
-        
+
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
             Version v1 = Version.valueOf("2.3.7");
@@ -211,9 +211,9 @@ public class VersionTest {
             assertEquals(v1.hashCode(), v2.hashCode());
         }
     }
-    
+
     public static class ToStringMethodTest {
-        
+
         @Test
         public void shouldReturnStringRepresentation() {
             String value = "1.2.3-beta+build";

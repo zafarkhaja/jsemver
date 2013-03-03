@@ -34,9 +34,9 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Enclosed.class)
 public class NormalVersionTest {
-    
+
     public static class CoreFunctionalityTest {
-        
+
         @Test
         public void mustConsistOfMajorMinorAndPatchVersions() {
             NormalVersion v = new NormalVersion(1, 2, 3);
@@ -44,13 +44,13 @@ public class NormalVersionTest {
             assertEquals(2, v.getMinor());
             assertEquals(3, v.getPatch());
         }
-        
+
         @Test
         public void mustTakeTheFormOfXDotYDotZWhereXyzAreNonNegativeIntegers() {
             NormalVersion v = new NormalVersion(1, 2, 3);
             assertEquals("1.2.3", v.toString());
         }
-        
+
         @Test
         public void shouldAcceptOnlyNonNegativeMajorMinorAndPatchVersions() {
             int[][] invalidVersions = {{-1, 2, 3}, {1, -2, 3}, {1, 2, -3}};
@@ -67,7 +67,7 @@ public class NormalVersionTest {
                 fail("Major, minor and patch versions MUST be non-negative integers.");
             }
         }
-        
+
         @Test
         public void mustIncreaseEachElementNumericallyByIncrementsOfOne() {
             int major = 1, minor = 2, patch = 3;
@@ -79,7 +79,7 @@ public class NormalVersionTest {
             v.incrementMajor();
             assertEquals(major + 1, v.getMajor());
         }
-        
+
         @Test
         public void mustResetMinorAndPatchToZeroWhenMajorIsIncremented() {
             NormalVersion v = new NormalVersion(1, 2, 3);
@@ -88,7 +88,7 @@ public class NormalVersionTest {
             assertEquals(0, v.getMinor());
             assertEquals(0, v.getPatch());
         }
-        
+
         @Test
         public void mustResetPatchToZeroWhenMinorIsIncremented() {
             NormalVersion v = new NormalVersion(1, 2, 3);
@@ -97,7 +97,7 @@ public class NormalVersionTest {
             assertEquals(3, v.getMinor());
             assertEquals(0, v.getPatch());
         }
-        
+
         @Test
         public void mustCompareMajorMinorAndPatchNumerically() {
             NormalVersion v = new NormalVersion(1, 2, 3);
@@ -105,7 +105,7 @@ public class NormalVersionTest {
             assertTrue(0 == v.compareTo(new NormalVersion(1, 2, 3)));
             assertTrue(0 > v.compareTo(new NormalVersion(1, 2, 4)));
         }
-        
+
         @Test
         public void shouldOverrideEqualsMethod() {
             NormalVersion v1 = new NormalVersion(1, 2, 3);
@@ -114,7 +114,7 @@ public class NormalVersionTest {
             assertTrue(v1.equals(v2));
             assertFalse(v1.equals(v3));
         }
-        
+
         @Test
         public void shouldHaveStaticFactoryMethod() {
             NormalVersion v = NormalVersion.valueOf("1.2.3");
@@ -123,15 +123,15 @@ public class NormalVersionTest {
             assertEquals(3, v.getPatch());
         }
     }
-    
+
     public static class EqualsMethodTest {
-        
+
         @Test
         public void shouldBeReflexive() {
             NormalVersion v = new NormalVersion(1, 2, 3);
             assertTrue(v.equals(v));
         }
-        
+
         @Test
         public void shouldBeSymmetric() {
             NormalVersion v1 = new NormalVersion(1, 2, 3);
@@ -172,9 +172,9 @@ public class NormalVersionTest {
             assertFalse(v1.equals(v2));
         }
     }
-    
+
     public static class HashCodeMethodTest {
-        
+
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
             NormalVersion v1 = new NormalVersion(1, 2, 3);
@@ -183,9 +183,9 @@ public class NormalVersionTest {
             assertEquals(v1.hashCode(), v2.hashCode());
         }
     }
-    
+
     public static class ToStringMethodTest {
-        
+
         @Test
         public void shouldReturnStringRepresentation() {
             NormalVersion v = new NormalVersion(1, 2, 3);

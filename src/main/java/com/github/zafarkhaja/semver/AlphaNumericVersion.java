@@ -27,21 +27,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
+ *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
 class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
-    
+
+    private String value;
+
     static final String FORMAT = "([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)";
     private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");
-    
-    private String value;
-    
+
     AlphaNumericVersion(String value) {
         if (value == null) {
-            throw new NullPointerException(
-                "Alpha-numeric version MUST NOT be NULL"
-            );
+            throw new NullPointerException("Alpha-numeric version MUST NOT be NULL");
         }
         Matcher matcher = PATTERN.matcher(value);
         if (!matcher.matches()) {
@@ -51,40 +49,40 @@ class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
         }
         this.value = matcher.group(0);
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
-            return true;            
+            return true;
         }
         if (!(other instanceof AlphaNumericVersion)) {
             return false;
         }
         return compareTo((AlphaNumericVersion) other) == 0 ? true : false;
     }
-    
+
     @Override
     public int hashCode() {
         return value.hashCode();
     }
-    
+
     @Override
     public String toString() {
         return value;
     }
-    
+
     @Override
     public int compareTo(AlphaNumericVersion other) {
         String[] thisIds  = value.split("\\.");
         String[] otherIds = other.value.split("\\.");
-        
+
         int result = compareIdentifierArrays(thisIds, otherIds);
         if (result == 0) {
             result = thisIds.length - otherIds.length;
         }
         return result;
     }
-    
+
     private int compareIdentifierArrays(String[] ids1, String[] ids2) {
         int result = 0;
         int length = getLeastCommonArrayLength(ids1, ids2);
@@ -96,11 +94,11 @@ class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
         }
         return result;
     }
-    
+
     private int getLeastCommonArrayLength(String[] arr1, String[] arr2) {
         return arr1.length <= arr2.length ? arr1.length : arr2.length;
     }
-    
+
     private int compareIdentifiers(String id1, String id2) {
         if (isInt(id1) && isInt(id2)) {
             return Integer.parseInt(id1) - Integer.parseInt(id2);
@@ -108,7 +106,7 @@ class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
             return id1.compareTo(id2);
         }
     }
-    
+
     private boolean isInt(String str) {
         try {
             Integer.parseInt(str);

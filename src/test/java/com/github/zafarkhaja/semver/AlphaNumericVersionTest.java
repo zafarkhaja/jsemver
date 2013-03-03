@@ -34,16 +34,16 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Enclosed.class)
 public class AlphaNumericVersionTest {
-    
+
     public static class CoreFunctionalityTest {
-        
+
         @Test
         public void mustConsistOfDotSeparatedIdentifiersOfAlphaNumericsAndHyphen() {
             String[] invalidVersions = {
                 null,
-                "", 
-                "123!", 
-                "1a:2b:3c", 
+                "",
+                "123!",
+                "1a:2b:3c",
                 "123,abc,123",
             };
             for (String ver : invalidVersions) {
@@ -88,14 +88,14 @@ public class AlphaNumericVersionTest {
         public void shouldOverrideEqualsMethod() {
             AlphaNumericVersion v1 = new AlphaNumericVersion("alpha.123");
             AlphaNumericVersion v2 = new AlphaNumericVersion("alpha.123");
-            AlphaNumericVersion v3 = new AlphaNumericVersion("alpha.321");       
+            AlphaNumericVersion v3 = new AlphaNumericVersion("alpha.321");
             assertTrue(v1.equals(v2));
             assertFalse(v1.equals(v3));
         }
     }
-    
+
     public static class EqualsMethodTest {
-        
+
         @Test
         public void shouldBeReflexive() {
             AlphaNumericVersion v = new AlphaNumericVersion("alpha.123");
@@ -142,9 +142,9 @@ public class AlphaNumericVersionTest {
             assertFalse(v1.equals(v2));
         }
     }
-    
+
     public static class HashCodeMethodTest {
-        
+
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
             AlphaNumericVersion v1 = new AlphaNumericVersion("alpha.123");
@@ -153,9 +153,9 @@ public class AlphaNumericVersionTest {
             assertEquals(v1.hashCode(), v2.hashCode());
         }
     }
-    
+
     public static class ToStringMethodTest {
-        
+
         @Test
         public void shouldReturnStringRepresentation() {
             String value = "beta.abc.def";

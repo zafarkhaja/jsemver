@@ -31,19 +31,19 @@ import java.util.regex.Pattern;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
 public class Version implements Comparable<Version> {
-    
+
     private NormalVersion normal;
     private AlphaNumericVersion preRelease;
     private AlphaNumericVersion build;
-    
+
     private static final String PRE_RELEASE_PREFIX = "-";
     private static final String BUILD_PREFIX = "+";
-    
+
     private static final Pattern SEMVER_PATTERN;
-    
+
     static {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("^");
         sb.append(NormalVersion.FORMAT);
         sb.append("(?:");
@@ -56,91 +56,89 @@ public class Version implements Comparable<Version> {
         sb.append(AlphaNumericVersion.FORMAT);
         sb.append(")?");
         sb.append("$");
-        
+
         SEMVER_PATTERN = Pattern.compile(sb.toString());
     }
-    
+
     Version(
-        NormalVersion normal, 
-        AlphaNumericVersion preRelease, 
+        NormalVersion normal,
+        AlphaNumericVersion preRelease,
         AlphaNumericVersion build
     ) {
         this.normal     = normal;
         this.preRelease = preRelease;
         this.build      = build;
     }
-    
+
     public static Version valueOf(String value) {
         Matcher matcher = SEMVER_PATTERN.matcher(value);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException(
-                "Illegal version format"
-            );
+            throw new IllegalArgumentException("Illegal version format");
         }
-        
+
         NormalVersion normal = new NormalVersion(
             Integer.parseInt(matcher.group(1)),
             Integer.parseInt(matcher.group(2)),
             Integer.parseInt(matcher.group(3))
         );
-        
-        AlphaNumericVersion preRelease = 
-            (matcher.group(4) != null) ? 
-                new AlphaNumericVersion(matcher.group(4)) : 
+
+        AlphaNumericVersion preRelease =
+            (matcher.group(4) != null) ?
+                new AlphaNumericVersion(matcher.group(4)) :
                     null;
-        
-        AlphaNumericVersion build = 
-            (matcher.group(5) != null) ? 
-                new AlphaNumericVersion(matcher.group(5)) : 
+
+        AlphaNumericVersion build =
+            (matcher.group(5) != null) ?
+                new AlphaNumericVersion(matcher.group(5)) :
                     null;
-        
-        return new Version(normal, preRelease, build); 
+
+        return new Version(normal, preRelease, build);
     }
-    
+
     public int getMajorVersion() {
         return normal.getMajor();
     }
-    
+
     public int getMinorVersion() {
         return normal.getMinor();
     }
-    
+
     public int getPatchVersion() {
         return normal.getPatch();
     }
-    
+
     public String getNormalVersion() {
         return normal.toString();
     }
-    
+
     public String getPreReleaseVersion() {
         return (preRelease != null) ? preRelease.toString() : "";
     }
-    
+
     public String getBuildVersion() {
         return (build != null) ? build.toString() : "";
     }
-    
+
     public boolean greaterThan(Version other) {
         return compareTo(other) > 0 ? true : false;
     }
-    
+
     public boolean greaterThanOrEqualsTo(Version other) {
         return compareTo(other) >= 0 ? true : false;
     }
-    
+
     public boolean lessThan(Version other) {
         return compareTo(other) < 0 ? true : false;
     }
-    
+
     public boolean lessThanOrEqualsTo(Version other) {
         return compareTo(other) <= 0 ? true : false;
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
-            return true;            
+            return true;
         }
         if (!(other instanceof Version)) {
             return false;
@@ -156,7 +154,7 @@ public class Version implements Comparable<Version> {
         hash = 97 * hash + (build != null ? build.hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getNormalVersion());
@@ -170,7 +168,7 @@ public class Version implements Comparable<Version> {
         }
         return sb.toString();
     }
-    
+
     @Override
     public int compareTo(Version other) {
         int result = normal.compareTo(other.normal);
@@ -182,23 +180,31 @@ public class Version implements Comparable<Version> {
         }
         return result;
     }
-    
+
     private int comparePreReleases(Version other) {
         int result = 0;
         if (preRelease != null && other.preRelease != null) {
             result = preRelease.compareTo(other.preRelease);
         } else if (preRelease == null ^ other.preRelease == null) {
-            result = preRelease == null ? 1 : -1;
+            /**
+             * Pre-release versions satisfy but have a lower precedence
+             * than the associated normal version. (SemVer p.9)
+             */
+            result = (preRelease == null) ? 1 : -1;
         }
         return result;
     }
-    
+
     private int compareBuilds(Version other) {
         int result = 0;
         if (build != null && other.build != null) {
             result = build.compareTo(other.build);
         } else if (build == null ^ other.build == null) {
-            result = build == null ? -1 : 1;
+            /**
+             * Build versions satisfy and have a higher precedence
+             * than the associated normal version. (SemVer p.10)
+             */
+            result = (build == null) ? -1 : 1;
         }
         return result;
     }

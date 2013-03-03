@@ -35,10 +35,10 @@ class NormalVersion implements Comparable<NormalVersion> {
     private int major;
     private int minor;
     private int patch;
-    
+
     static final String FORMAT = "(\\d+)\\.(\\d+)\\.(\\d+)";
     private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");
-    
+
     NormalVersion(int major, int minor, int patch) {
         if (major < 0 || minor < 0 || patch < 0) {
             throw new IllegalArgumentException(
@@ -49,7 +49,7 @@ class NormalVersion implements Comparable<NormalVersion> {
         this.minor = minor;
         this.patch = patch;
     }
-    
+
     static NormalVersion valueOf(String value) {
         Matcher matcher = PATTERN.matcher(value);
         if (!matcher.matches()) {
@@ -73,13 +73,13 @@ class NormalVersion implements Comparable<NormalVersion> {
     int getPatch() {
         return patch;
     }
-    
+
     void incrementMajor() {
         major = major + 1;
         minor = 0;
         patch = 0;
     }
-    
+
     void incrementMinor() {
         minor = minor + 1;
         patch = 0;
@@ -100,7 +100,7 @@ class NormalVersion implements Comparable<NormalVersion> {
         }
         return result;
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -120,12 +120,12 @@ class NormalVersion implements Comparable<NormalVersion> {
         hash = 31 * hash + patch;
         return hash;
     }
-    
+
     /**
      * Returns the string representation of this normal version.
-     * 
-     * A normal version number MUST take the form X.Y.Z where X, Y, and Z are 
-     * non-negative integers. X is the major version, Y is the minor version, 
+     *
+     * A normal version number MUST take the form X.Y.Z where X, Y, and Z are
+     * non-negative integers. X is the major version, Y is the minor version,
      * and Z is the patch version. (SemVer p.2)
      */
     @Override
