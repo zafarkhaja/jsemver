@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.github.zafarkhaja.semver;
 
 import java.util.regex.Matcher;
@@ -33,78 +32,93 @@ import java.util.regex.Pattern;
  */
 public class Version implements Comparable<Version> {
     
-    private String rawVersion;
+    private NormalVersion normal;
+    private AlphaNumericVersion preRelease;
+    private AlphaNumericVersion build;
     
-    private int majorVersion;
-    private int minorVersion;
-    private int patchVersion;
+    private static final String PRE_RELEASE_PREFIX = "-";
+    private static final String BUILD_PREFIX = "+";
     
-    private String preReleaseVersion;
-    private String buildVersion;
+    private static final Pattern SEMVER_PATTERN;
     
-    private static final String NORMAL_VERSION = 
-        "((?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+))";
+    static {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("^");
+        sb.append(NormalVersion.FORMAT);
+        sb.append("(?:");
+        sb.append(PRE_RELEASE_PREFIX);
+        sb.append(AlphaNumericVersion.FORMAT);
+        sb.append(")?");
+        sb.append("(?:");
+        sb.append("\\");
+        sb.append(BUILD_PREFIX);
+        sb.append(AlphaNumericVersion.FORMAT);
+        sb.append(")?");
+        sb.append("$");
+        
+        SEMVER_PATTERN = Pattern.compile(sb.toString());
+    }
     
-    private static final String PRE_RELEASE_VERSION = 
-        "(?:-(?<preRelease>[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?";
+    Version(
+        NormalVersion normal, 
+        AlphaNumericVersion preRelease, 
+        AlphaNumericVersion build
+    ) {
+        this.normal     = normal;
+        this.preRelease = preRelease;
+        this.build      = build;
+    }
     
-    private static final String BUILD_VERSION = 
-        "(?:\\+(?<build>[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?";
-    
-    private static final Pattern SEMVER_PATTERN = Pattern.compile(
-        "^" + NORMAL_VERSION + PRE_RELEASE_VERSION + BUILD_VERSION + "$"
-    );
-    
-    public Version(String version) {
-        Matcher matcher = SEMVER_PATTERN.matcher(version);
+    public static Version valueOf(String value) {
+        Matcher matcher = SEMVER_PATTERN.matcher(value);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(
                 "Illegal version format"
             );
         }
-        rawVersion = version;
         
-        majorVersion = Integer.parseInt(matcher.group("major"));
-        minorVersion = Integer.parseInt(matcher.group("minor"));
-        patchVersion = Integer.parseInt(matcher.group("patch"));
+        NormalVersion normal = new NormalVersion(
+            Integer.parseInt(matcher.group(1)),
+            Integer.parseInt(matcher.group(2)),
+            Integer.parseInt(matcher.group(3))
+        );
         
-        preReleaseVersion = matcher.group("preRelease");
-        buildVersion      = matcher.group("build");
+        AlphaNumericVersion preRelease = 
+            (matcher.group(4) != null) ? 
+                new AlphaNumericVersion(matcher.group(4)) : 
+                    null;
+        
+        AlphaNumericVersion build = 
+            (matcher.group(5) != null) ? 
+                new AlphaNumericVersion(matcher.group(5)) : 
+                    null;
+        
+        return new Version(normal, preRelease, build); 
     }
     
     public int getMajorVersion() {
-        return majorVersion;
+        return normal.getMajor();
     }
     
     public int getMinorVersion() {
-        return minorVersion;
+        return normal.getMinor();
     }
     
     public int getPatchVersion() {
-        return patchVersion;
+        return normal.getPatch();
+    }
+    
+    public String getNormalVersion() {
+        return normal.toString();
     }
     
     public String getPreReleaseVersion() {
-        return preReleaseVersion;
+        return (preRelease != null) ? preRelease.toString() : "";
     }
     
     public String getBuildVersion() {
-        return buildVersion;
-    }
-    
-    public void bumpMajorVersion() {
-        majorVersion = majorVersion + 1;
-        minorVersion = 0;
-        patchVersion = 0;
-    }
-    
-    public void bumpMinorVersion() {
-        minorVersion = minorVersion + 1;
-        patchVersion = 0;
-    }
-    
-    public void bumpPatchVersion() {
-        patchVersion = patchVersion + 1;
+        return (build != null) ? build.toString() : "";
     }
     
     public boolean greaterThan(Version other) {
@@ -126,9 +140,9 @@ public class Version implements Comparable<Version> {
     @Override
     public boolean equals(Object other) {
         if (this == other) {
-            return true;
+            return true;            
         }
-        if (null == other || this.getClass() != other.getClass()) {
+        if (!(other instanceof Version)) {
             return false;
         }
         return compareTo((Version) other) == 0 ? true : false;
@@ -137,128 +151,55 @@ public class Version implements Comparable<Version> {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + majorVersion;
-        hash = 97 * hash + minorVersion;
-        hash = 97 * hash + patchVersion;
-        hash = 97 * hash + (
-            preReleaseVersion != null ? preReleaseVersion.hashCode(): 0
-        );
-        hash = 97 * hash + (
-            buildVersion != null ? buildVersion.hashCode() : 0
-        );
+        hash = 97 * hash + (normal != null ? normal.hashCode() : 0);
+        hash = 97 * hash + (preRelease != null ? preRelease.hashCode() : 0);
+        hash = 97 * hash + (build != null ? build.hashCode() : 0);
         return hash;
     }
     
     @Override
     public String toString() {
-        return rawVersion;
+        StringBuilder sb = new StringBuilder(getNormalVersion());
+        if (preRelease != null) {
+            sb.append(PRE_RELEASE_PREFIX);
+            sb.append(getPreReleaseVersion());
+        }
+        if (build != null) {
+            sb.append(BUILD_PREFIX);
+            sb.append(getBuildVersion());
+        }
+        return sb.toString();
     }
     
     @Override
     public int compareTo(Version other) {
-        int result = compareNormalVersions(other);
+        int result = normal.compareTo(other.normal);
         if (result == 0) {
-            result = comparePreReleaseVersions(other);
-        }
-        if (result == 0) {
-            result = compareBuildVersions(other);
-        }
-        return result;
-    }
-    
-    private int compareNormalVersions(Version other) {
-        int result = compareInts(majorVersion, other.getMajorVersion());
-        if (result == 0) {
-            result = compareInts(minorVersion, other.getMinorVersion());
+            result = comparePreReleases(other);
             if (result == 0) {
-                result = compareInts(patchVersion, other.getPatchVersion());
+                result = compareBuilds(other);
             }
         }
         return result;
     }
     
-    private int compareInts(int thisOp, int otherOp) {
-        return (thisOp == otherOp) ? 0 : ((thisOp > otherOp) ? 1 : -1); 
-    }
-    
-    private int comparePreReleaseVersions(Version other) {
-        if (preReleaseVersion == null ^ other.getPreReleaseVersion() == null) {
-            return preReleaseVersion == null ? 1 : -1;
-        } else {
-            return compareAlphaNumericVersions(
-                preReleaseVersion,
-                other.getPreReleaseVersion()
-            );
-        }
-    }
-    
-    private int compareBuildVersions(Version other) {
-        if (buildVersion == null ^ other.getBuildVersion() == null) {
-            return buildVersion == null ? -1 : 1;
-        } else {
-            return compareAlphaNumericVersions(
-                buildVersion,
-                other.getBuildVersion()
-            );    
-        }
-    }
-    
-    private int compareAlphaNumericVersions(String thisOp, String otherOp) {
-        if (thisOp == null && otherOp == null) {
-            return 0;
-        }
-        String[] thisIdents  = thisOp.split("\\.");
-        String[] otherIdents = otherOp.split("\\.");
-        
-        int result = compareIdentifierArrays(thisIdents, otherIdents);
-        if (result == 0 && thisIdents.length != otherIdents.length) {
-            result = (thisIdents.length > otherIdents.length) ? 1 : -1;
-        }
-        return result;
-    }
-    
-    private int compareIdentifierArrays(String[] thisArr, String[] otherArr) {
+    private int comparePreReleases(Version other) {
         int result = 0;
-        for (int i = 0; i < getSmallestArrayLength(thisArr, otherArr); i++) {
-            result = compareIdentifiers(thisArr[i], otherArr[i]);
-            if (result != 0) {
-                break;
-            }
+        if (preRelease != null && other.preRelease != null) {
+            result = preRelease.compareTo(other.preRelease);
+        } else if (preRelease == null ^ other.preRelease == null) {
+            result = preRelease == null ? 1 : -1;
         }
         return result;
     }
     
-    private int getSmallestArrayLength(String[] thisArr, String[] otherArr) {
-        if (thisArr.length <= otherArr.length) {
-            return thisArr.length;
-        } else {
-            return otherArr.length;
+    private int compareBuilds(Version other) {
+        int result = 0;
+        if (build != null && other.build != null) {
+            result = build.compareTo(other.build);
+        } else if (build == null ^ other.build == null) {
+            result = build == null ? -1 : 1;
         }
-    }
-    
-    private int compareIdentifiers(String thisIdent, String otherIdent) {
-        if (isInt(thisIdent) && isInt(otherIdent)) {
-            return compareInts(
-                Integer.parseInt(thisIdent), 
-                Integer.parseInt(otherIdent)
-            );
-        } else if (isInt(thisIdent) || isInt(otherIdent)) {
-            /**
-             * Numeric identifiers always have lower precedence 
-             * than non-numeric identifiers.
-             */
-            return isInt(thisIdent) ? -1 : 1;
-        } else {
-            return thisIdent.compareTo(otherIdent);
-        }
-    }
-    
-    private boolean isInt(String str) {
-        try {
-            Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
+        return result;
     }
 }
