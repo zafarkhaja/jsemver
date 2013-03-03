@@ -150,6 +150,27 @@ public class VersionTest {
             assertEquals("rc.1", v.getPreReleaseVersion());
             assertEquals("build.1", v.getBuildVersion());
         }
+
+        @Test
+        public void shouldProvideIncrementMajorVersionMethod() {
+            Version v = Version.valueOf("1.2.3");
+            v.incrementMajorVersion();
+            assertEquals("2.0.0", v.toString());
+        }
+
+        @Test
+        public void shouldProvideIncrementMinorVersionMethod() {
+            Version v = Version.valueOf("1.2.3");
+            v.incrementMinorVersion();
+            assertEquals("1.3.0", v.toString());
+        }
+
+        @Test
+        public void shouldProvideIncrementPatchVersionMethod() {
+            Version v = Version.valueOf("1.2.3");
+            v.incrementPatchVersion();
+            assertEquals("1.2.4", v.toString());
+        }
     }
 
     public static class EqualsMethodTest {

@@ -95,6 +95,18 @@ public class Version implements Comparable<Version> {
         return new Version(normal, preRelease, build);
     }
 
+    public void incrementMajorVersion() {
+        normal.incrementMajor();
+    }
+
+    public void incrementMinorVersion() {
+        normal.incrementMinor();
+    }
+
+    public void incrementPatchVersion() {
+        normal.incrementPatch();
+    }
+
     public int getMajorVersion() {
         return normal.getMajor();
     }
