@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
  */
 class NormalVersion implements Comparable<NormalVersion> {
 
-    private int major;
-    private int minor;
-    private int patch;
+    private final int major;
+    private final int minor;
+    private final int patch;
 
     static final String FORMAT = "(\\d+)\\.(\\d+)\\.(\\d+)";
     private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");
@@ -74,19 +74,16 @@ class NormalVersion implements Comparable<NormalVersion> {
         return patch;
     }
 
-    void incrementMajor() {
-        major = major + 1;
-        minor = 0;
-        patch = 0;
+    NormalVersion incrementMajor() {
+        return new NormalVersion(major + 1, 0, 0);
     }
 
-    void incrementMinor() {
-        minor = minor + 1;
-        patch = 0;
+    NormalVersion incrementMinor() {
+        return new NormalVersion(major, minor + 1, 0);
     }
 
-    void incrementPatch() {
-        patch = patch + 1;
+    NormalVersion incrementPatch() {
+        return new NormalVersion(major, minor, patch + 1);
     }
 
     @Override

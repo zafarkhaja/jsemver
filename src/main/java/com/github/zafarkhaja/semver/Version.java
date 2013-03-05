@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
  */
 public class Version implements Comparable<Version> {
 
-    private NormalVersion normal;
-    private AlphaNumericVersion preRelease;
-    private AlphaNumericVersion build;
+    private final NormalVersion normal;
+    private final AlphaNumericVersion preRelease;
+    private final AlphaNumericVersion build;
 
     private static final String PRE_RELEASE_PREFIX = "-";
     private static final String BUILD_PREFIX = "+";
@@ -92,16 +92,16 @@ public class Version implements Comparable<Version> {
         return new Version(normal, preRelease, build);
     }
 
-    public void incrementMajorVersion() {
-        normal.incrementMajor();
+    public Version incrementMajorVersion() {
+        return new Version(normal.incrementMajor(), preRelease, build);
     }
 
-    public void incrementMinorVersion() {
-        normal.incrementMinor();
+    public Version incrementMinorVersion() {
+        return new Version(normal.incrementMinor(), preRelease, build);
     }
 
-    public void incrementPatchVersion() {
-        normal.incrementPatch();
+    public Version incrementPatchVersion() {
+        return new Version(normal.incrementPatch(), preRelease, build);
     }
 
     public int getMajorVersion() {

@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  */
 class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
 
-    private String value;
+    private final String value;
 
     static final String FORMAT = "([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)";
     private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");

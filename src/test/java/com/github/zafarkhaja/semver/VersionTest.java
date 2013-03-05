@@ -154,22 +154,33 @@ public class VersionTest {
         @Test
         public void shouldProvideIncrementMajorVersionMethod() {
             Version v = Version.valueOf("1.2.3");
-            v.incrementMajorVersion();
-            assertEquals("2.0.0", v.toString());
+            Version incrementedMajor = v.incrementMajorVersion();
+            assertEquals("2.0.0", incrementedMajor.toString());
         }
 
         @Test
         public void shouldProvideIncrementMinorVersionMethod() {
             Version v = Version.valueOf("1.2.3");
-            v.incrementMinorVersion();
-            assertEquals("1.3.0", v.toString());
+            Version incrementedMinor = v.incrementMinorVersion();
+            assertEquals("1.3.0", incrementedMinor.toString());
         }
 
         @Test
         public void shouldProvideIncrementPatchVersionMethod() {
             Version v = Version.valueOf("1.2.3");
-            v.incrementPatchVersion();
-            assertEquals("1.2.4", v.toString());
+            Version incrementedPatch = v.incrementPatchVersion();
+            assertEquals("1.2.4", incrementedPatch.toString());
+        }
+        
+        @Test
+        public void shouldBeImmutable() {
+            Version version = Version.valueOf("1.2.3");
+            Version incementedMajor = version.incrementMajorVersion();
+            assertNotSame(version, incementedMajor);
+            Version incementedMinor = version.incrementMinorVersion();
+            assertNotSame(version, incementedMinor);
+            Version incementedPatch = version.incrementPatchVersion();
+            assertNotSame(version, incementedPatch);
         }
     }
 
