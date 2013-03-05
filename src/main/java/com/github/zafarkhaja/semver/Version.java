@@ -43,20 +43,17 @@ public class Version implements Comparable<Version> {
 
     static {
         StringBuilder sb = new StringBuilder();
-
-        sb.append("^");
-        sb.append(NormalVersion.FORMAT);
-        sb.append("(?:");
-        sb.append(PRE_RELEASE_PREFIX);
-        sb.append(AlphaNumericVersion.FORMAT);
-        sb.append(")?");
-        sb.append("(?:");
-        sb.append("\\");
-        sb.append(BUILD_PREFIX);
-        sb.append(AlphaNumericVersion.FORMAT);
-        sb.append(")?");
-        sb.append("$");
-
+        sb.append("^")
+            .append(NormalVersion.FORMAT)
+            .append("(?:")
+                .append(PRE_RELEASE_PREFIX)
+                .append(AlphaNumericVersion.FORMAT)
+            .append(")?").append("(?:")
+                .append("\\").append(BUILD_PREFIX)
+                .append(AlphaNumericVersion.FORMAT)
+            .append(")?")
+        .append("$");
+        
         SEMVER_PATTERN = Pattern.compile(sb.toString());
     }
 
@@ -171,12 +168,10 @@ public class Version implements Comparable<Version> {
     public String toString() {
         StringBuilder sb = new StringBuilder(getNormalVersion());
         if (preRelease != null) {
-            sb.append(PRE_RELEASE_PREFIX);
-            sb.append(getPreReleaseVersion());
+            sb.append(PRE_RELEASE_PREFIX).append(getPreReleaseVersion());
         }
         if (build != null) {
-            sb.append(BUILD_PREFIX);
-            sb.append(getBuildVersion());
+            sb.append(BUILD_PREFIX).append(getBuildVersion());
         }
         return sb.toString();
     }
