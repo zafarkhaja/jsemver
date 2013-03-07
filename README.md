@@ -1,4 +1,4 @@
-Java SemVer v0.4.2
+Java SemVer v0.5.0
 ==================
 Java SemVer is a Java implementation of the Semantic Versioning Specification 
 (http://semver.org/).

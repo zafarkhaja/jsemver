@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 public class Version implements Comparable<Version> {
 
     private final NormalVersion normal;
-    private final AlphaNumericVersion preRelease;
-    private final AlphaNumericVersion build;
+    private final MetadataVersion preRelease;
+    private final MetadataVersion build;
 
     private static final String PRE_RELEASE_PREFIX = "-";
     private static final String BUILD_PREFIX = "+";
@@ -47,10 +47,10 @@ public class Version implements Comparable<Version> {
             .append(NormalVersion.FORMAT)
             .append("(?:")
                 .append(PRE_RELEASE_PREFIX)
-                .append(AlphaNumericVersion.FORMAT)
+                .append(MetadataVersion.FORMAT)
             .append(")?").append("(?:")
                 .append("\\").append(BUILD_PREFIX)
-                .append(AlphaNumericVersion.FORMAT)
+                .append(MetadataVersion.FORMAT)
             .append(")?")
         .append("$");
         
@@ -59,8 +59,8 @@ public class Version implements Comparable<Version> {
 
     Version(
         NormalVersion normal,
-        AlphaNumericVersion preRelease,
-        AlphaNumericVersion build
+        MetadataVersion preRelease,
+        MetadataVersion build
     ) {
         this.normal     = normal;
         this.preRelease = preRelease;
@@ -79,14 +79,14 @@ public class Version implements Comparable<Version> {
             Integer.parseInt(matcher.group(3))
         );
 
-        AlphaNumericVersion preRelease =
+        MetadataVersion preRelease =
             (matcher.group(4) != null) ?
-                new AlphaNumericVersion(matcher.group(4)) :
+                new MetadataVersion(matcher.group(4)) :
                     null;
 
-        AlphaNumericVersion build =
+        MetadataVersion build =
             (matcher.group(5) != null) ?
-                new AlphaNumericVersion(matcher.group(5)) :
+                new MetadataVersion(matcher.group(5)) :
                     null;
 
         return new Version(normal, preRelease, build);

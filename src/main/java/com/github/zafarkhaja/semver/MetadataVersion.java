@@ -30,21 +30,21 @@ import java.util.regex.Pattern;
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
-class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
+class MetadataVersion implements Comparable<MetadataVersion> {
 
     private final String value;
 
     static final String FORMAT = "([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)";
     private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");
 
-    AlphaNumericVersion(String value) {
+    MetadataVersion(String value) {
         if (value == null) {
-            throw new NullPointerException("Alpha-numeric version MUST NOT be NULL");
+            throw new NullPointerException("Metadata version MUST NOT be NULL");
         }
         Matcher matcher = PATTERN.matcher(value);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(
-                "Alpha-numeric version MUST consist of dot separated identifiers [0-9A-Za-z-]"
+                "Metadata version MUST consist of dot separated identifiers [0-9A-Za-z-]"
             );
         }
         this.value = matcher.group(0);
@@ -55,10 +55,10 @@ class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof AlphaNumericVersion)) {
+        if (!(other instanceof MetadataVersion)) {
             return false;
         }
-        return compareTo((AlphaNumericVersion) other) == 0 ? true : false;
+        return compareTo((MetadataVersion) other) == 0 ? true : false;
     }
 
     @Override
@@ -72,7 +72,7 @@ class AlphaNumericVersion implements Comparable<AlphaNumericVersion> {
     }
 
     @Override
-    public int compareTo(AlphaNumericVersion other) {
+    public int compareTo(MetadataVersion other) {
         String[] thisIds  = value.split("\\.");
         String[] otherIds = other.value.split("\\.");
 
