@@ -6,6 +6,14 @@ Java SemVer is a Java implementation of the Semantic Versioning Specification
 **NOTE**: The current version of the Java SemVer corresponds to the Semantic 
 Versioning 2.0.0-rc.1.
 
+Versioning
+----------
+Java SemVer is versioned according to the SemVer Specification.
+
+**NOTE**: The current release of the Java SemVer library has a major version of 
+zero which according to the SemVer p.4 means that the library is under initial 
+development and its public API should not be considered stable.
+
 Usage
 -----
 Below are some common use cases for the Java SemVer library.
