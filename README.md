@@ -58,7 +58,7 @@ String str = v1.toString(); // "1.2.3"
 
 ### Comparing Versions ###
 Comparing versions with Java SemVer is easy. The `Version` class implements the 
-`Comparable` interface, it also overrides the `Object.equal(Object obj)` method 
+`Comparable` interface, it also overrides the `Object.equals(Object obj)` method 
 and provides some more methods for convenient comparing.
 
 ```java
