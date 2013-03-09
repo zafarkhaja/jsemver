@@ -1,10 +1,12 @@
 Java SemVer v0.5.0 [![Build Status](https://travis-ci.org/zafarkhaja/java-semver.png)](https://travis-ci.org/zafarkhaja/java-semver)
 ==================
+
 Java SemVer is a Java implementation of the Semantic Versioning Specification 
 (http://semver.org/).
 
 **NOTE**: The current version of the Java SemVer corresponds to the Semantic 
 Versioning 2.0.0-rc.1.
+
 
 Versioning
 ----------
@@ -13,6 +15,7 @@ Java SemVer is versioned according to the SemVer Specification.
 **NOTE**: The current release of the Java SemVer library has a major version of 
 zero which according to the SemVer p.4 means that the library is under initial 
 development and its public API should not be considered stable.
+
 
 Usage
 -----
@@ -75,25 +78,39 @@ import com.github.zafarkhaja.semver.Version;
 Version v1 = Version.valueOf("1.0.0-rc.1+build.1");
 Version v2 = Version.valueOf("1.3.7+build.2.b8f12d7");
 
-int result = v1.compareTo(v2); // (result < 0)
+int result = v1.compareTo(v2);  // < 0
+boolean result = v1.equals(v2); // false
 
-boolean result = v1.equals(v2); // (result == false)
-
-boolean result = v1.greaterThan(v2);           // (result == false)
-boolean result = v1.greaterThanOrEqualsTo(v2); // (result == false)
-boolean result = v1.lessThan(v2);              // (result == true)
-boolean result = v1.lessThanOrEqualsTo(v2);    // (result == true)
+boolean result = v1.greaterThan(v2);           // false
+boolean result = v1.greaterThanOrEqualsTo(v2); // false
+boolean result = v1.lessThan(v2);              // true
+boolean result = v1.lessThanOrEqualsTo(v2);    // true
 ```
+
 
 Issues
 ------
-As of the moment, there is an ambiguity, at least for me, on what should be the 
+As of the moment, the Specification is not clear about what should be the 
 behavior of pre-release and build versions when the normal version numbers are 
-incremented. See the discussion page https://github.com/mojombo/semver/issues/60.
+incremented. Below is an example of what I mean:
+
+```java
+import com.github.zafarkhaja.semver.Version;
+
+Version v1 = Version.valueOf("1.2.3-alpha+build");
+Version v2 = v1.incrementMajorVersion();
+
+String normal     = v2.getNormalVersion();     // "2.0.0"
+String preRelease = v2.getPreReleaseVersion(); // "" OR "alpha" OR "alpha1" OR "alpha2" ?
+String build      = v2.getBuildVersion();      // "" OR "build" OR "build1" OR "build2" ?
+```
+Also, see the discussion page https://github.com/mojombo/semver/issues/60.
+
 
 TODO
 ----
 * implement ranges
+
 
 License
 -------
