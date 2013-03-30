@@ -204,14 +204,44 @@ public class VersionTest {
         }
 
         @Test
+        public void shouldProvideSetPreReleaseVersionMethod() {
+            Version v1 = Version.valueOf("1.0.0");
+            Version v2 = v1.setPreReleaseVersion("alpha");
+            assertEquals("1.0.0-alpha", v2.toString());
+        }
+
+        @Test
+        public void shouldDropBuildMetadataWhenSettingPreReleaseVersion() {
+            Version v1 = Version.valueOf("1.0.0-alpha+build");
+            Version v2 = v1.setPreReleaseVersion("beta");
+            assertEquals("1.0.0-beta", v2.toString());
+        }
+
+        @Test
+        public void shouldProvideSetBuildMetadataMethod() {
+            Version v1 = Version.valueOf("1.0.0");
+            Version v2 = v1.setBuildMetadata("build");
+            assertEquals("1.0.0+build", v2.toString());
+        }
+
+        @Test
         public void shouldBeImmutable() {
             Version version = Version.valueOf("1.2.3");
+
             Version incementedMajor = version.incrementMajorVersion();
             assertNotSame(version, incementedMajor);
+
             Version incementedMinor = version.incrementMinorVersion();
             assertNotSame(version, incementedMinor);
+
             Version incementedPatch = version.incrementPatchVersion();
             assertNotSame(version, incementedPatch);
+
+            Version preReleaseSet = version.setPreReleaseVersion("alpha");
+            assertNotSame(version, preReleaseSet);
+
+            Version buildSet = version.setBuildMetadata("build");
+            assertNotSame(version, buildSet);
         }
     }
 

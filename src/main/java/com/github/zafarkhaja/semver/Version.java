@@ -133,6 +133,14 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    public Version setPreReleaseVersion(String preRelease) {
+        return new Version(normal, new MetadataVersion(preRelease));
+    }
+
+    public Version setBuildMetadata(String build) {
+        return new Version(normal, preRelease, new MetadataVersion(build));
+    }
+
     public int getMajorVersion() {
         return normal.getMajor();
     }
