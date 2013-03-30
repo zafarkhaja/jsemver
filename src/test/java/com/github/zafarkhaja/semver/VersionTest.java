@@ -249,7 +249,6 @@ public class VersionTest {
             assertEquals("1.0.0-beta.2", v2.toString());
         }
 
-
         @Test
         public void shouldProvideIncrementBuildMetadataMethod() {
             Version v1 = Version.valueOf("1.0.0+build.1");
@@ -362,6 +361,47 @@ public class VersionTest {
             String value = "1.2.3-beta+build";
             Version v = Version.valueOf(value);
             assertEquals(value, v.toString());
+        }
+    }
+
+    public static class BuilderTest {
+
+        @Test
+        public void shouldThrowNullPointerExceptionIfNormalVersionIsNull() {
+            try {
+                Version.Builder builder = new Version.Builder(null);
+            } catch (NullPointerException e) {
+                return;
+            }
+            fail("Builder was expected to throw NullPointerException");
+        }
+
+        @Test
+        public void shouldBuildVersionFromNormalVersion() {
+            Version.Builder builder = new Version.Builder("1.0.0");
+            assertEquals(Version.valueOf("1.0.0"), builder.build());
+        }
+
+        @Test
+        public void shouldBuildVersionWithPreReleaseVersion() {
+            Version.Builder builder = new Version.Builder("1.0.0");
+            builder.setPreReleaseVersion("alpha");
+            assertEquals(Version.valueOf("1.0.0-alpha"), builder.build());
+        }
+
+        @Test
+        public void shouldBuildVersionWithBuildMetadata() {
+            Version.Builder builder = new Version.Builder("1.0.0");
+            builder.setBuildMetadata("build");
+            assertEquals(Version.valueOf("1.0.0+build"), builder.build());
+        }
+
+        @Test
+        public void shouldBuildVersionWithPreReleaseVersionAndBuildMetadata() {
+            Version.Builder builder = new Version.Builder("1.0.0");
+            builder.setPreReleaseVersion("alpha");
+            builder.setBuildMetadata("build");
+            assertEquals(Version.valueOf("1.0.0-alpha+build"), builder.build());
         }
     }
 }

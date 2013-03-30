@@ -44,17 +44,63 @@ public class Version implements Comparable<Version> {
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("^")
-            .append(NormalVersion.FORMAT)
+            .append("(?<normal>")
+                .append(NormalVersion.FORMAT)
+            .append(")")
             .append("(?:")
                 .append(PRE_RELEASE_PREFIX)
-                .append(MetadataVersion.FORMAT)
+                .append("(?<preRelease>")
+                    .append(MetadataVersion.FORMAT)
+                .append(")")
             .append(")?").append("(?:")
                 .append("\\").append(BUILD_PREFIX)
-                .append(MetadataVersion.FORMAT)
+                .append("(?<build>")
+                    .append(MetadataVersion.FORMAT)
+                .append(")")
             .append(")?")
         .append("$");
 
         SEMVER_PATTERN = Pattern.compile(sb.toString());
+    }
+
+    public static class Builder {
+
+        private String normal;
+        private String preRelease;
+        private String build;
+
+        public Builder(String normal) {
+            if (normal == null) {
+                throw new NullPointerException(
+                    "Normal version MUST NOT be NULL"
+                );
+            }
+            this.normal = normal;
+        }
+
+        public void setPreReleaseVersion(String preRelease) {
+            this.preRelease = preRelease;
+        }
+
+        public void setBuildMetadata(String build) {
+            this.build = build;
+        }
+
+        public Version build() {
+            MetadataVersion preReleaseVersion = null;
+            if (preRelease != null) {
+                preReleaseVersion = new MetadataVersion(preRelease);
+            }
+            MetadataVersion buildMetadata = null;
+            if (build != null) {
+                buildMetadata = new MetadataVersion(build);
+            }
+            return new Version(
+                NormalVersion.valueOf(normal),
+                preReleaseVersion,
+                buildMetadata
+            );
+        }
     }
 
     Version(NormalVersion normal) {
@@ -81,23 +127,10 @@ public class Version implements Comparable<Version> {
             throw new IllegalArgumentException("Illegal version format");
         }
 
-        NormalVersion normal = new NormalVersion(
-            Integer.parseInt(matcher.group(1)),
-            Integer.parseInt(matcher.group(2)),
-            Integer.parseInt(matcher.group(3))
-        );
-
-        MetadataVersion preRelease =
-            (matcher.group(4) != null) ?
-                new MetadataVersion(matcher.group(4)) :
-                    null;
-
-        MetadataVersion build =
-            (matcher.group(5) != null) ?
-                new MetadataVersion(matcher.group(5)) :
-                    null;
-
-        return new Version(normal, preRelease, build);
+        Builder builder = new Builder(matcher.group("normal"));
+        builder.setPreReleaseVersion(matcher.group("preRelease"));
+        builder.setBuildMetadata(matcher.group("build"));
+        return builder.build();
     }
 
     public Version incrementMajorVersion() {
