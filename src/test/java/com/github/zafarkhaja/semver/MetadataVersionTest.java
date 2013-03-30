@@ -52,7 +52,7 @@ public class MetadataVersionTest {
                 } catch (Exception e) {
                     continue;
                 }
-                fail("Alpha-numeric version MUST consist of dot separated identifiers [0-9A-Za-z-]");
+                fail("Metadata version MUST consist of dot separated identifiers [0-9A-Za-z-]");
             }
         }
 
