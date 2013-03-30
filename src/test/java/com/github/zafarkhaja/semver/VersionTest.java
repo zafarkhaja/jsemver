@@ -225,8 +225,52 @@ public class VersionTest {
         }
 
         @Test
+        public void shouldProvideIncrementPreReleaseVersionMethod() {
+            Version v1 = Version.valueOf("1.0.0-beta.1");
+            Version v2 = v1.incrementPreReleaseVersion();
+            assertEquals("1.0.0-beta.2", v2.toString());
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenIncrementingPreReleaseIfItsNull() {
+            Version v1 = Version.valueOf("1.0.0");
+            try {
+                Version v2 = v1.incrementPreReleaseVersion();
+            } catch (NullPointerException e) {
+                return;
+            }
+            fail("Method was expected to throw NullPointerException");
+        }
+
+        @Test
+        public void shouldDropBuildMetadataWhenIncrementingPreReleaseVersion() {
+            Version v1 = Version.valueOf("1.0.0-beta.1+build");
+            Version v2 = v1.incrementPreReleaseVersion();
+            assertEquals("1.0.0-beta.2", v2.toString());
+        }
+
+
+        @Test
+        public void shouldProvideIncrementBuildMetadataMethod() {
+            Version v1 = Version.valueOf("1.0.0+build.1");
+            Version v2 = v1.incrementBuildMetadata();
+            assertEquals("1.0.0+build.2", v2.toString());
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenIncrementingBuildIfItsNull() {
+            Version v1 = Version.valueOf("1.0.0");
+            try {
+                Version v2 = v1.incrementBuildMetadata();
+            } catch (NullPointerException e) {
+                return;
+            }
+            fail("Method was expected to throw NullPointerException");
+        }
+
+        @Test
         public void shouldBeImmutable() {
-            Version version = Version.valueOf("1.2.3");
+            Version version = Version.valueOf("1.2.3-alpha+build");
 
             Version incementedMajor = version.incrementMajorVersion();
             assertNotSame(version, incementedMajor);
@@ -242,6 +286,12 @@ public class VersionTest {
 
             Version buildSet = version.setBuildMetadata("build");
             assertNotSame(version, buildSet);
+
+            Version incrementedPreRelease = version.incrementPreReleaseVersion();
+            assertNotSame(version, incrementedPreRelease);
+
+            Version incrementedBuild = version.incrementBuildMetadata();
+            assertNotSame(version, incrementedBuild);
         }
     }
 

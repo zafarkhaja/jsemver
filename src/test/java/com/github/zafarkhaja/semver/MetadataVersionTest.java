@@ -92,6 +92,27 @@ public class MetadataVersionTest {
             assertTrue(v1.equals(v2));
             assertFalse(v1.equals(v3));
         }
+
+        @Test
+        public void shouldProvideIncrementMethod() {
+            MetadataVersion v1 = new MetadataVersion("alpha.1");
+            MetadataVersion v2 = v1.increment();
+            assertEquals("alpha.2", v2.toString());
+        }
+
+        @Test
+        public void shouldAppendOneAsLastIdentifierIfLastOneIsAlphaNumericWhenIncrementing() {
+            MetadataVersion v1 = new MetadataVersion("alpha");
+            MetadataVersion v2 = v1.increment();
+            assertEquals("alpha.1", v2.toString());
+        }
+
+        @Test
+        public void shouldBeImmutable() {
+            MetadataVersion v1 = new MetadataVersion("alpha.1");
+            MetadataVersion v2 = v1.increment();
+            assertNotSame(v1, v2);
+        }
     }
 
     public static class EqualsMethodTest {

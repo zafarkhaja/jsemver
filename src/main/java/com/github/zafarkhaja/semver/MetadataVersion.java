@@ -23,6 +23,7 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +49,20 @@ class MetadataVersion implements Comparable<MetadataVersion> {
             );
         }
         this.value = matcher.group(0);
+    }
+
+    MetadataVersion increment() {
+        String[] ids  = value.split("\\.");
+
+        String lastId = ids[ids.length - 1];
+        if (isInt(lastId)) {
+            int intId = Integer.parseInt(lastId);
+            ids[ids.length - 1] = String.valueOf(++intId);
+        } else {
+            ids = Arrays.copyOf(ids, ids.length + 1);
+            ids[ids.length - 1] = String.valueOf(1);
+        }
+        return new MetadataVersion(joinIdentifiers(ids));
     }
 
     @Override
@@ -114,5 +129,13 @@ class MetadataVersion implements Comparable<MetadataVersion> {
             return false;
         }
         return true;
+    }
+
+    private String joinIdentifiers(String[] ids) {
+        StringBuilder sb = new StringBuilder();
+        for (String id : ids) {
+            sb.append(id).append(".");
+        }
+        return sb.deleteCharAt(sb.lastIndexOf(".")).toString();
     }
 }

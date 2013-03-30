@@ -133,6 +133,20 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    public Version incrementPreReleaseVersion() {
+        if (preRelease == null) {
+            throw new NullPointerException("Pre-release version is NULL");
+        }
+        return new Version(normal, preRelease.increment());
+    }
+
+    public Version incrementBuildMetadata() {
+        if (build == null) {
+            throw new NullPointerException("Build metadata is NULL");
+        }
+        return new Version(normal, preRelease, build.increment());
+    }
+
     public Version setPreReleaseVersion(String preRelease) {
         return new Version(normal, new MetadataVersion(preRelease));
     }
