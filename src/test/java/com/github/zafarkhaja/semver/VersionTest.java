@@ -54,22 +54,17 @@ public class VersionTest {
         @Test
         public void mayHaveBuildFollowingPatchOrPreReleaseAppendedWithPlus() {
             Version v = Version.valueOf("1.2.3+build");
-            assertEquals("build", v.getBuildVersion());
+            assertEquals("build", v.getBuildMetadata());
         }
 
         @Test
-        public void shouldCompareBuildIfNormalAndPreReleaseAreEqual() {
-            Version v1 = Version.valueOf("1.3.7-beta+build.1");
-            Version v2 = Version.valueOf("1.3.7-beta+build.2");
-            assertTrue(0 > v1.compareTo(v2));
-        }
-
-        @Test
-        public void buildShouldHaveHigherPrecedenceThanAssociatedNormal() {
-            Version v1 = Version.valueOf("1.3.7");
-            Version v2 = Version.valueOf("1.3.7+build");
-            assertTrue(0 > v1.compareTo(v2));
-            assertTrue(0 < v2.compareTo(v1));
+        public void shouldIgnoreBuildMetadataWhenDeterminingVersionPrecedence() {
+            Version v1 = Version.valueOf("1.3.7-beta");
+            Version v2 = Version.valueOf("1.3.7-beta+build.1");
+            Version v3 = Version.valueOf("1.3.7-beta+build.2");
+            assertTrue(0 == v1.compareTo(v2));
+            assertTrue(0 == v1.compareTo(v3));
+            assertTrue(0 == v2.compareTo(v3));
         }
 
         @Test
@@ -126,12 +121,7 @@ public class VersionTest {
                 "1.0.0-beta.2",
                 "1.0.0-beta.11",
                 "1.0.0-rc.1",
-                "1.0.0-rc.1+build.1",
                 "1.0.0",
-                "1.0.0+0.3.7",
-                "1.3.7+build",
-                "1.3.7+build.2.b8f12d7",
-                "1.3.7+build.11.e0f985a"
             };
             for (int i = 1; i < versions.length; i++) {
                 Version v1 = Version.valueOf(versions[i-1]);
@@ -148,7 +138,7 @@ public class VersionTest {
             assertEquals(0, v.getPatchVersion());
             assertEquals("1.0.0", v.getNormalVersion());
             assertEquals("rc.1", v.getPreReleaseVersion());
-            assertEquals("build.1", v.getBuildVersion());
+            assertEquals("build.1", v.getBuildMetadata());
         }
 
         @Test
@@ -159,10 +149,24 @@ public class VersionTest {
         }
 
         @Test
+        public void shouldIncrementMajorVersionWithPreReleaseIfProvided() {
+            Version v = Version.valueOf("1.2.3");
+            Version incrementedMajor = v.incrementMajorVersion("beta");
+            assertEquals("2.0.0-beta", incrementedMajor.toString());
+        }
+
+        @Test
         public void shouldProvideIncrementMinorVersionMethod() {
             Version v = Version.valueOf("1.2.3");
             Version incrementedMinor = v.incrementMinorVersion();
             assertEquals("1.3.0", incrementedMinor.toString());
+        }
+
+        @Test
+        public void shouldIncrementMinorVersionWithPreReleaseIfProvided() {
+            Version v = Version.valueOf("1.2.3");
+            Version incrementedMinor = v.incrementMinorVersion("alpha");
+            assertEquals("1.3.0-alpha", incrementedMinor.toString());
         }
 
         @Test
@@ -171,7 +175,34 @@ public class VersionTest {
             Version incrementedPatch = v.incrementPatchVersion();
             assertEquals("1.2.4", incrementedPatch.toString());
         }
-        
+
+        @Test
+        public void shouldIncrementPatchVersionWithPreReleaseIfProvided() {
+            Version v = Version.valueOf("1.2.3");
+            Version incrementedPatch = v.incrementPatchVersion("rc");
+            assertEquals("1.2.4-rc", incrementedPatch.toString());
+        }
+
+        @Test
+        public void shouldDropBuildMetadataWhenIncrementing() {
+            Version v = Version.valueOf("1.2.3-alpha+build");
+
+            Version major1 = v.incrementMajorVersion();
+            assertEquals("2.0.0", major1.toString());
+            Version major2 = v.incrementMajorVersion("beta");
+            assertEquals("2.0.0-beta", major2.toString());
+
+            Version minor1 = v.incrementMinorVersion();
+            assertEquals("1.3.0", minor1.toString());
+            Version minor2 = v.incrementMinorVersion("beta");
+            assertEquals("1.3.0-beta", minor2.toString());
+
+            Version patch1 = v.incrementPatchVersion();
+            assertEquals("1.2.4", patch1.toString());
+            Version patch2 = v.incrementPatchVersion("beta");
+            assertEquals("1.2.4-beta", patch2.toString());
+        }
+
         @Test
         public void shouldBeImmutable() {
             Version version = Version.valueOf("1.2.3");

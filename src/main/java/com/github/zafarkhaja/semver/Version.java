@@ -53,8 +53,16 @@ public class Version implements Comparable<Version> {
                 .append(MetadataVersion.FORMAT)
             .append(")?")
         .append("$");
-        
+
         SEMVER_PATTERN = Pattern.compile(sb.toString());
+    }
+
+    Version(NormalVersion normal) {
+        this(normal, null, null);
+    }
+
+    Version(NormalVersion normal, MetadataVersion preRelease) {
+        this(normal, preRelease, null);
     }
 
     Version(
@@ -93,15 +101,36 @@ public class Version implements Comparable<Version> {
     }
 
     public Version incrementMajorVersion() {
-        return new Version(normal.incrementMajor(), preRelease, build);
+        return new Version(normal.incrementMajor());
+    }
+
+    public Version incrementMajorVersion(String preRelease) {
+        return new Version(
+            normal.incrementMajor(),
+            new MetadataVersion(preRelease)
+        );
     }
 
     public Version incrementMinorVersion() {
-        return new Version(normal.incrementMinor(), preRelease, build);
+        return new Version(normal.incrementMinor());
+    }
+
+    public Version incrementMinorVersion(String preRelease) {
+        return new Version(
+            normal.incrementMinor(),
+            new MetadataVersion(preRelease)
+        );
     }
 
     public Version incrementPatchVersion() {
-        return new Version(normal.incrementPatch(), preRelease, build);
+        return new Version(normal.incrementPatch());
+    }
+
+    public Version incrementPatchVersion(String preRelease) {
+        return new Version(
+            normal.incrementPatch(),
+            new MetadataVersion(preRelease)
+        );
     }
 
     public int getMajorVersion() {
@@ -124,7 +153,7 @@ public class Version implements Comparable<Version> {
         return (preRelease != null) ? preRelease.toString() : "";
     }
 
-    public String getBuildVersion() {
+    public String getBuildMetadata() {
         return (build != null) ? build.toString() : "";
     }
 
@@ -171,7 +200,7 @@ public class Version implements Comparable<Version> {
             sb.append(PRE_RELEASE_PREFIX).append(getPreReleaseVersion());
         }
         if (build != null) {
-            sb.append(BUILD_PREFIX).append(getBuildVersion());
+            sb.append(BUILD_PREFIX).append(getBuildMetadata());
         }
         return sb.toString();
     }
@@ -181,9 +210,6 @@ public class Version implements Comparable<Version> {
         int result = normal.compareTo(other.normal);
         if (result == 0) {
             result = comparePreReleases(other);
-            if (result == 0) {
-                result = compareBuilds(other);
-            }
         }
         return result;
     }
@@ -198,20 +224,6 @@ public class Version implements Comparable<Version> {
              * than the associated normal version. (SemVer p.9)
              */
             result = (preRelease == null) ? 1 : -1;
-        }
-        return result;
-    }
-
-    private int compareBuilds(Version other) {
-        int result = 0;
-        if (build != null && other.build != null) {
-            result = build.compareTo(other.build);
-        } else if (build == null ^ other.build == null) {
-            /**
-             * Build versions satisfy and have a higher precedence
-             * than the associated normal version. (SemVer p.10)
-             */
-            result = (build == null) ? -1 : 1;
         }
         return result;
     }
