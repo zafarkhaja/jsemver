@@ -23,6 +23,7 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,6 +101,34 @@ public class Version implements Comparable<Version> {
                 preReleaseVersion,
                 buildMetadata
             );
+        }
+    }
+
+    public static final Comparator BUILD_AWARE_ORDER = new BuildAwareOrder();
+
+    private static class BuildAwareOrder implements Comparator<Version> {
+
+        @Override
+        public int compare(Version v1, Version v2) {
+            int result = v1.compareTo(v2);
+            if (result == 0) {
+                result = compareBuilds(v1, v2);
+            }
+            return result;
+        }
+
+        private int compareBuilds(Version v1, Version v2) {
+            int result = 0;
+            if (v1.build != null && v2.build != null) {
+                result = v1.build.compareTo(v2.build);
+            } else if (v1.build == null ^ v2.build == null) {
+                /**
+                 * Build versions satisfy and have a higher precedence
+                 * than the associated normal version.
+                 */
+                result = (v1.build == null) ? -1 : 1;
+            }
+            return result;
         }
     }
 
@@ -267,6 +296,10 @@ public class Version implements Comparable<Version> {
             result = comparePreReleases(other);
         }
         return result;
+    }
+
+    public int compareWithBuildsTo(Version other) {
+        return BUILD_AWARE_ORDER.compare(this, other);
     }
 
     private int comparePreReleases(Version other) {

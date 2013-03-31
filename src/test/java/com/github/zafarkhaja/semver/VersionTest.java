@@ -292,6 +292,14 @@ public class VersionTest {
             Version incrementedBuild = version.incrementBuildMetadata();
             assertNotSame(version, incrementedBuild);
         }
+
+        @Test
+        public void shouldBeAbleToCompareWithoutIgnoringBuildMetadata() {
+            Version v1 = Version.valueOf("1.3.7-beta+build.1");
+            Version v2 = Version.valueOf("1.3.7-beta+build.2");
+            assertTrue(0 == v1.compareTo(v2));
+            assertTrue(0 > v1.compareWithBuildsTo(v2));
+        }
     }
 
     public static class EqualsMethodTest {
@@ -402,6 +410,31 @@ public class VersionTest {
             builder.setPreReleaseVersion("alpha");
             builder.setBuildMetadata("build");
             assertEquals(Version.valueOf("1.0.0-alpha+build"), builder.build());
+        }
+    }
+
+    public static class BuildAwareOrderTest {
+
+        @Test
+        public void shouldCorrectlyCompareAllVersionsWithBuildMetadata() {
+            String[] versions = {
+                "1.0.0-alpha",
+                "1.0.0-alpha.1",
+                "1.0.0-beta.2",
+                "1.0.0-beta.11",
+                "1.0.0-rc.1",
+                "1.0.0-rc.1+build.1",
+                "1.0.0",
+                "1.0.0+0.3.7",
+                "1.3.7+build",
+                "1.3.7+build.2.b8f12d7",
+                "1.3.7+build.11.e0f985a"
+            };
+            for (int i = 1; i < versions.length; i++) {
+                Version v1 = Version.valueOf(versions[i-1]);
+                Version v2 = Version.valueOf(versions[i]);
+                assertTrue(0 > Version.BUILD_AWARE_ORDER.compare(v1, v2));
+            }
         }
     }
 }
