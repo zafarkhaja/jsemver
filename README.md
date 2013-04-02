@@ -186,7 +186,13 @@ boolean result = v1.equals(v2);           // false
 
 TODO
 ----
-* implement ranges
+* [Implement ranges](https://github.com/zafarkhaja/java-semver/issues/1)
+* [Write doc comments for all API classes and methods](https://github.com/zafarkhaja/java-semver/issues/2)
+
+
+Bugs and Features
+-----------------
+Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/java-semver/issues.
 
 
 License
