@@ -150,9 +150,9 @@ int result = v1.compareTo(v2);  // < 0
 boolean result = v1.equals(v2); // false
 
 boolean result = v1.greaterThan(v2);           // false
-boolean result = v1.greaterThanOrEqualsTo(v2); // false
+boolean result = v1.greaterThanOrEqualTo(v2);  // false
 boolean result = v1.lessThan(v2);              // true
-boolean result = v1.lessThanOrEqualsTo(v2);    // true
+boolean result = v1.lessThanOrEqualTo(v2);     // true
 ```
 
 When determining version precedence build metadata is ignored (SemVer p.10).

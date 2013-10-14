@@ -77,12 +77,12 @@ public class VersionTest {
         }
 
         @Test
-        public void shouldHaveGreaterThanOrEqualsToMethodReturningBoolean() {
+        public void shouldHaveGreaterThanOrEqualToMethodReturningBoolean() {
             Version v1 = Version.valueOf("2.3.7");
             Version v2 = Version.valueOf("1.3.7");
-            assertTrue(v1.greaterThanOrEqualsTo(v2));
-            assertFalse(v2.greaterThanOrEqualsTo(v1));
-            assertTrue(v1.greaterThanOrEqualsTo(v1));
+            assertTrue(v1.greaterThanOrEqualTo(v2));
+            assertFalse(v2.greaterThanOrEqualTo(v1));
+            assertTrue(v1.greaterThanOrEqualTo(v1));
         }
 
         @Test
@@ -95,12 +95,12 @@ public class VersionTest {
         }
 
         @Test
-        public void shouldHaveLessThanOrEqualsToMethodReturningBoolean() {
+        public void shouldHaveLessThanOrEqualToMethodReturningBoolean() {
             Version v1 = Version.valueOf("2.3.7");
             Version v2 = Version.valueOf("1.3.7");
-            assertFalse(v1.lessThanOrEqualsTo(v2));
-            assertTrue(v2.lessThanOrEqualsTo(v1));
-            assertTrue(v1.lessThanOrEqualsTo(v1));
+            assertFalse(v1.lessThanOrEqualTo(v2));
+            assertTrue(v2.lessThanOrEqualTo(v1));
+            assertTrue(v1.lessThanOrEqualTo(v1));
         }
 
         @Test
