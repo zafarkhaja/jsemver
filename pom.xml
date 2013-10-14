@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.zafarkhaja</groupId>
-  <artifactId>semver</artifactId>
+  <artifactId>java-semver</artifactId>
   <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>semver</name>
+  <name>Java SemVer</name>
   <description>Java implementation of the SemVer Specification</description>
   <url>https://github.com/zafarkhaja/java-semver</url>
 
