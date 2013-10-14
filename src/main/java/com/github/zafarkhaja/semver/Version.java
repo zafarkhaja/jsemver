@@ -24,8 +24,6 @@
 package com.github.zafarkhaja.semver;
 
 import java.util.Comparator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -40,64 +38,40 @@ public class Version implements Comparable<Version> {
     private static final String PRE_RELEASE_PREFIX = "-";
     private static final String BUILD_PREFIX = "+";
 
-    private static final Pattern SEMVER_PATTERN;
-
-    static {
-        StringBuilder sb = new StringBuilder();
-        sb.append("^")
-            .append("(?<normal>")
-                .append(NormalVersion.FORMAT)
-            .append(")")
-            .append("(?:")
-                .append(PRE_RELEASE_PREFIX)
-                .append("(?<preRelease>")
-                    .append(MetadataVersion.FORMAT)
-                .append(")")
-            .append(")?").append("(?:")
-                .append("\\").append(BUILD_PREFIX)
-                .append("(?<build>")
-                    .append(MetadataVersion.FORMAT)
-                .append(")")
-            .append(")?")
-        .append("$");
-
-        SEMVER_PATTERN = Pattern.compile(sb.toString());
-    }
-
     public static class Builder {
 
         private String normal;
         private String preRelease;
         private String build;
 
-        public Builder(String normal) {
-            if (normal == null) {
+        public Builder(String normalVersion) {
+            if (normalVersion == null) {
                 throw new NullPointerException(
                     "Normal version MUST NOT be NULL"
                 );
             }
-            this.normal = normal;
+            normal = normalVersion;
         }
 
-        public void setPreReleaseVersion(String preRelease) {
-            this.preRelease = preRelease;
+        public void setPreReleaseVersion(String preReleaseVersion) {
+            preRelease = preReleaseVersion;
         }
 
-        public void setBuildMetadata(String build) {
-            this.build = build;
+        public void setBuildMetadata(String buildMetadata) {
+            build = buildMetadata;
         }
 
         public Version build() {
             MetadataVersion preReleaseVersion = null;
             if (preRelease != null) {
-                preReleaseVersion = new MetadataVersion(preRelease);
+                preReleaseVersion = VersionParser.parsePreRelease(preRelease);
             }
             MetadataVersion buildMetadata = null;
             if (build != null) {
-                buildMetadata = new MetadataVersion(build);
+                buildMetadata = VersionParser.parseBuild(build);
             }
             return new Version(
-                NormalVersion.valueOf(normal),
+                VersionParser.parseVersionCore(normal),
                 preReleaseVersion,
                 buildMetadata
             );
@@ -123,7 +97,7 @@ public class Version implements Comparable<Version> {
                 result = v1.build.compareTo(v2.build);
             } else if (v1.build == null ^ v2.build == null) {
                 /**
-                 * Build versions satisfy and have a higher precedence
+                 * Build versions should have a higher precedence
                  * than the associated normal version.
                  */
                 result = (v1.build == null) ? -1 : 1;
@@ -150,16 +124,8 @@ public class Version implements Comparable<Version> {
         this.build      = build;
     }
 
-    public static Version valueOf(String value) {
-        Matcher matcher = SEMVER_PATTERN.matcher(value);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Illegal version format");
-        }
-
-        Builder builder = new Builder(matcher.group("normal"));
-        builder.setPreReleaseVersion(matcher.group("preRelease"));
-        builder.setBuildMetadata(matcher.group("build"));
-        return builder.build();
+    public static Version valueOf(String version) {
+        return VersionParser.parseValidSemVer(version);
     }
 
     public Version incrementMajorVersion() {
@@ -169,7 +135,7 @@ public class Version implements Comparable<Version> {
     public Version incrementMajorVersion(String preRelease) {
         return new Version(
             normal.incrementMajor(),
-            new MetadataVersion(preRelease)
+            VersionParser.parsePreRelease(preRelease)
         );
     }
 
@@ -180,7 +146,7 @@ public class Version implements Comparable<Version> {
     public Version incrementMinorVersion(String preRelease) {
         return new Version(
             normal.incrementMinor(),
-            new MetadataVersion(preRelease)
+            VersionParser.parsePreRelease(preRelease)
         );
     }
 
@@ -191,7 +157,7 @@ public class Version implements Comparable<Version> {
     public Version incrementPatchVersion(String preRelease) {
         return new Version(
             normal.incrementPatch(),
-            new MetadataVersion(preRelease)
+            VersionParser.parsePreRelease(preRelease)
         );
     }
 
@@ -210,11 +176,18 @@ public class Version implements Comparable<Version> {
     }
 
     public Version setPreReleaseVersion(String preRelease) {
-        return new Version(normal, new MetadataVersion(preRelease));
+        return new Version(
+            normal,
+            VersionParser.parsePreRelease(preRelease)
+        );
     }
 
     public Version setBuildMetadata(String build) {
-        return new Version(normal, preRelease, new MetadataVersion(build));
+        return new Version(
+            normal,
+            preRelease,
+            VersionParser.parseBuild(build)
+        );
     }
 
     public int getMajorVersion() {
@@ -308,8 +281,8 @@ public class Version implements Comparable<Version> {
             result = preRelease.compareTo(other.preRelease);
         } else if (preRelease == null ^ other.preRelease == null) {
             /**
-             * Pre-release versions satisfy but have a lower precedence
-             * than the associated normal version. (SemVer p.9)
+             * Pre-release versions have a lower precedence than
+             * the associated normal version. (SemVer p.9)
              */
             result = (preRelease == null) ? 1 : -1;
         }

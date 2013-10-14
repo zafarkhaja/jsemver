@@ -1,11 +1,8 @@
-Java SemVer v0.7.0 [![Build Status](https://travis-ci.org/zafarkhaja/java-semver.png)](https://travis-ci.org/zafarkhaja/java-semver)
+Java SemVer v0.7.0 (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/java-semver.png)](https://travis-ci.org/zafarkhaja/java-semver)
 ==================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
 (http://semver.org/).
-
-**NOTE**: The current version of the Java SemVer corresponds to the Semantic
-Versioning 2.0.0-rc.2.
 
 
 Versioning
@@ -132,7 +129,7 @@ Version v4 = v1.incrementPatchVersion("alpha"); // "1.2.4-alpha"
 Version v2 = v1.incrementPreReleaseVersion();   // "1.2.3-beta.1"
 ```
 **NOTE**: The discussion page https://github.com/mojombo/semver/issues/60 might
-be of good use in better understanding some of the decisions made regarding the 
+be of good use in better understanding some of the decisions made regarding the
 incrementor methods.
 
 ### Comparing Versions ###

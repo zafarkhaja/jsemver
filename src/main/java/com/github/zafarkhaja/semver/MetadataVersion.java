@@ -24,8 +24,6 @@
 package com.github.zafarkhaja.semver;
 
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -33,27 +31,14 @@ import java.util.regex.Pattern;
  */
 class MetadataVersion implements Comparable<MetadataVersion> {
 
-    private final String value;
+    private final String[] idents;
 
-    static final String FORMAT = "([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)";
-    private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");
-
-    MetadataVersion(String value) {
-        if (value == null) {
-            throw new NullPointerException("Metadata version MUST NOT be NULL");
-        }
-        Matcher matcher = PATTERN.matcher(value);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException(
-                "Metadata version MUST consist of dot separated identifiers [0-9A-Za-z-]"
-            );
-        }
-        this.value = matcher.group(0);
+    MetadataVersion(String[] identifiers) {
+        idents = identifiers;
     }
 
     MetadataVersion increment() {
-        String[] ids  = value.split("\\.");
-
+        String[] ids  = idents;
         String lastId = ids[ids.length - 1];
         if (isInt(lastId)) {
             int intId = Integer.parseInt(lastId);
@@ -62,7 +47,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
             ids = Arrays.copyOf(ids, ids.length + 1);
             ids[ids.length - 1] = String.valueOf(1);
         }
-        return new MetadataVersion(joinIdentifiers(ids));
+        return new MetadataVersion(ids);
     }
 
     @Override
@@ -78,31 +63,32 @@ class MetadataVersion implements Comparable<MetadataVersion> {
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return Arrays.hashCode(idents);
     }
 
     @Override
     public String toString() {
-        return value;
+        StringBuilder sb = new StringBuilder();
+        for (String id : idents) {
+            sb.append(id).append(".");
+        }
+        return sb.deleteCharAt(sb.lastIndexOf(".")).toString();
     }
 
     @Override
     public int compareTo(MetadataVersion other) {
-        String[] thisIds  = value.split("\\.");
-        String[] otherIds = other.value.split("\\.");
-
-        int result = compareIdentifierArrays(thisIds, otherIds);
+        int result = compareIdentifierArrays(other.idents);
         if (result == 0) {
-            result = thisIds.length - otherIds.length;
+            result = idents.length - other.idents.length;
         }
         return result;
     }
 
-    private int compareIdentifierArrays(String[] ids1, String[] ids2) {
+    private int compareIdentifierArrays(String[] otherIdents) {
         int result = 0;
-        int length = getLeastCommonArrayLength(ids1, ids2);
+        int length = getLeastCommonArrayLength(idents, otherIdents);
         for (int i = 0; i < length; i++) {
-            result = compareIdentifiers(ids1[i], ids2[i]);
+            result = compareIdentifiers(idents[i], otherIdents[i]);
             if (result != 0) {
                 break;
             }
@@ -129,13 +115,5 @@ class MetadataVersion implements Comparable<MetadataVersion> {
             return false;
         }
         return true;
-    }
-
-    private String joinIdentifiers(String[] ids) {
-        StringBuilder sb = new StringBuilder();
-        for (String id : ids) {
-            sb.append(id).append(".");
-        }
-        return sb.deleteCharAt(sb.lastIndexOf(".")).toString();
     }
 }

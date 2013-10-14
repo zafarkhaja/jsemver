@@ -23,10 +23,10 @@
  */
 package com.github.zafarkhaja.semver;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -56,7 +56,7 @@ public class NormalVersionTest {
             int[][] invalidVersions = {{-1, 2, 3}, {1, -2, 3}, {1, 2, -3}};
             for (int[] versionParts : invalidVersions) {
                 try {
-                    NormalVersion v = new NormalVersion(
+                    new NormalVersion(
                         versionParts[0],
                         versionParts[1],
                         versionParts[2]
@@ -115,14 +115,6 @@ public class NormalVersionTest {
             assertFalse(v1.equals(v3));
         }
 
-        @Test
-        public void shouldHaveStaticFactoryMethod() {
-            NormalVersion v = NormalVersion.valueOf("1.2.3");
-            assertEquals(1, v.getMajor());
-            assertEquals(2, v.getMinor());
-            assertEquals(3, v.getPatch());
-        }
-        
         @Test
         public void shoudBeImmutable() {
             NormalVersion version = new NormalVersion(1, 2, 3);

@@ -23,9 +23,6 @@
  */
 package com.github.zafarkhaja.semver;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
@@ -36,9 +33,6 @@ class NormalVersion implements Comparable<NormalVersion> {
     private final int minor;
     private final int patch;
 
-    static final String FORMAT = "(\\d+)\\.(\\d+)\\.(\\d+)";
-    private static final Pattern PATTERN = Pattern.compile("^" + FORMAT + "$");
-
     NormalVersion(int major, int minor, int patch) {
         if (major < 0 || minor < 0 || patch < 0) {
             throw new IllegalArgumentException(
@@ -48,18 +42,6 @@ class NormalVersion implements Comparable<NormalVersion> {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
-    }
-
-    static NormalVersion valueOf(String value) {
-        Matcher matcher = PATTERN.matcher(value);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Illegal normal version format");
-        }
-        return new NormalVersion(
-            Integer.parseInt(matcher.group(1)),
-            Integer.parseInt(matcher.group(2)),
-            Integer.parseInt(matcher.group(3))
-        );
     }
 
     int getMajor() {

@@ -23,10 +23,10 @@
  */
 package com.github.zafarkhaja.semver;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -118,10 +118,15 @@ public class VersionTest {
             String[] versions = {
                 "1.0.0-alpha",
                 "1.0.0-alpha.1",
+                "1.0.0-alpha.beta",
+                "1.0.0-beta",
                 "1.0.0-beta.2",
                 "1.0.0-beta.11",
                 "1.0.0-rc.1",
                 "1.0.0",
+                "2.0.0",
+                "2.1.0",
+                "2.1.1"
             };
             for (int i = 1; i < versions.length; i++) {
                 Version v1 = Version.valueOf(versions[i-1]);
@@ -235,7 +240,7 @@ public class VersionTest {
         public void shouldThrowExceptionWhenIncrementingPreReleaseIfItsNull() {
             Version v1 = Version.valueOf("1.0.0");
             try {
-                Version v2 = v1.incrementPreReleaseVersion();
+                v1.incrementPreReleaseVersion();
             } catch (NullPointerException e) {
                 return;
             }
@@ -260,7 +265,7 @@ public class VersionTest {
         public void shouldThrowExceptionWhenIncrementingBuildIfItsNull() {
             Version v1 = Version.valueOf("1.0.0");
             try {
-                Version v2 = v1.incrementBuildMetadata();
+                v1.incrementBuildMetadata();
             } catch (NullPointerException e) {
                 return;
             }
@@ -377,7 +382,7 @@ public class VersionTest {
         @Test
         public void shouldThrowNullPointerExceptionIfNormalVersionIsNull() {
             try {
-                Version.Builder builder = new Version.Builder(null);
+                new Version.Builder(null);
             } catch (NullPointerException e) {
                 return;
             }

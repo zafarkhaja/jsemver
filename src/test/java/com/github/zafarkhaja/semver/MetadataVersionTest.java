@@ -23,10 +23,10 @@
  */
 package com.github.zafarkhaja.semver;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -38,78 +38,87 @@ public class MetadataVersionTest {
     public static class CoreFunctionalityTest {
 
         @Test
-        public void mustConsistOfDotSeparatedIdentifiersOfAlphaNumericsAndHyphen() {
-            String[] invalidVersions = {
-                null,
-                "",
-                "123!",
-                "1a:2b:3c",
-                "123,abc,123",
-            };
-            for (String ver : invalidVersions) {
-                try {
-                    MetadataVersion v = new MetadataVersion(ver);
-                } catch (Exception e) {
-                    continue;
-                }
-                fail("Metadata version MUST consist of dot separated identifiers [0-9A-Za-z-]");
-            }
-        }
-
-        @Test
         public void mustCompareEachIdentifierSeparately() {
-            MetadataVersion v1 = new MetadataVersion("beta.2.abc");
-            MetadataVersion v2 = new MetadataVersion("beta.1.edf");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"beta", "2", "abc"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"beta", "1", "edf"}
+            );
             assertTrue(0 < v1.compareTo(v2));
         }
 
         @Test
         public void shouldCompareIdentifiersCountIfCommonIdentifiersAreEqual() {
-            MetadataVersion v1 = new MetadataVersion("beta.abc");
-            MetadataVersion v2 = new MetadataVersion("beta.abc.def");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"beta", "abc"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"beta", "abc", "def"}
+            );
             assertTrue(0 > v1.compareTo(v2));
         }
 
         @Test
         public void shouldComapareDigitsOnlyIdentifiersNumerically() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
-            MetadataVersion v2 = new MetadataVersion("alpha.321");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"alpha", "321"}
+            );
             assertTrue(0 > v1.compareTo(v2));
         }
 
         @Test
         public void shouldCompareMixedIdentifiersLexicallyInAsciiSortOrder() {
-            MetadataVersion v1 = new MetadataVersion("beta.abc");
-            MetadataVersion v2 = new MetadataVersion("beta.111");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"beta", "abc"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"beta", "111"}
+            );
             assertTrue(0 < v1.compareTo(v2));
         }
 
         @Test
         public void shouldOverrideEqualsMethod() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
-            MetadataVersion v2 = new MetadataVersion("alpha.123");
-            MetadataVersion v3 = new MetadataVersion("alpha.321");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v3 = new MetadataVersion(
+                new String[] {"alpha", "321"}
+            );
             assertTrue(v1.equals(v2));
             assertFalse(v1.equals(v3));
         }
 
         @Test
         public void shouldProvideIncrementMethod() {
-            MetadataVersion v1 = new MetadataVersion("alpha.1");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "1"}
+            );
             MetadataVersion v2 = v1.increment();
             assertEquals("alpha.2", v2.toString());
         }
 
         @Test
         public void shouldAppendOneAsLastIdentifierIfLastOneIsAlphaNumericWhenIncrementing() {
-            MetadataVersion v1 = new MetadataVersion("alpha");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha"}
+            );
             MetadataVersion v2 = v1.increment();
             assertEquals("alpha.1", v2.toString());
         }
 
         @Test
         public void shouldBeImmutable() {
-            MetadataVersion v1 = new MetadataVersion("alpha.1");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "1"}
+            );
             MetadataVersion v2 = v1.increment();
             assertNotSame(v1, v2);
         }
@@ -119,23 +128,35 @@ public class MetadataVersionTest {
 
         @Test
         public void shouldBeReflexive() {
-            MetadataVersion v = new MetadataVersion("alpha.123");
+            MetadataVersion v = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             assertTrue(v.equals(v));
         }
 
         @Test
         public void shouldBeSymmetric() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
-            MetadataVersion v2 = new MetadataVersion("alpha.123");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             assertTrue(v1.equals(v2));
             assertTrue(v2.equals(v1));
         }
 
         @Test
         public void shouldBeTransitive() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
-            MetadataVersion v2 = new MetadataVersion("alpha.123");
-            MetadataVersion v3 = new MetadataVersion("alpha.123");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v3 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             assertTrue(v1.equals(v2));
             assertTrue(v2.equals(v3));
             assertTrue(v1.equals(v3));
@@ -143,8 +164,12 @@ public class MetadataVersionTest {
 
         @Test
         public void shouldBeConsistent() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
-            MetadataVersion v2 = new MetadataVersion("alpha.123");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             assertTrue(v1.equals(v2));
             assertTrue(v1.equals(v2));
             assertTrue(v1.equals(v2));
@@ -152,13 +177,17 @@ public class MetadataVersionTest {
 
         @Test
         public void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
-            MetadataVersion v = new MetadataVersion("alpha.123");
+            MetadataVersion v = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             assertFalse(v.equals(new String("alpha.123")));
         }
 
         @Test
         public void shouldReturnFalseIfOtherVersionIsNull() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             MetadataVersion v2 = null;
             assertFalse(v1.equals(v2));
         }
@@ -168,8 +197,12 @@ public class MetadataVersionTest {
 
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
-            MetadataVersion v1 = new MetadataVersion("alpha.123");
-            MetadataVersion v2 = new MetadataVersion("alpha.123");
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
+            MetadataVersion v2 = new MetadataVersion(
+                new String[] {"alpha", "123"}
+            );
             assertTrue(v1.equals(v2));
             assertEquals(v1.hashCode(), v2.hashCode());
         }
@@ -180,7 +213,7 @@ public class MetadataVersionTest {
         @Test
         public void shouldReturnStringRepresentation() {
             String value = "beta.abc.def";
-            MetadataVersion v = new MetadataVersion(value);
+            MetadataVersion v = new MetadataVersion(value.split("\\."));
             assertEquals(value, v.toString());
         }
     }
