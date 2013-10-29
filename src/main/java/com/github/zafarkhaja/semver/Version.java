@@ -242,19 +242,19 @@ public class Version implements Comparable<Version> {
     }
 
     public boolean greaterThan(Version other) {
-        return compareTo(other) > 0 ? true : false;
+        return compareTo(other) > 0;
     }
 
     public boolean greaterThanOrEqualTo(Version other) {
-        return compareTo(other) >= 0 ? true : false;
+        return compareTo(other) >= 0;
     }
 
     public boolean lessThan(Version other) {
-        return compareTo(other) < 0 ? true : false;
+        return compareTo(other) < 0;
     }
 
     public boolean lessThanOrEqualTo(Version other) {
-        return compareTo(other) <= 0 ? true : false;
+        return compareTo(other) <= 0;
     }
 
     @Override
@@ -265,7 +265,7 @@ public class Version implements Comparable<Version> {
         if (!(other instanceof Version)) {
             return false;
         }
-        return compareTo((Version) other) == 0 ? true : false;
+        return compareTo((Version) other) == 0;
     }
 
     @Override

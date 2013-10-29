@@ -73,7 +73,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         if (!(other instanceof MetadataVersion)) {
             return false;
         }
-        return compareTo((MetadataVersion) other) == 0 ? true : false;
+        return compareTo((MetadataVersion) other) == 0;
     }
 
     @Override

@@ -106,7 +106,7 @@ class NormalVersion implements Comparable<NormalVersion> {
         if (!(other instanceof NormalVersion)) {
             return false;
         }
-        return compareTo((NormalVersion) other) == 0 ? true : false;
+        return compareTo((NormalVersion) other) == 0;
     }
 
     @Override
