@@ -173,19 +173,25 @@ class VersionParser implements Parser<Version> {
     }
 
     static MetadataVersion parsePreRelease(String preRelease) {
+        if (preRelease == null) {
+            return MetadataVersion.NULL;
+        }
         VersionParser parser = new VersionParser(preRelease);
         return parser.parsePreRelease();
     }
 
     static MetadataVersion parseBuild(String build) {
+        if (build == null) {
+            return MetadataVersion.NULL;
+        }
         VersionParser parser = new VersionParser(build);
         return parser.parseBuild();
     }
 
     private Version parseValidSemVer() {
         NormalVersion normalVersion = parseVersionCore();
-        MetadataVersion preReleaseVersion = null;
-        MetadataVersion buildMetadata = null;
+        MetadataVersion preReleaseVersion = MetadataVersion.NULL;
+        MetadataVersion buildMetadata = MetadataVersion.NULL;
         if (chars.positiveLookahead(HYPHEN)) {
             chars.consume();
             preReleaseVersion = parsePreRelease();

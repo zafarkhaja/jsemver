@@ -82,6 +82,13 @@ public class MetadataVersionTest {
         }
 
         @Test
+        public void shouldReturnNegativeWhenComparedToNullMetadataVersion() {
+            MetadataVersion v1 = new MetadataVersion(new String[] {});
+            MetadataVersion v2 = MetadataVersion.NULL;
+            assertTrue(0 > v1.compareTo(v2));
+        }
+
+        @Test
         public void shouldOverrideEqualsMethod() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
@@ -121,6 +128,55 @@ public class MetadataVersionTest {
             );
             MetadataVersion v2 = v1.increment();
             assertNotSame(v1, v2);
+        }
+    }
+
+    public static class NullMetadataVersionTest {
+
+        @Test
+        public void shouldReturnEmptyStringOnToString() {
+            MetadataVersion v = MetadataVersion.NULL;
+            assertTrue(v.toString().isEmpty());
+        }
+
+        @Test
+        public void shouldReturnZeroOnHashCode() {
+            MetadataVersion v = MetadataVersion.NULL;
+            assertEquals(0, v.hashCode());
+        }
+
+        @Test
+        public void shouldBeEqualOnlyToItsType() {
+            MetadataVersion v1 = MetadataVersion.NULL;
+            MetadataVersion v2 = MetadataVersion.NULL;
+            MetadataVersion v3 = new MetadataVersion(new String[] {});
+            assertTrue(v1.equals(v2));
+            assertTrue(v2.equals(v1));
+            assertFalse(v1.equals(v3));
+        }
+
+        @Test
+        public void shouldReturnPositiveWhenComparedToNonNullMetadataVersion() {
+            MetadataVersion v1 = MetadataVersion.NULL;
+            MetadataVersion v2 = new MetadataVersion(new String[] {});
+            assertTrue(0 < v1.compareTo(v2));
+        }
+
+        @Test
+        public void shouldReturnZeroWhenComparedToNullMetadataVersion() {
+            MetadataVersion v1 = MetadataVersion.NULL;
+            MetadataVersion v2 = MetadataVersion.NULL;
+            assertTrue(0 == v1.compareTo(v2));
+        }
+
+        @Test
+        public void shouldThrowNullPointerExceptionIfIncremented() {
+            try {
+                MetadataVersion.NULL.increment();
+            } catch (NullPointerException e) {
+                return;
+            }
+            fail("Should throw NullPointerException when incremented");
         }
     }
 

@@ -55,6 +55,12 @@ public class VersionParserTest {
     }
 
     @Test
+    public void shouldReturnNullMetadataVersionIfPreReleaseIsNull() {
+        MetadataVersion preRelease = VersionParser.parsePreRelease(null);
+        assertEquals(MetadataVersion.NULL, preRelease);
+    }
+
+    @Test
     public void shouldNotAllowDigitsInPreReleaseVersion() {
         try {
             VersionParser.parsePreRelease("alpha.01");
@@ -78,6 +84,12 @@ public class VersionParserTest {
     public void shouldParseBuildMetadata() {
         MetadataVersion build = VersionParser.parseBuild("build.1");
         assertEquals(new MetadataVersion(new String[] {"build", "1"}), build);
+    }
+
+    @Test
+    public void shouldReturnNullMetadataVersionIfBuildIsNull() {
+        MetadataVersion build = VersionParser.parseBuild(null);
+        assertEquals(MetadataVersion.NULL, build);
     }
 
     @Test

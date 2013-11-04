@@ -31,6 +31,47 @@ import java.util.Arrays;
  */
 class MetadataVersion implements Comparable<MetadataVersion> {
 
+    static final MetadataVersion NULL = new NullMetadataVersion();
+
+    private static class NullMetadataVersion extends MetadataVersion {
+
+        public NullMetadataVersion() {
+            super(null);
+        }
+
+        @Override
+        MetadataVersion increment() {
+            throw new NullPointerException("Metadata version is NULL");
+        }
+
+        @Override
+        public String toString() {
+            return "";
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof NullMetadataVersion;
+        }
+
+        @Override
+        public int compareTo(MetadataVersion other) {
+            if (!equals(other)) {
+                /**
+                 * Pre-release versions have a lower precedence than
+                 * the associated normal version. (SemVer p.9)
+                 */
+                return 1;
+            }
+            return 0;
+        }
+    }
+
     private final String[] idents;
 
     MetadataVersion(String[] identifiers) {
@@ -69,14 +110,21 @@ class MetadataVersion implements Comparable<MetadataVersion> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (String id : idents) {
-            sb.append(id).append(".");
+        for (String ident : idents) {
+            sb.append(ident).append(".");
         }
         return sb.deleteCharAt(sb.lastIndexOf(".")).toString();
     }
 
     @Override
     public int compareTo(MetadataVersion other) {
+        if (other == MetadataVersion.NULL) {
+            /**
+             * Pre-release versions have a lower precedence than
+             * the associated normal version. (SemVer p.9)
+             */
+            return -1;
+        }
         int result = compareIdentifierArrays(other.idents);
         if (result == 0) {
             result = idents.length - other.idents.length;
@@ -100,11 +148,11 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         return arr1.length <= arr2.length ? arr1.length : arr2.length;
     }
 
-    private int compareIdentifiers(String id1, String id2) {
-        if (isInt(id1) && isInt(id2)) {
-            return Integer.parseInt(id1) - Integer.parseInt(id2);
+    private int compareIdentifiers(String ident1, String ident2) {
+        if (isInt(ident1) && isInt(ident2)) {
+            return Integer.parseInt(ident1) - Integer.parseInt(ident2);
         } else {
-            return id1.compareTo(id2);
+            return ident1.compareTo(ident2);
         }
     }
 
