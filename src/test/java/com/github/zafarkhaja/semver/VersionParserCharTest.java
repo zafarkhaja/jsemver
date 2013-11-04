@@ -23,9 +23,8 @@
  */
 package com.github.zafarkhaja.semver;
 
-import com.github.zafarkhaja.semver.VersionParser.Char;
-import com.github.zafarkhaja.semver.VersionParser.CharStream;
 import org.junit.Test;
+import static com.github.zafarkhaja.semver.VersionParser.Char.*;
 import static org.junit.Assert.*;
 
 /**
@@ -36,49 +35,49 @@ public class VersionParserCharTest {
 
     @Test
     public void shouldBeMatchedByDigit() {
-        assertTrue(Char.DIGIT.isMatchedBy('0'));
-        assertTrue(Char.DIGIT.isMatchedBy('9'));
-        assertFalse(Char.DIGIT.isMatchedBy('a'));
-        assertFalse(Char.DIGIT.isMatchedBy('A'));
+        assertTrue(DIGIT.isMatchedBy('0'));
+        assertTrue(DIGIT.isMatchedBy('9'));
+        assertFalse(DIGIT.isMatchedBy('a'));
+        assertFalse(DIGIT.isMatchedBy('A'));
     }
 
     @Test
     public void shouldBeMatchedByLetter() {
-        assertTrue(Char.LETTER.isMatchedBy('a'));
-        assertTrue(Char.LETTER.isMatchedBy('A'));
-        assertFalse(Char.LETTER.isMatchedBy('0'));
-        assertFalse(Char.LETTER.isMatchedBy('9'));
+        assertTrue(LETTER.isMatchedBy('a'));
+        assertTrue(LETTER.isMatchedBy('A'));
+        assertFalse(LETTER.isMatchedBy('0'));
+        assertFalse(LETTER.isMatchedBy('9'));
     }
 
     @Test
     public void shouldBeMatchedByDot() {
-        assertTrue(Char.DOT.isMatchedBy('.'));
-        assertFalse(Char.DOT.isMatchedBy('-'));
-        assertFalse(Char.DOT.isMatchedBy('0'));
-        assertFalse(Char.DOT.isMatchedBy('9'));
+        assertTrue(DOT.isMatchedBy('.'));
+        assertFalse(DOT.isMatchedBy('-'));
+        assertFalse(DOT.isMatchedBy('0'));
+        assertFalse(DOT.isMatchedBy('9'));
     }
 
     @Test
     public void shouldBeMatchedByHyphen() {
-        assertTrue(Char.HYPHEN.isMatchedBy('-'));
-        assertFalse(Char.HYPHEN.isMatchedBy('+'));
-        assertFalse(Char.HYPHEN.isMatchedBy('a'));
-        assertFalse(Char.HYPHEN.isMatchedBy('0'));
+        assertTrue(HYPHEN.isMatchedBy('-'));
+        assertFalse(HYPHEN.isMatchedBy('+'));
+        assertFalse(HYPHEN.isMatchedBy('a'));
+        assertFalse(HYPHEN.isMatchedBy('0'));
     }
 
     @Test
     public void shouldBeMatchedByPlus() {
-        assertTrue(Char.PLUS.isMatchedBy('+'));
-        assertFalse(Char.PLUS.isMatchedBy('-'));
-        assertFalse(Char.PLUS.isMatchedBy('a'));
-        assertFalse(Char.PLUS.isMatchedBy('0'));
+        assertTrue(PLUS.isMatchedBy('+'));
+        assertFalse(PLUS.isMatchedBy('-'));
+        assertFalse(PLUS.isMatchedBy('a'));
+        assertFalse(PLUS.isMatchedBy('0'));
     }
 
     @Test
     public void shouldBeMatchedByEol() {
-        assertTrue(Char.EOL.isMatchedBy(CharStream.EOL));
-        assertFalse(Char.EOL.isMatchedBy('-'));
-        assertFalse(Char.EOL.isMatchedBy('a'));
-        assertFalse(Char.EOL.isMatchedBy('0'));
+        assertTrue(EOL.isMatchedBy(null));
+        assertFalse(EOL.isMatchedBy('-'));
+        assertFalse(EOL.isMatchedBy('a'));
+        assertFalse(EOL.isMatchedBy('0'));
     }
 }

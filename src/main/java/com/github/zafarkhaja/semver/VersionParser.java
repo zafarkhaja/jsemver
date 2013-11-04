@@ -23,7 +23,7 @@
  */
 package com.github.zafarkhaja.semver;
 
-import com.github.zafarkhaja.semver.VersionParser.CharStream;
+import com.github.zafarkhaja.semver.util.Stream;
 import java.util.ArrayList;
 import java.util.List;
 import static com.github.zafarkhaja.semver.VersionParser.Char.*;
@@ -34,127 +34,70 @@ import static com.github.zafarkhaja.semver.VersionParser.Char.*;
  */
 class VersionParser implements Parser<Version> {
 
-    static class CharStream {
-
-        static interface CharType {
-            boolean isMatchedBy(char chr);
-        }
-
-        private final char[] data;
-
-        private int offset = 0;
-
-        static final char EOL = (char) -1;
-
-        CharStream(String input) {
-            data = input.toCharArray();
-        }
-
-        char consume() {
-            if (offset + 1 <= data.length) {
-                return data[offset++];
-            }
-            return EOL;
-        }
-
-        char consume(CharType... expected) {
-            char la = lookahead(1);
-            for (CharType charType : expected) {
-                if (charType.isMatchedBy(la)) {
-                    return consume();
-                }
-            }
-            throw new UnexpectedCharacterException(la, expected);
-        }
-
-        char lookahead() {
-            return lookahead(1);
-        }
-
-        char lookahead(int pos) {
-            int idx = offset + pos - 1;
-            if (idx < data.length) {
-                return data[idx];
-            }
-            return EOL;
-        }
-
-        boolean positiveLookahead(CharType... expected) {
-            char la = lookahead(1);
-            for (CharType charType : expected) {
-                if (charType.isMatchedBy(la)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        boolean positiveLookaheadBefore(CharType before, CharType... expected) {
-            char la;
-            for (int i = 1; i <= data.length; i++) {
-                la = lookahead(i);
-                if (before.isMatchedBy(la)) {
-                    break;
-                }
-                for (CharType charType : expected) {
-                    if (charType.isMatchedBy(la)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        char[] toArray() {
-            return data.clone();
-        }
-    }
-
-    static enum Char implements CharStream.CharType {
+    static enum Char implements Stream.ElementType<Character> {
 
         DIGIT {
             @Override
-            public boolean isMatchedBy(char chr) {
+            public boolean isMatchedBy(Character chr) {
+                if (chr == null) {
+                    return false;
+                }
                 return chr >= '0' && chr <= '9';
             }
         },
         LETTER {
             @Override
-            public boolean isMatchedBy(char chr) {
+            public boolean isMatchedBy(Character chr) {
+                if (chr == null) {
+                    return false;
+                }
                 return (chr >= 'a' && chr <= 'z')
                     || (chr >= 'A' && chr <= 'Z');
             }
         },
         DOT {
             @Override
-            public boolean isMatchedBy(char chr) {
+            public boolean isMatchedBy(Character chr) {
+                if (chr == null) {
+                    return false;
+                }
                 return chr == '.';
             }
         },
         HYPHEN {
             @Override
-            public boolean isMatchedBy(char chr) {
+            public boolean isMatchedBy(Character chr) {
+                if (chr == null) {
+                    return false;
+                }
                 return chr == '-';
             }
         },
         PLUS {
             @Override
-            public boolean isMatchedBy(char chr) {
+            public boolean isMatchedBy(Character chr) {
+                if (chr == null) {
+                    return false;
+                }
                 return chr == '+';
             }
         },
         EOL {
             @Override
-            public boolean isMatchedBy(char chr) {
-                return chr == CharStream.EOL;
+            public boolean isMatchedBy(Character chr) {
+                return chr == null;
             }
         };
     }
 
-    private final CharStream chars;
+    private final Stream<Character> chars;
 
     VersionParser(String input) {
-        chars = new CharStream(input);
+        Character[] elements = new Character[input.length()];
+        for (int i = 0; i < input.length(); i++) {
+            elements[i] = Character.valueOf(input.charAt(i));
+        }
+        chars = new Stream<Character>(elements);
     }
 
     @Override
@@ -298,8 +241,8 @@ class VersionParser implements Parser<Version> {
     }
 
     private void checkForLeadingZeroes() {
-        char la1 = chars.lookahead(1);
-        char la2 = chars.lookahead(2);
+        Character la1 = chars.lookahead(1);
+        Character la2 = chars.lookahead(2);
         if (la1 == '0' && DIGIT.isMatchedBy(la2)) {
             throw new GrammarException(
                 "Numeric identifier MUST NOT contain leading zeroes"

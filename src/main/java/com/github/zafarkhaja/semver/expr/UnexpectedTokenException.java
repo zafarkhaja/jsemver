@@ -21,19 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.zafarkhaja.semver;
+package com.github.zafarkhaja.semver.expr;
+
+import com.github.zafarkhaja.semver.ParserException;
+import com.github.zafarkhaja.semver.expr.Lexer.*;
+import java.util.Arrays;
 
 /**
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
-public class ParserException extends RuntimeException {
+public class UnexpectedTokenException extends ParserException {
 
-    public ParserException(String message) {
-        super(message);
+    private final Token unexpected;
+    private final Token.Type[] expected;
+
+    UnexpectedTokenException(Token token, Token.Type... expected) {
+        unexpected = token;
+        this.expected = expected;
     }
 
-    public ParserException() {
-
+    @Override
+    public String toString() {
+        String message = "Unexpected token '" + unexpected + "'";
+        if (expected.length > 0) {
+            message += ", expecting '" + Arrays.toString(expected) + "'";
+        }
+        return message;
     }
 }

@@ -21,19 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.zafarkhaja.semver;
+package com.github.zafarkhaja.semver.util;
+
+import com.github.zafarkhaja.semver.util.Stream.ElementType;
+import java.util.Arrays;
 
 /**
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
-public class ParserException extends RuntimeException {
+public class UnexpectedElementTypeException extends RuntimeException {
 
-    public ParserException(String message) {
-        super(message);
+    private final Object unexpected;
+    private final ElementType<?>[] expected;
+
+    UnexpectedElementTypeException(Object element, ElementType<?>... expected) {
+        unexpected = element;
+        this.expected = expected;
     }
 
-    public ParserException() {
-
+    @Override
+    public String toString() {
+        String message = "Unexpected element '" + unexpected + "'";
+        if (expected.length > 0) {
+            message += ", expecting '" + Arrays.toString(expected) + "'";
+        }
+        return message;
     }
 }

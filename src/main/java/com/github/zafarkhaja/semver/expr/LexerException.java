@@ -21,31 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.zafarkhaja.semver;
-
-import com.github.zafarkhaja.semver.VersionParser.CharStream.CharType;
-import java.util.Arrays;
+package com.github.zafarkhaja.semver.expr;
 
 /**
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
-public class UnexpectedCharacterException extends ParserException {
+public class LexerException extends RuntimeException {
 
-    private final char unexpected;
-    private final CharType[] expected;
+    private final String expr;
 
-    UnexpectedCharacterException(char chr, CharType... expected) {
-        unexpected = chr;
-        this.expected = expected;
+    LexerException(String expr) {
+        this.expr = expr;
     }
 
     @Override
     public String toString() {
-        String message = "Unexpected character '" + unexpected + "'";
-        if (expected.length > 0) {
-            message += ", expecting '" + Arrays.toString(expected) + "'";
-        }
-        return message;
+        return "Illegal character near '" + expr + "'";
     }
 }
