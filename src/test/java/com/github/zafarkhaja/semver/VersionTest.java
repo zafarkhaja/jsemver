@@ -305,6 +305,13 @@ public class VersionTest {
             assertTrue(0 == v1.compareTo(v2));
             assertTrue(0 > v1.compareWithBuildsTo(v2));
         }
+
+        @Test
+        public void shouldCheckIfVersionSatisfiesExpression() {
+            Version v = Version.valueOf("2.0.0-beta");
+            assertTrue(v.satisfies("~1.0"));
+            assertFalse(v.satisfies(">=2.0 & <3.0"));
+        }
     }
 
     public static class EqualsMethodTest {

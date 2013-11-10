@@ -23,6 +23,8 @@
  */
 package com.github.zafarkhaja.semver;
 
+import com.github.zafarkhaja.semver.expr.Expression;
+import com.github.zafarkhaja.semver.expr.ExpressionParser;
 import java.util.Comparator;
 
 /**
@@ -114,6 +116,23 @@ public class Version implements Comparable<Version> {
 
     public static Version valueOf(String version) {
         return VersionParser.parseValidSemVer(version);
+    }
+
+    public static Version forIntegers(int major) {
+        return new Version(new NormalVersion(major, 0, 0));
+    }
+
+    public static Version forIntegers(int major, int minor) {
+        return new Version(new NormalVersion(major, minor, 0));
+    }
+
+    public static Version forIntegers(int major, int minor, int patch) {
+        return new Version(new NormalVersion(major, minor, patch));
+    }
+
+    public boolean satisfies(String expr) {
+        Parser<Expression> parser = ExpressionParser.newInstance();
+        return parser.parse(expr).interpret(this);
     }
 
     public Version incrementMajorVersion() {
