@@ -28,19 +28,42 @@ import com.github.zafarkhaja.semver.expr.Lexer.*;
 import java.util.Arrays;
 
 /**
+ * Thrown when a token of unexpected types is encountered during the parsing.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.7.0
  */
 public class UnexpectedTokenException extends ParserException {
 
+    /**
+     * The unexpected token.
+     */
     private final Token unexpected;
+
+    /**
+     * The array of the expected token types.
+     */
     private final Token.Type[] expected;
 
+    /**
+     * Constructs a {@code UnexpectedTokenException} instance
+     * with the unexpected token and the expected types.
+     *
+     * @param element the unexpected token
+     * @param expected an array of the expected token types
+     */
     UnexpectedTokenException(Token token, Token.Type... expected) {
         unexpected = token;
         this.expected = expected;
     }
 
+    /**
+     * Returns the string representation of this exception
+     * containing the information about the unexpected
+     * token and, if available, about the expected types.
+     *
+     * @return the string representation of this exception
+     */
     @Override
     public String toString() {
         String message = "Unexpected token '" + unexpected + "'";

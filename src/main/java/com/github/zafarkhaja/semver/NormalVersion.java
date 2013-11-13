@@ -24,15 +24,39 @@
 package com.github.zafarkhaja.semver;
 
 /**
+ * The {@code NormalVersion} class represents the version core.
+ *
+ * This class is immutable and hence thread-safe.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.2.0
  */
 class NormalVersion implements Comparable<NormalVersion> {
 
+    /**
+     * The major version number.
+     */
     private final int major;
+
+    /**
+     * The minor version number.
+     */
     private final int minor;
+
+    /**
+     * The patch version number.
+     */
     private final int patch;
 
+    /**
+     * Constructs a {@code NormalVersion} with the
+     * major, minor and patch version numbers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     * @throws IllegalArgumentException if one of the version numbers is a negative integer
+     */
     NormalVersion(int major, int minor, int patch) {
         if (major < 0 || minor < 0 || patch < 0) {
             throw new IllegalArgumentException(
@@ -44,30 +68,63 @@ class NormalVersion implements Comparable<NormalVersion> {
         this.patch = patch;
     }
 
+    /**
+     * Returns the major version number.
+     *
+     * @return the major version number
+     */
     int getMajor() {
         return major;
     }
 
+    /**
+     * Returns the minor version number.
+     *
+     * @return the minor version number
+     */
     int getMinor() {
         return minor;
     }
 
+    /**
+     * Returns the patch version number.
+     *
+     * @return the patch version number
+     */
     int getPatch() {
         return patch;
     }
 
+    /**
+     * Increments the major version number.
+     *
+     * @return a new instance of the {@code NormalVersion} class
+     */
     NormalVersion incrementMajor() {
         return new NormalVersion(major + 1, 0, 0);
     }
 
+    /**
+     * Increments the minor version number.
+     *
+     * @return a new instance of the {@code NormalVersion} class
+     */
     NormalVersion incrementMinor() {
         return new NormalVersion(major, minor + 1, 0);
     }
 
+    /**
+     * Increments the patch version number.
+     *
+     * @return a new instance of the {@code NormalVersion} class
+     */
     NormalVersion incrementPatch() {
         return new NormalVersion(major, minor, patch + 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(NormalVersion other) {
         int result = major - other.major;
@@ -80,6 +137,9 @@ class NormalVersion implements Comparable<NormalVersion> {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -91,6 +151,9 @@ class NormalVersion implements Comparable<NormalVersion> {
         return compareTo((NormalVersion) other) == 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int hash = 17;
@@ -106,6 +169,8 @@ class NormalVersion implements Comparable<NormalVersion> {
      * A normal version number MUST take the form X.Y.Z where X, Y, and Z are
      * non-negative integers. X is the major version, Y is the minor version,
      * and Z is the patch version. (SemVer p.2)
+     *
+     * @return the string representation of this normal version
      */
     @Override
     public String toString() {

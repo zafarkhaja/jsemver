@@ -24,11 +24,19 @@
 package com.github.zafarkhaja.semver;
 
 /**
+ * Thrown when an error occurs during the parsing specified
+ * by the SemVer or the formal grammar of the parsed string.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.7.0
  */
 public class GrammarException extends ParserException {
 
+    /**
+     * Constructs a {@code GrammarException} instance with an error message.
+     *
+     * @param message the error message
+     */
     GrammarException(String message) {
         super(message);
     }

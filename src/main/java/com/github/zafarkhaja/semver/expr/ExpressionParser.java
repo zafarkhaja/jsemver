@@ -33,28 +33,72 @@ import java.util.Iterator;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
 
 /**
+ * A parser for the SemVer Expressions.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.7.0
  */
 public class ExpressionParser implements Parser<Expression> {
 
+    /**
+     * The lexer instance used for tokenization of the input string.
+     */
     private final Lexer lexer;
+
+    /**
+     * The stream of tokens produced by the lexer.
+     */
     private Stream<Token> tokens;
 
+    /**
+     * Constructs a {@code ExpressionParser} instance
+     * with the corresponding lexer.
+     *
+     * @param lexer the lexer to use for tokenization of the input string
+     */
     ExpressionParser(Lexer lexer) {
         this.lexer = lexer;
     }
 
+    /**
+     * Creates and returns new instance of the {@code ExpressionParser} class.
+     *
+     * This method implements the Static Factory Method pattern.
+     *
+     * @return a new instance of the {@code ExpressionParser} class
+     */
     public static Parser<Expression> newInstance() {
         return new ExpressionParser(new Lexer());
     }
 
+    /**
+     * Parses the SemVer Expressions.
+     *
+     * @param input a string representing the SemVer Expression
+     * @return the AST for the SemVer Expressions
+     * @throws LexerException when encounters an illegal character
+     * @throws UnexpectedTokenException when encounters an unexpected token type
+     */
     @Override
     public Expression parse(String input) {
         tokens = lexer.tokenize(input);
         return parseSemVerExpression();
     }
 
+    /**
+     * Parses the {@literal <semver-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <semver-expr> ::= "!" "(" <semver-expr> ")"
+     *                 | "(" <semver-expr> ")"
+     *                 | <semver-expr> <boolean-expr>
+     *                 | <expr>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
     private Expression parseSemVerExpression() {
         Expression expr;
         if (tokens.positiveLookahead(NOT)) {
@@ -72,6 +116,19 @@ public class ExpressionParser implements Parser<Expression> {
         return parseBooleanExpression(expr);
     }
 
+    /**
+     * Parses the {@literal <boolean-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <boolean-expr> ::= <boolean-op> <semver-expr>
+     *                  | <epsilon>
+     * }
+     * </pre>
+     *
+     * @param expr the left-hand expression of the logical operators
+     * @return the expression AST
+     */
     private Expression parseBooleanExpression(Expression expr) {
         if (tokens.positiveLookahead(AND)) {
             tokens.consume();
@@ -83,6 +140,20 @@ public class ExpressionParser implements Parser<Expression> {
         return expr;
     }
 
+    /**
+     * Parses the {@literal <expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <expr> ::= <comparison-expr>
+     *          | <version-expr>
+     *          | <tilde-expr>
+     *          | <range-expr>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
     private Expression parseExpression() {
         if (tokens.positiveLookahead(TILDE)) {
             return parseTildeExpression();
@@ -94,6 +165,18 @@ public class ExpressionParser implements Parser<Expression> {
         return parseComparisonExpression();
     }
 
+    /**
+     * Parses the {@literal <comparison-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <comparison-expr> ::= <comparison-op> <version>
+     *                     | <version>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
     private Expression parseComparisonExpression() {
         Token token = tokens.lookahead();
         Expression expr;
@@ -128,6 +211,17 @@ public class ExpressionParser implements Parser<Expression> {
         return expr;
     }
 
+    /**
+     * Parses the {@literal <tilde-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <tilde-expr> ::= "~" <version>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
     private Expression parseTildeExpression() {
         tokens.consume(TILDE);
         int major = intOf(tokens.consume(NUMERIC).lexeme);
@@ -150,10 +244,30 @@ public class ExpressionParser implements Parser<Expression> {
         );
     }
 
+    /**
+     * Determines if the following version terminals are part
+     * of the {@literal <version-expr>} not-terminal.
+     *
+     * @return {@code true} if the following version terminals are
+     *         part of the {@literal <version-expr>} not-terminal or
+     *         {@code false} otherwise
+     */
     private boolean isVersionExpression() {
         return isVersionFollowedBy(STAR);
     }
 
+    /**
+     * Parses the {@literal <version-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <version-expr> ::= <major> "." "*"
+     *                  | <major> "." <minor> "." "*"
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
     private Expression parseVersionExpression() {
         int major = intOf(tokens.consume(NUMERIC).lexeme);
         tokens.consume(DOT);
@@ -173,10 +287,29 @@ public class ExpressionParser implements Parser<Expression> {
         );
     }
 
+    /**
+     * Determines if the following version terminals are
+     * part of the {@literal <range-expr>} not-terminal.
+     *
+     * @return {@code true} if the following version terminals are
+     *         part of the {@literal <range-expr>} not-terminal or
+     *         {@code false} otherwise
+     */
     private boolean isRangeExpression() {
         return isVersionFollowedBy(HYPHEN);
     }
 
+    /**
+     * Parses the {@literal <range-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <range-expr> ::= <version> "-" <version>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
     private Expression parseRangeExpression() {
         Expression ge = new GreaterOrEqual(parseVersion());
         tokens.consume(HYPHEN);
@@ -184,6 +317,19 @@ public class ExpressionParser implements Parser<Expression> {
         return new And(ge, le);
     }
 
+    /**
+     * Parses the {@literal <version>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <version> ::= <major>
+     *             | <major> "." <minor>
+     *             | <major> "." <minor> "." <patch>
+     * }
+     * </pre>
+     *
+     * @return the parsed version
+     */
     private Version parseVersion() {
         int major = intOf(tokens.consume(NUMERIC).lexeme);
         int minor = 0;
@@ -199,6 +345,17 @@ public class ExpressionParser implements Parser<Expression> {
         return versionOf(major, minor, patch);
     }
 
+    /**
+     * Determines if the version terminals are
+     * followed by the specified token type.
+     *
+     * This method is essentially a {@code lookahead(k)} method
+     * which allows to solve the grammar's ambiguities.
+     *
+     * @param type the token type to check
+     * @return {@code true} if the version terminals are followed by
+     *         the specified token type or {@code false} otherwise
+     */
     private boolean isVersionFollowedBy(ElementType<Token> type) {
         EnumSet<Token.Type> expected = EnumSet.of(NUMERIC, DOT);
         Iterator<Token> it = tokens.iterator();
@@ -212,10 +369,24 @@ public class ExpressionParser implements Parser<Expression> {
         return type.isMatchedBy(lookahead);
     }
 
+    /**
+     * Creates a {@code Version} instance for the specified integers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     * @return the version for the specified integers
+     */
     private Version versionOf(int major, int minor, int patch) {
         return Version.forIntegers(major, minor, patch);
     }
 
+    /**
+     * Returns a {@code int} representation of the specified string.
+     *
+     * @param value the string to convert into an integer
+     * @return the integer value of the specified string
+     */
     private int intOf(String value) {
         return Integer.parseInt(value);
     }

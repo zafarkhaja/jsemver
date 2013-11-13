@@ -30,13 +30,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * A lexer for the SemVer Expressions.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.7.0
  */
 class Lexer {
 
+    /**
+     * This class holds the information about lexemes in the input stream.
+     */
     static class Token {
 
+        /**
+         * Valid token types.
+         */
         enum Type implements Stream.ElementType<Token> {
 
             NUMERIC("0|[1-9][0-9]*"),
@@ -57,23 +65,44 @@ class Lexer {
             RIGHT_PAREN("\\)"),
             WHITESPACE("\\s+"),
             EOL("?!") {
+                /**
+                 * {@inheritDoc}
+                 */
                 @Override
                 public boolean isMatchedBy(Token token) {
                     return token == null;
                 }
             };
 
+            /**
+             * A pattern matching this type.
+             */
             final Pattern pattern;
 
+            /**
+             * Constructs a token type with a regular
+             * expression for the pattern.
+             *
+             * @param regexp the regular expression for the pattern
+             * @see #pattern
+             */
             private Type(String regexp) {
                 pattern = Pattern.compile("^(" + regexp + ")");
             }
 
+            /**
+             * Returns the string representation of this type.
+             *
+             * @return the string representation of this type
+             */
             @Override
             public String toString() {
                 return name() + "(" + pattern + ")";
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public boolean isMatchedBy(Token token) {
                 if (token == null) {
@@ -83,14 +112,30 @@ class Lexer {
             }
         }
 
+        /**
+         * The type of this token.
+         */
         final Type type;
+
+        /**
+         * The lexeme of this token.
+         */
         final String lexeme;
 
+        /**
+         * Constructs a {@code Token} instance with the type and lexeme.
+         *
+         * @param type the type of this token
+         * @param lexeme the lexeme of this token
+         */
         Token(Type type, String lexeme) {
             this.type = type;
             this.lexeme = (lexeme == null) ? "" : lexeme;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean equals(Object other) {
             if (this == other) {
@@ -103,6 +148,9 @@ class Lexer {
             return type.equals(token.type) && lexeme.equals(token.lexeme);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
             int hash = 5;
@@ -111,16 +159,31 @@ class Lexer {
             return hash;
         }
 
+        /**
+         * Returns the string representation of this token.
+         *
+         * @return the string representation of this token
+         */
         @Override
         public String toString() {
             return type.name() + "(" + lexeme + ")";
         }
     }
 
+    /**
+     * Constructs a {@code Lexer} instance.
+     */
     Lexer() {
 
     }
 
+    /**
+     * Tokenizes the specified input string.
+     *
+     * @param input the input string to tokenize
+     * @return a stream of tokens
+     * @throws LexerException when encounters an illegal character
+     */
     Stream<Token> tokenize(String input) {
         List<Token> tokens = new ArrayList<Token>();
         while (!input.isEmpty()) {

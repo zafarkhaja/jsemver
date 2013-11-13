@@ -24,17 +24,34 @@
 package com.github.zafarkhaja.semver.expr;
 
 /**
+ * Thrown during the lexical analysis when
+ * an illegal character is encountered.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.7.0
  */
 public class LexerException extends RuntimeException {
 
+    /**
+     * The string being analyzed starting from an illegal character.
+     */
     private final String expr;
 
+    /**
+     * Constructs a {@code LexerException} instance with
+     * a string starting from an illegal character.
+     *
+     * @param expr the string starting from an illegal character
+     */
     LexerException(String expr) {
         this.expr = expr;
     }
 
+    /**
+     * Returns the string representation of this exception.
+     *
+     * @return the string representation of this exception
+     */
     @Override
     public String toString() {
         return "Illegal character near '" + expr + "'";

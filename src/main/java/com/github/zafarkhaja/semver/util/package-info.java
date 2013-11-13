@@ -21,49 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.zafarkhaja.semver.expr;
-
-import com.github.zafarkhaja.semver.Version;
 
 /**
- * Expression for the logical "or" operator.
+ * This package provides some useful utility classes.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.7.0
  */
-class Or implements Expression {
-
-    /**
-     * The left-hand operand of expression.
-     */
-    private final Expression left;
-
-    /**
-     * The right-hand operand of expression.
-     */
-    private final Expression right;
-
-    /**
-     * Constructs a {@code Or} expression with
-     * the left-hand and right-hand operands.
-     *
-     * @param left the left-hand operand of expression
-     * @param right the right-hand operand of expression
-     */
-    Or(Expression left, Expression right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    /**
-     * Checks if one of the operands evaluates to {@code true}.
-     *
-     * @param version the version to interpret against
-     * @return {@code true} if one of the operands evaluates to {@code true}
-     *         or {@code false} otherwise
-     */
-    @Override
-    public boolean interpret(Version version) {
-        return left.interpret(version) || right.interpret(version);
-    }
-}
+package com.github.zafarkhaja.semver.util;

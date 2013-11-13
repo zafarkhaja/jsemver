@@ -27,19 +27,43 @@ import com.github.zafarkhaja.semver.util.Stream.ElementType;
 import java.util.Arrays;
 
 /**
+ * Thrown when attempting to consume a stream element of unexpected types.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @see Stream#consume(Stream.ElementType...)
+ * @since 0.7.0
  */
 public class UnexpectedElementTypeException extends RuntimeException {
 
+    /**
+     * The unexpected element in the stream.
+     */
     private final Object unexpected;
+
+    /**
+     * The array of the expected element types.
+     */
     private final ElementType<?>[] expected;
 
+    /**
+     * Constructs a {@code UnexpectedElementTypeException} instance
+     * with the unexpected element and the expected types.
+     *
+     * @param element the unexpected element in the stream
+     * @param expected an array of the expected element types
+     */
     UnexpectedElementTypeException(Object element, ElementType<?>... expected) {
         unexpected = element;
         this.expected = expected;
     }
 
+    /**
+     * Returns the string representation of this exception
+     * containing the information about the unexpected
+     * element and, if available, about the expected types.
+     *
+     * @return the string representation of this exception
+     */
     @Override
     public String toString() {
         String message = "Unexpected element '" + unexpected + "'";

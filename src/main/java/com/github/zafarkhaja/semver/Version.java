@@ -28,24 +28,70 @@ import com.github.zafarkhaja.semver.expr.ExpressionParser;
 import java.util.Comparator;
 
 /**
+ * The {@code Version} class is the main class of the Java SemVer library.
+ *
+ * This class implements the Facade design pattern.
+ * It is also immutable, which makes the class thread-safe.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.1.0
  */
 public class Version implements Comparable<Version> {
 
+    /**
+     * The normal version.
+     */
     private final NormalVersion normal;
+
+    /**
+     * The pre-release version.
+     */
     private final MetadataVersion preRelease;
+
+    /**
+     * The build metadata.
+     */
     private final MetadataVersion build;
 
+    /**
+     * A separator that separates the pre-release
+     * version from the normal version.
+     */
     private static final String PRE_RELEASE_PREFIX = "-";
+
+    /**
+     * A separator that separates the build metadata from
+     * the normal version or the pre-release version.
+     */
     private static final String BUILD_PREFIX = "+";
 
+    /**
+     * A mutable builder for the immutable {@code Version} class.
+     */
     public static class Builder {
 
+        /**
+         * The normal version string.
+         */
         private String normal;
+
+        /**
+         * The pre-release version string.
+         */
         private String preRelease;
+
+        /**
+         * The build metadata string.
+         */
         private String build;
 
+        /**
+         * Constructs a {@code Builder} instance with the
+         * string representation of the normal version.
+         *
+         * @param normal the string representation of the normal version
+         * @throws NullPointerException if the specified normal version is null
+         */
         public Builder(String normal) {
             if (normal == null) {
                 throw new NullPointerException(
@@ -55,14 +101,29 @@ public class Version implements Comparable<Version> {
             this.normal = normal;
         }
 
+        /**
+         * Sets the pre-release version.
+         *
+         * @param preRelease the string representation of the pre-release version
+         */
         public void setPreReleaseVersion(String preRelease) {
             this.preRelease = preRelease;
         }
 
+        /**
+         * Sets the build metadata.
+         *
+         * @param build the string representation of the build metadata
+         */
         public void setBuildMetadata(String build) {
             this.build = build;
         }
 
+        /**
+         * Builds a {@code Version} object.
+         *
+         * @return a newly built {@code Version} instance
+         */
         public Version build() {
             return new Version(
                 VersionParser.parseVersionCore(normal),
@@ -72,10 +133,30 @@ public class Version implements Comparable<Version> {
         }
     }
 
+    /**
+     * A comparator that respects the build metadata when comparing versions.
+     */
     public static final Comparator BUILD_AWARE_ORDER = new BuildAwareOrder();
 
+    /**
+     * A build-aware comparator.
+     */
     private static class BuildAwareOrder implements Comparator<Version> {
 
+        /**
+         * Compares two {@code Version} instances taking
+         * into account their build metadata.
+         *
+         * When compared build metadata is divided into identifiers. The
+         * numeric identifiers are compared numerically, and the alphanumeric
+         * identifiers are compared in the ASCII sort order.
+         *
+         * If one of the compared versions has no defined build
+         * metadata, this version is considered to have a lower
+         * precedence than that of the other.
+         *
+         * @return {@inheritDoc}
+         */
         @Override
         public int compare(Version v1, Version v2) {
             int result = v1.compareTo(v2);
@@ -96,14 +177,34 @@ public class Version implements Comparable<Version> {
         }
     }
 
+    /**
+     * Constructs a {@code Version} instance with the normal version.
+     *
+     * @param normal the normal version
+     */
     Version(NormalVersion normal) {
         this(normal, MetadataVersion.NULL, MetadataVersion.NULL);
     }
 
+    /**
+     * Constructs a {@code Version} instance with the
+     * normal version and the pre-release version.
+     *
+     * @param normal the normal version
+     * @param preRelease the pre-release version
+     */
     Version(NormalVersion normal, MetadataVersion preRelease) {
         this(normal, preRelease, MetadataVersion.NULL);
     }
 
+    /**
+     * Constructs a {@code Version} instance with the normal
+     * version, the pre-release version and the build metadata.
+     *
+     * @param normal the normal version
+     * @param preRelease the pre-release version
+     * @param build the build metadata
+     */
     Version(
         NormalVersion normal,
         MetadataVersion preRelease,
@@ -114,31 +215,86 @@ public class Version implements Comparable<Version> {
         this.build      = build;
     }
 
+    /**
+     * Creates a new instance of {@code Version} as a
+     * result of parsing the specified version string.
+     *
+     * @param version the version string to parse
+     * @return a new instance of the {@code Version} class
+     */
     public static Version valueOf(String version) {
         return VersionParser.parseValidSemVer(version);
     }
 
+    /**
+     * Creates a new instance of {@code Version}
+     * for the specified version numbers.
+     *
+     * @param major the major version number
+     * @return a new instance of the {@code Version} class
+     * @since 0.7.0
+     */
     public static Version forIntegers(int major) {
         return new Version(new NormalVersion(major, 0, 0));
     }
 
+    /**
+     * Creates a new instance of {@code Version}
+     * for the specified version numbers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @return a new instance of the {@code Version} class
+     * @since 0.7.0
+     */
     public static Version forIntegers(int major, int minor) {
         return new Version(new NormalVersion(major, minor, 0));
     }
 
+    /**
+     * Creates a new instance of {@code Version}
+     * for the specified version numbers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     * @return a new instance of the {@code Version} class
+     * @since 0.7.0
+     */
     public static Version forIntegers(int major, int minor, int patch) {
         return new Version(new NormalVersion(major, minor, patch));
     }
 
+    /**
+     * Checks if this version satisfies the specified SemVer Expression.
+     *
+     * This method is a part of the SemVer Expressions API.
+     *
+     * @param expr the SemVer Expression
+     * @return {@code true} if this version satisfies the specified
+     *         SemVer Expression or {@code false} otherwise
+     * @since 0.7.0
+     */
     public boolean satisfies(String expr) {
         Parser<Expression> parser = ExpressionParser.newInstance();
         return parser.parse(expr).interpret(this);
     }
 
+    /**
+     * Increments the major version.
+     *
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementMajorVersion() {
         return new Version(normal.incrementMajor());
     }
 
+    /**
+     * Increments the major version and appends the pre-release version.
+     *
+     * @param preRelease the pre-release version to append
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementMajorVersion(String preRelease) {
         return new Version(
             normal.incrementMajor(),
@@ -146,10 +302,21 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    /**
+     * Increments the minor version.
+     *
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementMinorVersion() {
         return new Version(normal.incrementMinor());
     }
 
+    /**
+     * Increments the minor version and appends the pre-release version.
+     *
+     * @param preRelease the pre-release version to append
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementMinorVersion(String preRelease) {
         return new Version(
             normal.incrementMinor(),
@@ -157,10 +324,21 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    /**
+     * Increments the patch version.
+     *
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementPatchVersion() {
         return new Version(normal.incrementPatch());
     }
 
+    /**
+     * Increments the patch version and appends the pre-release version.
+     *
+     * @param preRelease the pre-release version to append
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementPatchVersion(String preRelease) {
         return new Version(
             normal.incrementPatch(),
@@ -168,14 +346,30 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    /**
+     * Increments the pre-release version.
+     *
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementPreReleaseVersion() {
         return new Version(normal, preRelease.increment());
     }
 
+    /**
+     * Increments the build metadata.
+     *
+     * @return a new instance of the {@code Version} class
+     */
     public Version incrementBuildMetadata() {
         return new Version(normal, preRelease, build.increment());
     }
 
+    /**
+     * Sets the pre-release version.
+     *
+     * @param preRelease the pre-release version to set
+     * @return a new instance of the {@code Version} class
+     */
     public Version setPreReleaseVersion(String preRelease) {
         return new Version(
             normal,
@@ -183,6 +377,12 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    /**
+     * Sets the build metadata.
+     *
+     * @param build the build metadata to set
+     * @return a new instance of the {@code Version} class
+     */
     public Version setBuildMetadata(String build) {
         return new Version(
             normal,
@@ -191,46 +391,118 @@ public class Version implements Comparable<Version> {
         );
     }
 
+    /**
+     * Returns the major version number.
+     *
+     * @return the major version number
+     */
     public int getMajorVersion() {
         return normal.getMajor();
     }
 
+    /**
+     * Returns the minor version number.
+     *
+     * @return the minor version number
+     */
     public int getMinorVersion() {
         return normal.getMinor();
     }
 
+    /**
+     * Returns the patch version number.
+     *
+     * @return the patch version number
+     */
     public int getPatchVersion() {
         return normal.getPatch();
     }
 
+    /**
+     * Returns the string representation of the normal version.
+     *
+     * @return the string representation of the normal version
+     */
     public String getNormalVersion() {
         return normal.toString();
     }
 
+    /**
+     * Returns the string representation of the pre-release version.
+     *
+     * @return the string representation of the pre-release version
+     */
     public String getPreReleaseVersion() {
         return preRelease.toString();
     }
 
+    /**
+     * Returns the string representation of the build metadata.
+     *
+     * @return the string representation of the build metadata
+     */
     public String getBuildMetadata() {
         return build.toString();
     }
 
+    /**
+     * Checks if this version is greater than the other version.
+     *
+     * @param other the other version to compare to
+     * @return {@code true} if this version is greater than the other version
+     *         or {@code false} otherwise
+     * @see #compareTo(Version other)
+     */
     public boolean greaterThan(Version other) {
         return compareTo(other) > 0;
     }
 
+    /**
+     * Checks if this version is greater than or equal to the other version.
+     *
+     * @param other the other version to compare to
+     * @return {@code true} if this version is greater than or equal
+     *         to the other version or {@code false} otherwise
+     * @see #compareTo(Version other)
+     */
     public boolean greaterThanOrEqualTo(Version other) {
         return compareTo(other) >= 0;
     }
 
+    /**
+     * Checks if this version is less than the other version.
+     *
+     * @param other the other version to compare to
+     * @return {@code true} if this version is less than the other version
+     *         or {@code false} otherwise
+     * @see #compareTo(Version other)
+     */
     public boolean lessThan(Version other) {
         return compareTo(other) < 0;
     }
 
+    /**
+     * Checks if this version is less than or equal to the other version.
+     *
+     * @param other the other version to compare to
+     * @return {@code true} if this version is less than or equal
+     *         to the other version or {@code false} otherwise
+     * @see #compareTo(Version other)
+     */
     public boolean lessThanOrEqualTo(Version other) {
         return compareTo(other) <= 0;
     }
 
+    /**
+     * Checks if this version equals the other version.
+     *
+     * The comparison is done by the {@code Version.compareTo} method.
+     *
+     * @param other the other version to compare to
+     * @return {@code true} if this version equals the other version
+     *         or {@code false} otherwise
+     * @see #compareTo(Version other)
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -242,6 +514,9 @@ public class Version implements Comparable<Version> {
         return compareTo((Version) other) == 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int hash = 5;
@@ -251,6 +526,9 @@ public class Version implements Comparable<Version> {
         return hash;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getNormalVersion());
@@ -263,6 +541,20 @@ public class Version implements Comparable<Version> {
         return sb.toString();
     }
 
+    /**
+     * Compares this version to the other version.
+     *
+     * This method does not take into account the versions' build
+     * metadata. If you want to compare the versions' build metadata
+     * use the {@code Version.compareWithBuildsTo} method or the
+     * {@code Version.BUILD_AWARE_ORDER} comparator.
+     *
+     * @param other the other version to compare to
+     * @return a negative integer, zero or a positive integer if this version
+     *         is less than, equal to or greater the the specified version
+     * @see #BUILD_AWARE_ORDER
+     * @see #compareWithBuildsTo(Version other)
+     */
     @Override
     public int compareTo(Version other) {
         int result = normal.compareTo(other.normal);
@@ -272,6 +564,17 @@ public class Version implements Comparable<Version> {
         return result;
     }
 
+    /**
+     * Compare this version to the other version
+     * taking into account the build metadata.
+     *
+     * The method makes use of the {@code Version.BUILD_AWARE_ORDER} comparator.
+     *
+     * @param other the other version to compare to
+     * @return integer result of comparison compatible with
+     *         that of the {@code Comparable.compareTo} method
+     * @see #BUILD_AWARE_ORDER
+     */
     public int compareWithBuildsTo(Version other) {
         return BUILD_AWARE_ORDER.compare(this, other);
     }

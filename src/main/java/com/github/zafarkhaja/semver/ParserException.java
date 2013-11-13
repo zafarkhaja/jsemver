@@ -24,15 +24,25 @@
 package com.github.zafarkhaja.semver;
 
 /**
+ * Thrown to indicate an error during the parsing.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.7.0
  */
 public class ParserException extends RuntimeException {
 
+    /**
+     * Constructs a {@code ParserException} instance with an error message.
+     *
+     * @param message the error message
+     */
     public ParserException(String message) {
         super(message);
     }
 
+    /**
+     * Constructs a {@code ParserException} instance with no error message.
+     */
     public ParserException() {
 
     }

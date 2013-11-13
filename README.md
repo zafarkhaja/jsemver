@@ -218,11 +218,6 @@ other interesting capabilities of the SemVer Expressions DSL.
 * Parenthesized expression - `~1.3 | (1.4.* & !=1.4.5) | ~2`
 
 
-TODO
-----
-* [Write doc comments for all API classes and methods](https://github.com/zafarkhaja/java-semver/issues/2)
-
-
 Bugs and Features
 -----------------
 Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/java-semver/issues.

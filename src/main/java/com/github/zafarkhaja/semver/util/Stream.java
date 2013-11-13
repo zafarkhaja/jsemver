@@ -28,23 +28,65 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
+ * A simple stream class used to represent a stream of characters or tokens.
+ *
+ * @param <E> the type of elements held in this stream
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @see com.github.zafarkhaja.semver.VersionParser
+ * @see com.github.zafarkhaja.semver.expr.Lexer
+ * @see com.github.zafarkhaja.semver.expr.ExpressionParser
+ * @since 0.7.0
  */
 public class Stream<E> implements Iterable<E> {
 
+    /**
+     * The {@code ElementType} interface represents types of the elements
+     * held by this stream and can be used for stream filtering.
+     *
+     * @param <E> type of elements held by this stream
+     */
     public static interface ElementType<E> {
+
+        /**
+         * Checks if the specified element matches this type.
+         *
+         * @param element the element to be tested
+         * @return {@code true} if the element matches this type
+         *         or {@code false} otherwise
+         */
         boolean isMatchedBy(E element);
     }
 
+    /**
+     * The array holding all the elements of this stream.
+     */
     private final E[] elements;
 
+    /**
+     * The current offset which is incremented when an element is consumed.
+     *
+     * @see #consume()
+     */
     private int offset = 0;
 
+    /**
+     * Constructs a stream containing the specified elements.
+     *
+     * The stream does not store the real elements but the defensive copy.
+     *
+     * @param elements the elements to be streamed
+     */
     public Stream(E[] elements) {
         this.elements = elements.clone();
     }
 
+    /**
+     * Consumes the next element in this stream.
+     *
+     * @return the next element in this stream
+     *         or {@code null} if no more elements left
+     */
     public E consume() {
         if (offset >= elements.length) {
             return null;
@@ -52,6 +94,14 @@ public class Stream<E> implements Iterable<E> {
         return elements[offset++];
     }
 
+    /**
+     * Consumes the next element in this stream
+     * only if it is of the expected types.
+     *
+     * @param expected the types which are expected
+     * @return the next element in this stream
+     * @throws UnexpectedElementTypeException if the next element is of an unexpected type
+     */
     public E consume(ElementType<E>... expected) {
         E lookahead = lookahead(1);
         for (ElementType<E> type : expected) {
@@ -62,10 +112,23 @@ public class Stream<E> implements Iterable<E> {
         throw new UnexpectedElementTypeException(lookahead, expected);
     }
 
+    /**
+     * Returns the next element in this stream without consuming it.
+     *
+     * @return the next element in this stream
+     */
     public E lookahead() {
         return lookahead(1);
     }
 
+    /**
+     * Returns the element at the specified position
+     * in this stream without consuming it.
+     *
+     * @param position the position of the element to return
+     * @return the element at the specified position
+     *         or {@code null} if no more elements left
+     */
     public E lookahead(int position) {
         int idx = offset + position - 1;
         if (idx < elements.length) {
@@ -74,6 +137,13 @@ public class Stream<E> implements Iterable<E> {
         return null;
     }
 
+    /**
+     * Checks if the next element in this stream is of the expected types.
+     *
+     * @param expected the expected types
+     * @return {@code true} if the next element is of the expected types
+     *         or {@code false} otherwise
+     */
     public boolean positiveLookahead(ElementType<E>... expected) {
         for (ElementType<E> type : expected) {
             if (type.isMatchedBy(lookahead(1))) {
@@ -83,6 +153,15 @@ public class Stream<E> implements Iterable<E> {
         return false;
     }
 
+    /**
+     * Checks if there exists an element in this stream of
+     * the expected types before the specified type.
+     *
+     * @param before the type before which to search
+     * @param expected the expected types
+     * @return {@code true} if there is an element of the expected types
+     *         before the specified type or {@code false} otherwise
+     */
     public boolean positiveLookaheadBefore(
         ElementType<E> before,
         ElementType<E>... expected
@@ -102,6 +181,15 @@ public class Stream<E> implements Iterable<E> {
         return false;
     }
 
+    /**
+     * Checks if there is an element in this stream of
+     * the expected types until the specified position.
+     *
+     * @param until the position until which to search
+     * @param expected the expected types
+     * @return {@code true} if there is an element of the expected types
+     *         until the specified position or {@code false} otherwise
+     */
     public boolean positiveLookaheadUntil(
         int until,
         ElementType<E>... expected
@@ -116,17 +204,28 @@ public class Stream<E> implements Iterable<E> {
         return false;
     }
 
+    /**
+     * Returns an iterator over elements that are left in this stream.
+     *
+     * @return an iterator of the remaining elements in this stream
+     */
     @Override
     public Iterator<E> iterator() {
         return new Iterator<E>() {
 
             private int index = offset;
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public boolean hasNext() {
                 return index < elements.length;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public E next() {
                 if (index >= elements.length) {
@@ -135,6 +234,9 @@ public class Stream<E> implements Iterable<E> {
                 return elements[index++];
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void remove() {
                 throw new UnsupportedOperationException();
@@ -142,6 +244,14 @@ public class Stream<E> implements Iterable<E> {
         };
     }
 
+    /**
+     * Returns an array containing all of the
+     * elements that are left in this stream.
+     *
+     * The returned array is a safe copy.
+     *
+     * @return an array containing all of elements in this stream
+     */
     public E[] toArray() {
         return Arrays.copyOfRange(elements, offset, elements.length);
     }

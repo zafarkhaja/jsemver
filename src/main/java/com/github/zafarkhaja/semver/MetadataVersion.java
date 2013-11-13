@@ -26,39 +26,66 @@ package com.github.zafarkhaja.semver;
 import java.util.Arrays;
 
 /**
+ * The {@code MetadataVersion} class is used to represent
+ * the pre-release version and the build metadata.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @since 0.2.0
  */
 class MetadataVersion implements Comparable<MetadataVersion> {
 
+    /**
+     * Null metadata, the implementation of the Null Object design pattern.
+     */
     static final MetadataVersion NULL = new NullMetadataVersion();
 
+    /**
+     * The implementation of the Null Object design pattern.
+     */
     private static class NullMetadataVersion extends MetadataVersion {
 
+        /**
+         * Constructs a {@code NullMetadataVersion} instance.
+         */
         public NullMetadataVersion() {
             super(null);
         }
 
+        /**
+         * @throws NullPointerException as Null metadata cannot be incremented
+         */
         @Override
         MetadataVersion increment() {
             throw new NullPointerException("Metadata version is NULL");
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
             return "";
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
             return 0;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean equals(Object other) {
             return other instanceof NullMetadataVersion;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int compareTo(MetadataVersion other) {
             if (!equals(other)) {
@@ -72,12 +99,24 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         }
     }
 
+    /**
+     * The array containing the version's identifiers.
+     */
     private final String[] idents;
 
+    /**
+     * Constructs a {@code MetadataVersion} instance with identifiers.
+     * @param identifiers the version's identifiers
+     */
     MetadataVersion(String[] identifiers) {
         idents = identifiers;
     }
 
+    /**
+     * Increments the metadata version.
+     *
+     * @return a new instance of the {@code MetadataVersion} class
+     */
     MetadataVersion increment() {
         String[] ids  = idents;
         String lastId = ids[ids.length - 1];
@@ -91,6 +130,9 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         return new MetadataVersion(ids);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -102,11 +144,17 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         return compareTo((MetadataVersion) other) == 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(idents);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -116,6 +164,9 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         return sb.deleteCharAt(sb.lastIndexOf(".")).toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(MetadataVersion other) {
         if (other == MetadataVersion.NULL) {
@@ -127,11 +178,23 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         }
         int result = compareIdentifierArrays(other.idents);
         if (result == 0) {
+            /**
+             * A larger set of pre-release fields has a higher
+             * precedence than a smaller set, if all of the
+             * preceding identifiers are equal. (SemVer p.11)
+             */
             result = idents.length - other.idents.length;
         }
         return result;
     }
 
+    /**
+     * Compares two arrays of identifiers.
+     *
+     * @param otherIdents the identifiers of the other version
+     * @return integer result of comparison compatible with
+     *         the {@code Comparable.compareTo} method
+     */
     private int compareIdentifierArrays(String[] otherIdents) {
         int result = 0;
         int length = getLeastCommonArrayLength(idents, otherIdents);
@@ -144,10 +207,25 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         return result;
     }
 
+    /**
+     * Returns the size of the smallest array.
+     *
+     * @param arr1 the first array
+     * @param arr2 the second array
+     * @return the size of the smallest array
+     */
     private int getLeastCommonArrayLength(String[] arr1, String[] arr2) {
         return arr1.length <= arr2.length ? arr1.length : arr2.length;
     }
 
+    /**
+     * Compares two identifiers.
+     *
+     * @param ident1 the first identifier
+     * @param ident2 the second identifier
+     * @return integer result of comparison compatible with
+     *         the {@code Comparable.compareTo} method
+     */
     private int compareIdentifiers(String ident1, String ident2) {
         if (isInt(ident1) && isInt(ident2)) {
             return Integer.parseInt(ident1) - Integer.parseInt(ident2);
@@ -156,6 +234,13 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         }
     }
 
+    /**
+     * Checks if the specified string is an integer.
+     *
+     * @param str the string to check
+     * @return {@code true} if the specified string is an integer
+     *         or {@code false} otherwise
+     */
     private boolean isInt(String str) {
         try {
             Integer.parseInt(str);
