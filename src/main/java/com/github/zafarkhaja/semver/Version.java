@@ -136,7 +136,7 @@ public class Version implements Comparable<Version> {
     /**
      * A comparator that respects the build metadata when comparing versions.
      */
-    public static final Comparator BUILD_AWARE_ORDER = new BuildAwareOrder();
+    public static final Comparator<Version> BUILD_AWARE_ORDER = new BuildAwareOrder();
 
     /**
      * A build-aware comparator.
