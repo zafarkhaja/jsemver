@@ -11,6 +11,41 @@ Java SemVer is versioned according to the SemVer Specification.
 zero which according to the SemVer p.4 means that the library is under initial
 development and its public API should not be considered stable.
 
+### Table of Contents ###
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Creating Versions](#creating-versions)
+  * [Incrementing Versions](#incrementing-versions)
+  * [Comparing Versions](#comparing-versions)
+* [SemVer Expressions API (Ranges)](#semver-expressions-api-ranges)
+* [Bugs and Features](#bugs-and-features)
+* [License](#license)
+
+
+Installation
+------------
+To install the Java SemVer libary add the following dependency to your Maven
+project.
+
+**Current stable version**
+~~~ xml
+<dependency>
+  <groupId>com.github.zafarkhaja</groupId>
+  <artifactId>java-semver</artifactId>
+  <version>0.7.0</version>
+</dependency>
+~~~
+
+**Development version**
+~~~ xml
+<dependency>
+  <groupId>com.github.zafarkhaja</groupId>
+  <artifactId>java-semver</artifactId>
+  <version>0.7.1-SNAPSHOT</version>
+</dependency>
+~~~
+**NOTE**: To use the development version you need to add the SNAPSHOT repository
+to your `pom.xml` file: http://oss.sonatype.org/content/repositories/snapshots/.
 
 Usage
 -----
@@ -25,7 +60,7 @@ provides few _static factory methods_.
 
 One of the methods is the `Version.valueOf` method.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v = Version.valueOf("1.0.0-rc.1+build.1");
@@ -39,22 +74,22 @@ String preRelease = v.getPreReleaseVersion(); // "rc.1"
 String build      = v.getBuildMetadata();     // "build.1"
 
 String str = v.toString(); // "1.0.0-rc.1+build.1"
-```
+~~~
 
 The other static factory method is `Version.forIntegers` which is also
 overloaded to allow fewer arguments.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v1 = Version.forIntegers(1);
 Version v2 = Version.forIntegers(1, 2);
 Version v3 = Version.forIntegers(1, 2, 3);
-```
+~~~
 
 Another way to create a `Version` is to use a _builder_ class `Version.Builder`.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version.Builder builder = new Version.Builder("1.0.0");
@@ -72,7 +107,7 @@ String preRelease = v.getPreReleaseVersion(); // "rc.1"
 String build      = v.getBuildMetadata();     // "build.1"
 
 String str = v.toString(); // "1.0.0-rc.1+build.1"
-```
+~~~
 
 ### Incrementing Versions ###
 Because the `Version` class is immutable, the _incrementors_ return a new
@@ -80,7 +115,7 @@ instance of `Version` rather than modifying the given one. Each of the normal
 version incrementors has an overloaded method that takes a pre-release version
 as an argument.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v1 = Version.valueOf("1.2.3");
@@ -99,12 +134,12 @@ Version v4 = v1.incrementPatchVersion("alpha"); // "1.2.4-alpha"
 
 // Original Version is still the same
 String str = v1.toString(); // "1.2.3"
-```
+~~~
 
 There are also incrementor methods for the pre-release version and the build
 metadata.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 // Incrementing the pre-release version
@@ -116,12 +151,12 @@ Version v3 = v2.incrementPreReleaseVersion();    // "1.2.3-rc.2"
 Version v1 = Version.valueOf("1.2.3-rc+build");  // considered as "build.0"
 Version v2 = v1.incrementBuildMetadata();        // "1.2.3-rc+build.1"
 Version v3 = v2.incrementBuildMetadata();        // "1.2.3-rc+build.2"
-```
+~~~
 
 When incrementing the normal or pre-release versions the build metadata is
 always dropped.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v1 = Version.valueOf("1.2.3-beta+build");
@@ -138,7 +173,7 @@ Version v4 = v1.incrementPatchVersion("alpha"); // "1.2.4-alpha"
 
 // Incrementing the pre-release version
 Version v2 = v1.incrementPreReleaseVersion();   // "1.2.3-beta.1"
-```
+~~~
 **NOTE**: The discussion page https://github.com/mojombo/semver/issues/60 might
 be of good use in better understanding some of the decisions made regarding the
 incrementor methods.
@@ -148,7 +183,7 @@ Comparing versions with Java SemVer is easy. The `Version` class implements the
 `Comparable` interface, it also overrides the `Object.equals` method and provides
 some more methods for convenient comparing.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v1 = Version.valueOf("1.0.0-rc.1+build.1");
@@ -161,11 +196,11 @@ boolean result = v1.greaterThan(v2);           // false
 boolean result = v1.greaterThanOrEqualTo(v2);  // false
 boolean result = v1.lessThan(v2);              // true
 boolean result = v1.lessThanOrEqualTo(v2);     // true
-```
+~~~
 
 When determining version precedence the build metadata is ignored (SemVer p.10).
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v1 = Version.valueOf("1.0.0+build.1");
@@ -173,13 +208,13 @@ Version v2 = Version.valueOf("1.0.0+build.2");
 
 int result = v1.compareTo(v2);  // = 0
 boolean result = v1.equals(v2); // true
-```
+~~~
 
 Sometimes, however, you might want to compare versions with the build metadata
 in mind. For such cases Java SemVer provides a _comparator_ `Version.BUILD_AWARE_ORDER`
 and a convenience method `Version.compareWithBuildsTo`.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v1 = Version.valueOf("1.0.0+build.1");
@@ -189,7 +224,7 @@ int result = Version.BUILD_AWARE_ORDER.compare(v1, v2);  // < 0
 
 int result = v1.compareWithBuildsTo(v2);  // < 0
 boolean result = v1.equals(v2);           // false
-```
+~~~
 
 
 SemVer Expressions API (Ranges)
@@ -201,12 +236,12 @@ can be found in the corresponding issue
 
 The entry point for the API is the `Version.satisfies` method.
 
-```java
+~~~ java
 import com.github.zafarkhaja.semver.Version;
 
 Version v = Version.valueOf("1.0.0-beta");
 boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
-```
+~~~
 
 Below are examples of some common use cases, as well as syntactic sugar and some
 other interesting capabilities of the SemVer Expressions DSL.
