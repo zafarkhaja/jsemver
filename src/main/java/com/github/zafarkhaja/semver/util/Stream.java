@@ -213,6 +213,14 @@ public class Stream<E> implements Iterable<E> {
     public Iterator<E> iterator() {
         return new Iterator<E>() {
 
+            /**
+             * The index to indicate the current position
+             * of this iterator.
+             *
+             * The starting point is set to the current
+             * value of this stream's offset, so that it
+             * doesn't iterate over consumed elements.
+             */
             private int index = offset;
 
             /**
