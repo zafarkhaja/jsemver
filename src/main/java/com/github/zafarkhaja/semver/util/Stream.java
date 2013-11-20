@@ -98,11 +98,14 @@ public class Stream<E> implements Iterable<E> {
      * Consumes the next element in this stream
      * only if it is of the expected types.
      *
+     * @param <T> represents the element type of this stream, removes the
+     *            "unchecked generic array creation for varargs parameter"
+     *            warnings
      * @param expected the types which are expected
      * @return the next element in this stream
      * @throws UnexpectedElementTypeException if the next element is of an unexpected type
      */
-    public E consume(ElementType<E>... expected) {
+    public <T extends ElementType<E>> E consume(T... expected) {
         E lookahead = lookahead(1);
         for (ElementType<E> type : expected) {
             if (type.isMatchedBy(lookahead)) {
@@ -140,11 +143,14 @@ public class Stream<E> implements Iterable<E> {
     /**
      * Checks if the next element in this stream is of the expected types.
      *
+     * @param <T> represents the element type of this stream, removes the
+     *            "unchecked generic array creation for varargs parameter"
+     *            warnings
      * @param expected the expected types
      * @return {@code true} if the next element is of the expected types
      *         or {@code false} otherwise
      */
-    public boolean positiveLookahead(ElementType<E>... expected) {
+    public <T extends ElementType<E>> boolean positiveLookahead(T... expected) {
         for (ElementType<E> type : expected) {
             if (type.isMatchedBy(lookahead(1))) {
                 return true;
@@ -157,14 +163,17 @@ public class Stream<E> implements Iterable<E> {
      * Checks if there exists an element in this stream of
      * the expected types before the specified type.
      *
+     * @param <T> represents the element type of this stream, removes the
+     *            "unchecked generic array creation for varargs parameter"
+     *            warnings
      * @param before the type before which to search
      * @param expected the expected types
      * @return {@code true} if there is an element of the expected types
      *         before the specified type or {@code false} otherwise
      */
-    public boolean positiveLookaheadBefore(
+    public <T extends ElementType<E>> boolean positiveLookaheadBefore(
         ElementType<E> before,
-        ElementType<E>... expected
+        T... expected
     ) {
         E lookahead;
         for (int i = 1; i <= elements.length; i++) {
@@ -185,14 +194,17 @@ public class Stream<E> implements Iterable<E> {
      * Checks if there is an element in this stream of
      * the expected types until the specified position.
      *
+     * @param <T> represents the element type of this stream, removes the
+     *            "unchecked generic array creation for varargs parameter"
+     *            warnings
      * @param until the position until which to search
      * @param expected the expected types
      * @return {@code true} if there is an element of the expected types
      *         until the specified position or {@code false} otherwise
      */
-    public boolean positiveLookaheadUntil(
+    public <T extends ElementType<E>> boolean positiveLookaheadUntil(
         int until,
-        ElementType<E>... expected
+        T... expected
     ) {
         for (int i = 1; i <= until; i++) {
             for (ElementType<E> type : expected) {
