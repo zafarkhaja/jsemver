@@ -49,7 +49,7 @@ public class UnexpectedTokenException extends ParserException {
      * Constructs a {@code UnexpectedTokenException} instance
      * with the unexpected token and the expected types.
      *
-     * @param element the unexpected token
+     * @param token the unexpected token
      * @param expected an array of the expected token types
      */
     UnexpectedTokenException(Token token, Token.Type... expected) {
