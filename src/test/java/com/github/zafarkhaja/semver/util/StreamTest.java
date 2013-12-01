@@ -85,7 +85,7 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldRaiseErrorWhenUnexpectedElementTypeConsumed() {
+    public void shouldRaiseErrorWhenUnexpectedElementConsumed() {
         Stream<Character> stream = new Stream<Character>(
             new Character[] {'a', 'b', 'c'}
         );
@@ -96,7 +96,7 @@ public class StreamTest {
                     return false;
                 }
             });
-        } catch (UnexpectedElementTypeException e) {
+        } catch (UnexpectedElementException e) {
             return;
         }
         fail("Should raise error when unexpected element type is consumed");

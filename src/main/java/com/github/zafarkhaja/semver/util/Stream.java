@@ -103,7 +103,7 @@ public class Stream<E> implements Iterable<E> {
      *            warnings
      * @param expected the types which are expected
      * @return the next element in this stream
-     * @throws UnexpectedElementTypeException if the next element is of an unexpected type
+     * @throws UnexpectedElementException if the next element is of an unexpected type
      */
     public <T extends ElementType<E>> E consume(T... expected) {
         E lookahead = lookahead(1);
@@ -112,7 +112,7 @@ public class Stream<E> implements Iterable<E> {
                 return consume();
             }
         }
-        throw new UnexpectedElementTypeException(lookahead, expected);
+        throw new UnexpectedElementException(lookahead, expected);
     }
 
     /**

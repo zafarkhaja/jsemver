@@ -24,7 +24,7 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
-import com.github.zafarkhaja.semver.util.UnexpectedElementTypeException;
+import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -197,7 +197,7 @@ public class ExpressionParserTest {
         ExpressionParser parser = new ExpressionParser(new Lexer());
         try {
             parser.parse("((>=1.0.1 & < 2)");
-        } catch (UnexpectedElementTypeException e) {
+        } catch (UnexpectedElementException e) {
             return;
         }
         fail("Should raise error if closing parenthesis is missing");

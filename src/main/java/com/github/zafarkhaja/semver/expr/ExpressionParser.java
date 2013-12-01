@@ -28,7 +28,7 @@ import com.github.zafarkhaja.semver.Version;
 import com.github.zafarkhaja.semver.expr.Lexer.Token;
 import com.github.zafarkhaja.semver.util.Stream;
 import com.github.zafarkhaja.semver.util.Stream.ElementType;
-import com.github.zafarkhaja.semver.util.UnexpectedElementTypeException;
+import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.EnumSet;
 import java.util.Iterator;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
@@ -78,8 +78,7 @@ public class ExpressionParser implements Parser<Expression> {
      * @param input a string representing the SemVer Expression
      * @return the AST for the SemVer Expressions
      * @throws LexerException when encounters an illegal character
-     * @throws UnexpectedElementTypeException when consumes a token of an
-     *                                        unexpected type
+     * @throws UnexpectedElementException when consumes a token of an unexpected type
      */
     @Override
     public Expression parse(String input) {

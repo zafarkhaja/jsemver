@@ -24,10 +24,10 @@
 package com.github.zafarkhaja.semver;
 
 import com.github.zafarkhaja.semver.util.Stream;
+import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.ArrayList;
 import java.util.List;
 import static com.github.zafarkhaja.semver.VersionParser.Char.*;
-import com.github.zafarkhaja.semver.util.UnexpectedElementTypeException;
 
 /**
  * A parser for the SemVer Version.
@@ -140,8 +140,7 @@ class VersionParser implements Parser<Version> {
      * @return a valid version object
      * @throws GrammarException when there is an error defined in
      *                          the SemVer or the formal grammar
-     * @throws UnexpectedElementTypeException when encounters an unexpected
-     *                                        character type
+     * @throws UnexpectedElementException when encounters an unexpected character type
      */
     @Override
     public Version parse(String input) {
@@ -155,8 +154,7 @@ class VersionParser implements Parser<Version> {
      * @return a valid version object
      * @throws GrammarException when there is an error defined in
      *                          the SemVer or the formal grammar
-     * @throws UnexpectedElementTypeException when encounters an unexpected
-     *                                        character type
+     * @throws UnexpectedElementException when encounters an unexpected character type
      */
     static Version parseValidSemVer(String version) {
         VersionParser parser = new VersionParser(version);
@@ -170,8 +168,7 @@ class VersionParser implements Parser<Version> {
      * @return a valid normal version object
      * @throws GrammarException when there is an error defined in
      *                          the SemVer or the formal grammar
-     * @throws UnexpectedElementTypeException when encounters an unexpected
-     *                                        character type
+     * @throws UnexpectedElementException when encounters an unexpected character type
      */
     static NormalVersion parseVersionCore(String versionCore) {
         VersionParser parser = new VersionParser(versionCore);

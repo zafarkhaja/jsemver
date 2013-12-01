@@ -33,7 +33,7 @@ import java.util.Arrays;
  * @see Stream#consume(Stream.ElementType...)
  * @since 0.7.0
  */
-public class UnexpectedElementTypeException extends RuntimeException {
+public class UnexpectedElementException extends RuntimeException {
 
     /**
      * The unexpected element in the stream.
@@ -46,13 +46,13 @@ public class UnexpectedElementTypeException extends RuntimeException {
     private final ElementType<?>[] expected;
 
     /**
-     * Constructs a {@code UnexpectedElementTypeException} instance
+     * Constructs a {@code UnexpectedElementException} instance
      * with the unexpected element and the expected types.
      *
      * @param element the unexpected element in the stream
      * @param expected an array of the expected element types
      */
-    UnexpectedElementTypeException(Object element, ElementType<?>... expected) {
+    UnexpectedElementException(Object element, ElementType<?>... expected) {
         unexpected = element;
         this.expected = expected;
     }
