@@ -27,7 +27,7 @@ import com.github.zafarkhaja.semver.util.Stream;
 import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.ArrayList;
 import java.util.List;
-import static com.github.zafarkhaja.semver.VersionParser.Char.*;
+import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
 
 /**
  * A parser for the SemVer Version.
@@ -40,7 +40,7 @@ class VersionParser implements Parser<Version> {
     /**
      * Valid character types.
      */
-    static enum Char implements Stream.ElementType<Character> {
+    static enum CharType implements Stream.ElementType<Character> {
 
         DIGIT {
             /**
@@ -279,8 +279,8 @@ class VersionParser implements Parser<Version> {
      * @throws GrammarException if the pre-release version has empty identifier(s)
      */
     private MetadataVersion parsePreRelease() {
-        Char end = closestEndpoint(PLUS, EOL);
-        Char before = closestEndpoint(DOT, end);
+        CharType end = closestEndpoint(PLUS, EOL);
+        CharType before = closestEndpoint(DOT, end);
         List<String> idents = new ArrayList<String>();
         while (!chars.positiveLookahead(end)) {
             if (before == DOT) {
@@ -320,8 +320,8 @@ class VersionParser implements Parser<Version> {
      * @throws GrammarException if the build metadata has empty identifier(s)
      */
     private MetadataVersion parseBuild() {
-        Char end = EOL;
-        Char before = closestEndpoint(DOT, end);
+        CharType end = EOL;
+        CharType before = closestEndpoint(DOT, end);
         List<String> idents = new ArrayList<String>();
         while (!chars.positiveLookahead(end)) {
             if (before == DOT) {
@@ -417,7 +417,7 @@ class VersionParser implements Parser<Version> {
      * @param orThis the character to fallback to
      * @return the closest character
      */
-    private Char closestEndpoint(Char tryThis, Char orThis) {
+    private CharType closestEndpoint(CharType tryThis, CharType orThis) {
         if (chars.positiveLookaheadBefore(orThis, tryThis)) {
             return tryThis;
         }

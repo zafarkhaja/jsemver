@@ -24,14 +24,14 @@
 package com.github.zafarkhaja.semver;
 
 import org.junit.Test;
-import static com.github.zafarkhaja.semver.VersionParser.Char.*;
+import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
-public class VersionParserCharTest {
+public class VersionParserCharTypeTest {
 
     @Test
     public void shouldBeMatchedByDigit() {
