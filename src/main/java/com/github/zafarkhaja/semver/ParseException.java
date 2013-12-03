@@ -29,21 +29,21 @@ package com.github.zafarkhaja.semver;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.7.0
  */
-public class ParserException extends RuntimeException {
+public class ParseException extends RuntimeException {
 
     /**
-     * Constructs a {@code ParserException} instance with an error message.
+     * Constructs a {@code ParseException} instance with an error message.
      *
      * @param message the error message
      */
-    public ParserException(String message) {
+    public ParseException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a {@code ParserException} instance with no error message.
+     * Constructs a {@code ParseException} instance with no error message.
      */
-    public ParserException() {
+    public ParseException() {
 
     }
 }

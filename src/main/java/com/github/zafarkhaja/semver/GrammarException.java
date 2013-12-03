@@ -30,7 +30,7 @@ package com.github.zafarkhaja.semver;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.7.0
  */
-public class GrammarException extends ParserException {
+public class GrammarException extends ParseException {
 
     /**
      * Constructs a {@code GrammarException} instance with an error message.

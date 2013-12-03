@@ -64,7 +64,7 @@ public class VersionParserTest {
     public void shouldNotAllowDigitsInPreReleaseVersion() {
         try {
             VersionParser.parsePreRelease("alpha.01");
-        } catch (ParserException e) {
+        } catch (ParseException e) {
             return;
         }
         fail("Should not allow digits in pre-release version");
@@ -96,7 +96,7 @@ public class VersionParserTest {
     public void shouldAllowDigitsInBuildMetadata() {
         try {
             VersionParser.parseBuild("build.01");
-        } catch (ParserException e) {
+        } catch (ParseException e) {
             fail("Should allow digits in build metadata");
         }
     }

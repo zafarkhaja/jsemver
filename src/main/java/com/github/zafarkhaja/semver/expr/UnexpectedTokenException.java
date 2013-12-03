@@ -23,7 +23,7 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
-import com.github.zafarkhaja.semver.ParserException;
+import com.github.zafarkhaja.semver.ParseException;
 import com.github.zafarkhaja.semver.expr.Lexer.*;
 import java.util.Arrays;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.7.0
  */
-public class UnexpectedTokenException extends ParserException {
+public class UnexpectedTokenException extends ParseException {
 
     /**
      * The unexpected token.
