@@ -361,14 +361,21 @@ public class VersionTest {
             Version v2 = null;
             assertFalse(v1.equals(v2));
         }
+
+        @Test
+        public void shouldIgnoreBuildMetadataWhenCheckingForEquality() {
+            Version v1 = Version.valueOf("2.3.7-beta+build");
+            Version v2 = Version.valueOf("2.3.7-beta");
+            assertTrue(v1.equals(v2));
+        }
     }
 
     public static class HashCodeMethodTest {
 
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
-            Version v1 = Version.valueOf("2.3.7");
-            Version v2 = Version.valueOf("2.3.7");
+            Version v1 = Version.valueOf("2.3.7-beta+build");
+            Version v2 = Version.valueOf("2.3.7-beta");
             assertTrue(v1.equals(v2));
             assertEquals(v1.hashCode(), v2.hashCode());
         }

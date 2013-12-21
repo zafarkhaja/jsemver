@@ -522,7 +522,6 @@ public class Version implements Comparable<Version> {
         int hash = 5;
         hash = 97 * hash + normal.hashCode();
         hash = 97 * hash + preRelease.hashCode();
-        hash = 97 * hash + build.hashCode();
         return hash;
     }
 
