@@ -1,6 +1,9 @@
 Java SemVer Changelog
 =====================
 
+### 0.7.2 (Dec 30, 2013) ###
+* [[Issue #8](https://github.com/zafarkhaja/java-semver/issues/8)] Fixed `Version.hashCode()` to comply with `Version.equals()`
+
 ### 0.7.1 (Dec 01, 2013) ###
 * [[Issue #5](https://github.com/zafarkhaja/java-semver/issues/5)] Got rid of 'unchecked' warnings
 * Made minor Javadoc corrections
