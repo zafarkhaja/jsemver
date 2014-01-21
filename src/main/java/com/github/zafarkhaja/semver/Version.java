@@ -371,10 +371,7 @@ public class Version implements Comparable<Version> {
      * @return a new instance of the {@code Version} class
      */
     public Version setPreReleaseVersion(String preRelease) {
-        return new Version(
-            normal,
-            VersionParser.parsePreRelease(preRelease)
-        );
+        return new Version(normal, VersionParser.parsePreRelease(preRelease));
     }
 
     /**
@@ -384,11 +381,7 @@ public class Version implements Comparable<Version> {
      * @return a new instance of the {@code Version} class
      */
     public Version setBuildMetadata(String build) {
-        return new Version(
-            normal,
-            preRelease,
-            VersionParser.parseBuild(build)
-        );
+        return new Version(normal, preRelease, VersionParser.parseBuild(build));
     }
 
     /**

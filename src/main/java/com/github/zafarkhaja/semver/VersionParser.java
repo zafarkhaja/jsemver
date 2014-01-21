@@ -233,11 +233,7 @@ class VersionParser implements Parser<Version> {
             chars.consume();
             buildMetadata = parseBuild();
         }
-        return new Version(
-            normalVersion,
-            preReleaseVersion,
-            buildMetadata
-        );
+        return new Version(normalVersion, preReleaseVersion, buildMetadata);
     }
 
     /**
@@ -296,9 +292,7 @@ class VersionParser implements Parser<Version> {
             }
             before = closestEndpoint(DOT, end);
         }
-        return new MetadataVersion(
-            idents.toArray(new String[idents.size()])
-        );
+        return new MetadataVersion(idents.toArray(new String[idents.size()]));
     }
 
     /**
@@ -337,9 +331,7 @@ class VersionParser implements Parser<Version> {
             }
             before = closestEndpoint(DOT, end);
         }
-        return new MetadataVersion(
-            idents.toArray(new String[idents.size()])
-        );
+        return new MetadataVersion(idents.toArray(new String[idents.size()]));
     }
 
     /**
