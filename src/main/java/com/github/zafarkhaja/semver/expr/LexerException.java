@@ -23,6 +23,8 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
+import com.github.zafarkhaja.semver.ParseException;
+
 /**
  * Thrown during the lexical analysis when
  * an illegal character is encountered.
@@ -30,7 +32,7 @@ package com.github.zafarkhaja.semver.expr;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.7.0
  */
-public class LexerException extends RuntimeException {
+public class LexerException extends ParseException {
 
     /**
      * The string being analyzed starting from an illegal character.
