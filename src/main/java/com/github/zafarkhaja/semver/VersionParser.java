@@ -350,12 +350,7 @@ class VersionParser implements Parser<Version> {
      */
     private String numericIdentifier() {
         checkForLeadingZeroes();
-        StringBuilder sb = new StringBuilder();
-        sb.append(chars.consume(DIGIT));
-        while (chars.positiveLookahead(DIGIT)) {
-            sb.append(chars.consume());
-        }
-        return sb.toString();
+        return digits();
     }
 
     /**
