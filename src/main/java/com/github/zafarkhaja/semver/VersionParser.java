@@ -138,8 +138,8 @@ class VersionParser implements Parser<Version> {
      *
      * @param input the input string to parse
      * @return a valid version object
-     * @throws GrammarException when there is an error defined in
-     *                          the SemVer or the formal grammar
+     * @throws ParseException when there is an error defined in
+     *                        the SemVer or the formal grammar
      * @throws UnexpectedElementException when encounters an unexpected character type
      */
     @Override
@@ -152,8 +152,8 @@ class VersionParser implements Parser<Version> {
      *
      * @param version the version string to parse
      * @return a valid version object
-     * @throws GrammarException when there is an error defined in
-     *                          the SemVer or the formal grammar
+     * @throws ParseException when there is an error defined in
+     *                        the SemVer or the formal grammar
      * @throws UnexpectedElementException when encounters an unexpected character type
      */
     static Version parseValidSemVer(String version) {
@@ -166,8 +166,8 @@ class VersionParser implements Parser<Version> {
      *
      * @param versionCore the version core string to parse
      * @return a valid normal version object
-     * @throws GrammarException when there is an error defined in
-     *                          the SemVer or the formal grammar
+     * @throws ParseException when there is an error defined in
+     *                        the SemVer or the formal grammar
      * @throws UnexpectedElementException when encounters an unexpected character type
      */
     static NormalVersion parseVersionCore(String versionCore) {
@@ -180,8 +180,8 @@ class VersionParser implements Parser<Version> {
      *
      * @param preRelease the pre-release version string to parse
      * @return a valid pre-release version object
-     * @throws GrammarException when there is an error defined in
-     *                          the SemVer or the formal grammar
+     * @throws ParseException when there is an error defined in
+     *                        the SemVer or the formal grammar
      */
     static MetadataVersion parsePreRelease(String preRelease) {
         if (preRelease == null) {
@@ -196,8 +196,8 @@ class VersionParser implements Parser<Version> {
      *
      * @param build the build metadata string to parse
      * @return a valid build metadata object
-     * @throws GrammarException when there is an error defined in
-     *                          the SemVer or the formal grammar
+     * @throws ParseException when there is an error defined in
+     *                        the SemVer or the formal grammar
      */
     static MetadataVersion parseBuild(String build) {
         if (build == null) {
@@ -272,7 +272,7 @@ class VersionParser implements Parser<Version> {
      * </pre>
      *
      * @return a valid pre-release version object
-     * @throws GrammarException if the pre-release version has empty identifier(s)
+     * @throws ParseException if the pre-release version has empty identifier(s)
      */
     private MetadataVersion parsePreRelease() {
         CharType end = closestEndpoint(PLUS, EOL);
@@ -311,7 +311,7 @@ class VersionParser implements Parser<Version> {
      * </pre>
      *
      * @return a valid build metadata object
-     * @throws GrammarException if the build metadata has empty identifier(s)
+     * @throws ParseException if the build metadata has empty identifier(s)
      */
     private MetadataVersion parseBuild() {
         CharType end = EOL;
@@ -346,7 +346,7 @@ class VersionParser implements Parser<Version> {
      * </pre>
      *
      * @return a string representing the numeric identifier
-     * @throws GrammarException if the numeric identifier has leading zero(es)
+     * @throws ParseException if the numeric identifier has leading zero(es)
      */
     private String numericIdentifier() {
         checkForLeadingZeroes();
@@ -414,13 +414,13 @@ class VersionParser implements Parser<Version> {
     /**
      * Checks for leading zeroes in the numeric identifiers.
      *
-     * @throws GrammarException if a numeric identifier has leading zero(es)
+     * @throws ParseException if a numeric identifier has leading zero(es)
      */
     private void checkForLeadingZeroes() {
         Character la1 = chars.lookahead(1);
         Character la2 = chars.lookahead(2);
         if (la1 == '0' && DIGIT.isMatchedBy(la2)) {
-            throw new GrammarException(
+            throw new ParseException(
                 "Numeric identifier MUST NOT contain leading zeroes"
             );
         }
@@ -429,12 +429,12 @@ class VersionParser implements Parser<Version> {
     /**
      * Checks for empty identifiers in the pre-release version or build metadata.
      *
-     * @throws GrammarException if the pre-release version or build
-     *                          metadata have empty identifier(s)
+     * @throws ParseException if the pre-release version or build
+     *                        metadata have empty identifier(s)
      */
     private void checkForEmptyIdentifier() {
         if (DOT.isMatchedBy(chars.lookahead(1))) {
-            throw new GrammarException("Identifiers MUST NOT be empty");
+            throw new ParseException("Identifiers MUST NOT be empty");
         }
     }
 }

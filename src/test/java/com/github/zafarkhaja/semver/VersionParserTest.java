@@ -42,7 +42,7 @@ public class VersionParserTest {
     public void shouldRaiseErrorIfNumericIdentifierHasLeadingZeroes() {
         try {
             VersionParser.parseVersionCore("01.1.0");
-        } catch (GrammarException e) {
+        } catch (ParseException e) {
             return;
         }
         fail("Numeric identifier MUST NOT contain leading zeroes");
@@ -74,7 +74,7 @@ public class VersionParserTest {
     public void shouldRaiseErrorForEmptyPreReleaseIdentifier() {
         try {
             VersionParser.parsePreRelease("beta-1..1");
-        } catch (GrammarException e) {
+        } catch (ParseException e) {
             return;
         }
         fail("Identifiers MUST NOT be empty");
@@ -105,7 +105,7 @@ public class VersionParserTest {
     public void shouldRaiseErrorForEmptyBuildIdentifier() {
         try {
             VersionParser.parseBuild(".build.01");
-        } catch (GrammarException e) {
+        } catch (ParseException e) {
             return;
         }
         fail("Identifiers MUST NOT be empty");
