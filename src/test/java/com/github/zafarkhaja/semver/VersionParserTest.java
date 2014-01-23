@@ -55,12 +55,6 @@ public class VersionParserTest {
     }
 
     @Test
-    public void shouldReturnNullMetadataVersionIfPreReleaseIsNull() {
-        MetadataVersion preRelease = VersionParser.parsePreRelease(null);
-        assertEquals(MetadataVersion.NULL, preRelease);
-    }
-
-    @Test
     public void shouldNotAllowDigitsInPreReleaseVersion() {
         try {
             VersionParser.parsePreRelease("alpha.01");
@@ -84,12 +78,6 @@ public class VersionParserTest {
     public void shouldParseBuildMetadata() {
         MetadataVersion build = VersionParser.parseBuild("build.1");
         assertEquals(new MetadataVersion(new String[] {"build", "1"}), build);
-    }
-
-    @Test
-    public void shouldReturnNullMetadataVersionIfBuildIsNull() {
-        MetadataVersion build = VersionParser.parseBuild(null);
-        assertEquals(MetadataVersion.NULL, build);
     }
 
     @Test
@@ -123,5 +111,17 @@ public class VersionParserTest {
             ),
             version
         );
+    }
+
+    @Test
+    public void shouldRaiseErrorForIllegalInputString() {
+        for (String illegal : new String[] { "", null }) {
+            try {
+                new VersionParser(illegal);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            fail("Should raise error for illegal input string");
+        }
     }
 }

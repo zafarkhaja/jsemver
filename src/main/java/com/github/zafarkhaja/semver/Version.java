@@ -86,18 +86,28 @@ public class Version implements Comparable<Version> {
         private String build;
 
         /**
+         * Constructs a {@code Builder} instance.
+         */
+        public Builder() {
+
+        }
+
+        /**
          * Constructs a {@code Builder} instance with the
          * string representation of the normal version.
          *
          * @param normal the string representation of the normal version
-         * @throws NullPointerException if the specified normal version is null
          */
         public Builder(String normal) {
-            if (normal == null) {
-                throw new NullPointerException(
-                    "Normal version MUST NOT be NULL"
-                );
-            }
+            this.normal = normal;
+        }
+
+        /**
+         * Sets the normal version.
+         *
+         * @param normal the string representation of the normal version
+         */
+        public void setNormalVersion(String normal) {
             this.normal = normal;
         }
 
@@ -125,11 +135,27 @@ public class Version implements Comparable<Version> {
          * @return a newly built {@code Version} instance
          */
         public Version build() {
-            return new Version(
-                VersionParser.parseVersionCore(normal),
-                VersionParser.parsePreRelease(preRelease),
-                VersionParser.parseBuild(build)
-            );
+            StringBuilder sb = new StringBuilder();
+            if (isFilled(normal)) {
+                sb.append(normal);
+            }
+            if (isFilled(preRelease)) {
+                sb.append(PRE_RELEASE_PREFIX).append(preRelease);
+            }
+            if (isFilled(build)) {
+                sb.append(BUILD_PREFIX).append(build);
+            }
+            return VersionParser.parseValidSemVer(sb.toString());
+        }
+
+        /**
+         * Checks if a string has a usable value.
+         *
+         * @param str the string to check
+         * @return {@code true} if the string is filled or {@code false} otherwise
+         */
+        private boolean isFilled(String str) {
+            return str != null && !str.isEmpty();
         }
     }
 
@@ -221,6 +247,7 @@ public class Version implements Comparable<Version> {
      *
      * @param version the version string to parse
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     public static Version valueOf(String version) {
         return VersionParser.parseValidSemVer(version);
@@ -294,6 +321,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     public Version incrementMajorVersion(String preRelease) {
         return new Version(
@@ -316,6 +344,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     public Version incrementMinorVersion(String preRelease) {
         return new Version(
@@ -338,6 +367,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     public Version incrementPatchVersion(String preRelease) {
         return new Version(
@@ -369,6 +399,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to set
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     public Version setPreReleaseVersion(String preRelease) {
         return new Version(normal, VersionParser.parsePreRelease(preRelease));
@@ -379,6 +410,7 @@ public class Version implements Comparable<Version> {
      *
      * @param build the build metadata to set
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     public Version setBuildMetadata(String build) {
         return new Version(normal, preRelease, VersionParser.parseBuild(build));

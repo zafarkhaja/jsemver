@@ -124,8 +124,12 @@ class VersionParser implements Parser<Version> {
      * with the input string to parse.
      *
      * @param input the input string to parse
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     VersionParser(String input) {
+        if (input == null || input.isEmpty()) {
+            throw new IllegalArgumentException("Input string is NULL or empty");
+        }
         Character[] elements = new Character[input.length()];
         for (int i = 0; i < input.length(); i++) {
             elements[i] = Character.valueOf(input.charAt(i));
@@ -152,6 +156,7 @@ class VersionParser implements Parser<Version> {
      *
      * @param version the version string to parse
      * @return a valid version object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is an error defined in
      *                        the SemVer or the formal grammar
      * @throws UnexpectedElementException when encounters an unexpected character type
@@ -166,6 +171,7 @@ class VersionParser implements Parser<Version> {
      *
      * @param versionCore the version core string to parse
      * @return a valid normal version object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is an error defined in
      *                        the SemVer or the formal grammar
      * @throws UnexpectedElementException when encounters an unexpected character type
@@ -180,13 +186,11 @@ class VersionParser implements Parser<Version> {
      *
      * @param preRelease the pre-release version string to parse
      * @return a valid pre-release version object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is an error defined in
      *                        the SemVer or the formal grammar
      */
     static MetadataVersion parsePreRelease(String preRelease) {
-        if (preRelease == null) {
-            return MetadataVersion.NULL;
-        }
         VersionParser parser = new VersionParser(preRelease);
         return parser.parsePreRelease();
     }
@@ -196,13 +200,11 @@ class VersionParser implements Parser<Version> {
      *
      * @param build the build metadata string to parse
      * @return a valid build metadata object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is an error defined in
      *                        the SemVer or the formal grammar
      */
     static MetadataVersion parseBuild(String build) {
-        if (build == null) {
-            return MetadataVersion.NULL;
-        }
         VersionParser parser = new VersionParser(build);
         return parser.parseBuild();
     }

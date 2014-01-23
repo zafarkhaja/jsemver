@@ -394,13 +394,12 @@ public class VersionTest {
     public static class BuilderTest {
 
         @Test
-        public void shouldThrowNullPointerExceptionIfNormalVersionIsNull() {
-            try {
-                new Version.Builder(null);
-            } catch (NullPointerException e) {
-                return;
-            }
-            fail("Builder was expected to throw NullPointerException");
+        public void shouldBuildVersionInSteps() {
+            Version.Builder builder = new Version.Builder();
+            builder.setNormalVersion("1.0.0");
+            builder.setPreReleaseVersion("alpha");
+            builder.setBuildMetadata("build");
+            assertEquals(Version.valueOf("1.0.0-alpha+build"), builder.build());
         }
 
         @Test
