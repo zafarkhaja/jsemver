@@ -429,6 +429,17 @@ public class VersionTest {
             builder.setBuildMetadata("build");
             assertEquals(Version.valueOf("1.0.0-alpha+build"), builder.build());
         }
+
+        @Test
+        public void shouldImplementFluentInterface() {
+            Version.Builder builder = new Version.Builder();
+            Version version = builder
+                .setNormalVersion("1.0.0")
+                .setPreReleaseVersion("alpha")
+                .setBuildMetadata("build")
+                .build();
+            assertEquals(Version.valueOf("1.0.0-alpha+build"), version);
+        }
     }
 
     public static class BuildAwareOrderTest {

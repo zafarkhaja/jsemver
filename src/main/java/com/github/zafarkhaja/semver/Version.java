@@ -106,27 +106,33 @@ public class Version implements Comparable<Version> {
          * Sets the normal version.
          *
          * @param normal the string representation of the normal version
+         * @return this builder instance
          */
-        public void setNormalVersion(String normal) {
+        public Builder setNormalVersion(String normal) {
             this.normal = normal;
+            return this;
         }
 
         /**
          * Sets the pre-release version.
          *
          * @param preRelease the string representation of the pre-release version
+         * @return this builder instance
          */
-        public void setPreReleaseVersion(String preRelease) {
+        public Builder setPreReleaseVersion(String preRelease) {
             this.preRelease = preRelease;
+            return this;
         }
 
         /**
          * Sets the build metadata.
          *
          * @param build the string representation of the build metadata
+         * @return this builder instance
          */
-        public void setBuildMetadata(String build) {
+        public Builder setBuildMetadata(String build) {
             this.build = build;
+            return this;
         }
 
         /**
