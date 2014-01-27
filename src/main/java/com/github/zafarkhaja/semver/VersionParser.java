@@ -224,18 +224,18 @@ class VersionParser implements Parser<Version> {
      * @return a valid version object
      */
     private Version parseValidSemVer() {
-        NormalVersion normalVersion = parseVersionCore();
-        MetadataVersion preReleaseVersion = MetadataVersion.NULL;
-        MetadataVersion buildMetadata = MetadataVersion.NULL;
+        NormalVersion normal = parseVersionCore();
+        MetadataVersion preRelease = MetadataVersion.NULL;
         if (chars.positiveLookahead(HYPHEN)) {
             chars.consume();
-            preReleaseVersion = parsePreRelease();
+            preRelease = parsePreRelease();
         }
+        MetadataVersion build = MetadataVersion.NULL;
         if (chars.positiveLookahead(PLUS)) {
             chars.consume();
-            buildMetadata = parseBuild();
+            build = parseBuild();
         }
-        return new Version(normalVersion, preReleaseVersion, buildMetadata);
+        return new Version(normal, preRelease, build);
     }
 
     /**
@@ -277,23 +277,21 @@ class VersionParser implements Parser<Version> {
      * @throws ParseException if the pre-release version has empty identifier(s)
      */
     private MetadataVersion parsePreRelease() {
+        List<String> idents = new ArrayList<String>();
         CharType end = closestEndpoint(PLUS, EOL);
         CharType before = closestEndpoint(DOT, end);
-        List<String> idents = new ArrayList<String>();
-        while (!chars.positiveLookahead(end)) {
-            if (before == DOT) {
-                checkForEmptyIdentifier();
-            }
+        do {
+            checkForEmptyIdentifier();
             if (chars.positiveLookaheadBefore(before, LETTER, HYPHEN)) {
                 idents.add(alphanumericIdentifier());
             } else {
                 idents.add(numericIdentifier());
             }
             if (before == DOT) {
-                chars.consume();
+                chars.consume(DOT);
+                before = closestEndpoint(DOT, end);
             }
-            before = closestEndpoint(DOT, end);
-        }
+        } while (!chars.positiveLookahead(end));
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
     }
 
@@ -316,23 +314,21 @@ class VersionParser implements Parser<Version> {
      * @throws ParseException if the build metadata has empty identifier(s)
      */
     private MetadataVersion parseBuild() {
+        List<String> idents = new ArrayList<String>();
         CharType end = EOL;
         CharType before = closestEndpoint(DOT, end);
-        List<String> idents = new ArrayList<String>();
-        while (!chars.positiveLookahead(end)) {
-            if (before == DOT) {
-                checkForEmptyIdentifier();
-            }
+        do {
+            checkForEmptyIdentifier();
             if (chars.positiveLookaheadBefore(before, LETTER, HYPHEN)) {
                 idents.add(alphanumericIdentifier());
             } else {
                 idents.add(digits());
             }
             if (before == DOT) {
-                chars.consume();
+                chars.consume(DOT);
+                before = closestEndpoint(DOT, end);
             }
-            before = closestEndpoint(DOT, end);
-        }
+        } while (!chars.positiveLookahead(end));
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
     }
 
@@ -371,10 +367,9 @@ class VersionParser implements Parser<Version> {
      */
     private String alphanumericIdentifier() {
         StringBuilder sb = new StringBuilder();
-        sb.append(chars.consume(DIGIT, LETTER, HYPHEN));
-        while (chars.positiveLookahead(DIGIT, LETTER, HYPHEN)) {
-            sb.append(chars.consume());
-        }
+        do {
+            sb.append(chars.consume(DIGIT, LETTER, HYPHEN));
+        } while (chars.positiveLookahead(DIGIT, LETTER, HYPHEN));
         return sb.toString();
     }
 
@@ -392,10 +387,9 @@ class VersionParser implements Parser<Version> {
      */
     private String digits() {
         StringBuilder sb = new StringBuilder();
-        sb.append(chars.consume(DIGIT));
-        while (chars.positiveLookahead(DIGIT)) {
-            sb.append(chars.consume());
-        }
+        do {
+            sb.append(chars.consume(DIGIT));
+        } while (chars.positiveLookahead(DIGIT));
         return sb.toString();
     }
 
