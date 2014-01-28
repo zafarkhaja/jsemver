@@ -128,6 +128,21 @@ class VersionParser implements Parser<Version> {
                 return true;
             }
         };
+
+        /**
+         * Gets the type for a given character.
+         *
+         * @param chr the character to get the type for
+         * @return the type of the specified character
+         */
+        static CharType forCharacter(Character chr) {
+            for (CharType type : values()) {
+                if (type.isMatchedBy(chr)) {
+                    return type;
+                }
+            }
+            return null;
+        }
     }
 
     /**

@@ -23,6 +23,7 @@
  */
 package com.github.zafarkhaja.semver;
 
+import com.github.zafarkhaja.semver.VersionParser.CharType;
 import org.junit.Test;
 import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
 import static org.junit.Assert.*;
@@ -87,5 +88,16 @@ public class VersionParserCharTypeTest {
         assertFalse(ILLEGAL.isMatchedBy('-'));
         assertFalse(ILLEGAL.isMatchedBy('a'));
         assertFalse(ILLEGAL.isMatchedBy('0'));
+    }
+
+    @Test
+    public void shouldReturnCharTypeForCharacter() {
+        assertEquals(DIGIT,   CharType.forCharacter('1'));
+        assertEquals(LETTER,  CharType.forCharacter('a'));
+        assertEquals(DOT,     CharType.forCharacter('.'));
+        assertEquals(HYPHEN,  CharType.forCharacter('-'));
+        assertEquals(PLUS,    CharType.forCharacter('+'));
+        assertEquals(EOL,     CharType.forCharacter(null));
+        assertEquals(ILLEGAL, CharType.forCharacter('!'));
     }
 }
