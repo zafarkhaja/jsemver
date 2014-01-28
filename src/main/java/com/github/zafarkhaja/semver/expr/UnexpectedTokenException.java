@@ -66,9 +66,12 @@ public class UnexpectedTokenException extends ParseException {
      */
     @Override
     public String toString() {
-        String message = "Unexpected token '" + unexpected + "'";
+        String message = String.format("Unexpected token '%s'", unexpected);
         if (expected.length > 0) {
-            message += ", expecting '" + Arrays.toString(expected) + "'";
+            message += String.format(
+                ", expecting '%s'",
+                Arrays.toString(expected)
+            );
         }
         return message;
     }
