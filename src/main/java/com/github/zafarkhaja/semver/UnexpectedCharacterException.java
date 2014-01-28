@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Zafar Khaja <zafarkhaja@gmail.com>.
+ * Copyright 2014 Zafar Khaja <zafarkhaja@gmail.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,57 +21,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.zafarkhaja.semver.util;
+package com.github.zafarkhaja.semver;
 
-import com.github.zafarkhaja.semver.util.Stream.ElementType;
+import com.github.zafarkhaja.semver.VersionParser.CharType;
+import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.Arrays;
 
 /**
- * Thrown when attempting to consume a stream element of unexpected types.
+ * Thrown when attempting to consume a character of unexpected types.
+ *
+ * This exception is a wrapper exception extending {@code ParseException}.
  *
  * @author Zafar Khaja <zafarkhaja@gmail.com>
- * @see Stream#consume(Stream.ElementType...)
- * @since 0.7.0
+ * @since 0.8.0
  */
-public class UnexpectedElementException extends RuntimeException {
+public class UnexpectedCharacterException extends ParseException {
 
     /**
-     * The unexpected element in the stream.
+     * The unexpected character.
      */
-    private final Object unexpected;
+    private final Character unexpected;
 
     /**
-     * The array of the expected element types.
+     * The array of expected character types.
      */
-    private final ElementType<?>[] expected;
+    private final CharType[] expected;
 
     /**
-     * Constructs a {@code UnexpectedElementException} instance
-     * with the unexpected element and the expected types.
+     * Constructs a {@code UnexpectedCharacterException} instance
+     * with the unexpected character and the expected types.
      *
-     * @param element the unexpected element in the stream
-     * @param expected an array of the expected element types
+     * @param cause the wrapped exception
      */
-    UnexpectedElementException(Object element, ElementType<?>... expected) {
-        unexpected = element;
-        this.expected = expected;
+    UnexpectedCharacterException(UnexpectedElementException cause) {
+        unexpected = (Character) cause.getUnexpectedElement();
+        expected = (CharType[]) cause.getExpectedElementTypes();
     }
 
     /**
-     * Gets the unexpected element.
+     * Gets the unexpected character.
      *
-     * @return the unexpected element
+     * @return the unexpected character
      */
-    public Object getUnexpectedElement() {
+    Character getUnexpectedCharacter() {
         return unexpected;
     }
 
     /**
-     * Gets the expected element types.
+     * Gets the expected character types.
      *
-     * @return an array of expected element types
+     * @return an array of expected character types
      */
-    public ElementType<?>[] getExpectedElementTypes() {
+    CharType[] getExpectedCharTypes() {
         return expected;
     }
 
@@ -84,7 +85,7 @@ public class UnexpectedElementException extends RuntimeException {
      */
     @Override
     public String toString() {
-        String message = "Unexpected element '" + unexpected + "'";
+        String message = "Unexpected character '" + unexpected + "'";
         if (expected.length > 0) {
             message += ", expecting '" + Arrays.toString(expected) + "'";
         }
