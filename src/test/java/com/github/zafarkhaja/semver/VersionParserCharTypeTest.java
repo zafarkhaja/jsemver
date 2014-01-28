@@ -80,4 +80,12 @@ public class VersionParserCharTypeTest {
         assertFalse(EOL.isMatchedBy('a'));
         assertFalse(EOL.isMatchedBy('0'));
     }
+
+    @Test
+    public void shouldBeMatchedByIllegal() {
+        assertTrue(ILLEGAL.isMatchedBy('!'));
+        assertFalse(ILLEGAL.isMatchedBy('-'));
+        assertFalse(ILLEGAL.isMatchedBy('a'));
+        assertFalse(ILLEGAL.isMatchedBy('0'));
+    }
 }

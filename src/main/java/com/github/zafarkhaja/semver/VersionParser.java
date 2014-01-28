@@ -26,6 +26,7 @@ package com.github.zafarkhaja.semver;
 import com.github.zafarkhaja.semver.util.Stream;
 import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
 
@@ -110,6 +111,21 @@ class VersionParser implements Parser<Version> {
             @Override
             public boolean isMatchedBy(Character chr) {
                 return chr == null;
+            }
+        },
+        ILLEGAL {
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean isMatchedBy(Character chr) {
+                EnumSet<CharType> itself = EnumSet.of(ILLEGAL);
+                for (CharType type : EnumSet.complementOf(itself)) {
+                    if (type.isMatchedBy(chr)) {
+                        return false;
+                    }
+                }
+                return true;
             }
         };
     }
