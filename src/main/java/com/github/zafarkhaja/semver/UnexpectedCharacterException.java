@@ -48,14 +48,25 @@ public class UnexpectedCharacterException extends ParseException {
     private final CharType[] expected;
 
     /**
-     * Constructs a {@code UnexpectedCharacterException} instance
-     * with the unexpected character and the expected types.
+     * Constructs a {@code UnexpectedCharacterException} instance with
+     * the wrapped {@code UnexpectedElementException} exception.
      *
      * @param cause the wrapped exception
      */
     UnexpectedCharacterException(UnexpectedElementException cause) {
         unexpected = (Character) cause.getUnexpectedElement();
         expected = (CharType[]) cause.getExpectedElementTypes();
+    }
+
+    /**
+     * Constructs a {@code UnexpectedCharacterException} instance
+     * with the unexpected character and the expected types.
+     *
+     * @param cause the wrapped exception
+     */
+    UnexpectedCharacterException(Character unexpected, CharType... expected) {
+        this.unexpected = unexpected;
+        this.expected = expected;
     }
 
     /**
