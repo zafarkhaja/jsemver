@@ -309,8 +309,8 @@ class VersionParser implements Parser<Version> {
      */
     private MetadataVersion parsePreRelease() {
         List<String> idents = new ArrayList<String>();
-        CharType end = closestEndpoint(PLUS, EOL);
-        CharType before = closestEndpoint(DOT, end);
+        CharType end = nearestCharType(PLUS, EOL);
+        CharType before = nearestCharType(DOT, end);
         do {
             checkForEmptyIdentifier();
             if (chars.positiveLookaheadBefore(before, LETTER, HYPHEN)) {
@@ -320,7 +320,7 @@ class VersionParser implements Parser<Version> {
             }
             if (before == DOT) {
                 chars.consume(DOT);
-                before = closestEndpoint(DOT, end);
+                before = nearestCharType(DOT, end);
             }
         } while (!chars.positiveLookahead(end));
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
@@ -347,7 +347,7 @@ class VersionParser implements Parser<Version> {
     private MetadataVersion parseBuild() {
         List<String> idents = new ArrayList<String>();
         CharType end = EOL;
-        CharType before = closestEndpoint(DOT, end);
+        CharType before = nearestCharType(DOT, end);
         do {
             checkForEmptyIdentifier();
             if (chars.positiveLookaheadBefore(before, LETTER, HYPHEN)) {
@@ -357,7 +357,7 @@ class VersionParser implements Parser<Version> {
             }
             if (before == DOT) {
                 chars.consume(DOT);
-                before = closestEndpoint(DOT, end);
+                before = nearestCharType(DOT, end);
             }
         } while (!chars.positiveLookahead(end));
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
@@ -425,17 +425,20 @@ class VersionParser implements Parser<Version> {
     }
 
     /**
-     * Chooses the closest character.
+     * Finds the nearest character type.
      *
-     * @param tryThis the character to try first
-     * @param orThis the character to fallback to
-     * @return the closest character
+     * @param types the character types to choose from
+     * @return the nearest character type or {@code EOL}
      */
-    private CharType closestEndpoint(CharType tryThis, CharType orThis) {
-        if (chars.positiveLookaheadBefore(orThis, tryThis)) {
-            return tryThis;
+    private CharType nearestCharType(CharType... types) {
+        for (Character chr : chars) {
+            for (CharType type : types) {
+                if (type.isMatchedBy(chr)) {
+                    return type;
+                }
+            }
         }
-        return orThis;
+        return EOL;
     }
 
     /**
