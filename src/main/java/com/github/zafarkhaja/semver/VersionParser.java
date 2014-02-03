@@ -163,7 +163,7 @@ class VersionParser implements Parser<Version> {
         }
         Character[] elements = new Character[input.length()];
         for (int i = 0; i < input.length(); i++) {
-            elements[i] = Character.valueOf(input.charAt(i));
+            elements[i] = input.charAt(i);
         }
         chars = new Stream<Character>(elements);
     }
