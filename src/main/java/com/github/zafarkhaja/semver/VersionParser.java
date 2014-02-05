@@ -298,9 +298,6 @@ class VersionParser implements Parser<Version> {
      *
      * <dot-separated pre-release identifiers> ::= <pre-release identifier>
      *    | <pre-release identifier> "." <dot-separated pre-release identifiers>
-     *
-     * <pre-release identifier> ::= <alphanumeric identifier>
-     *                            | <numeric identifier>
      * }
      * </pre>
      *
@@ -309,21 +306,35 @@ class VersionParser implements Parser<Version> {
      */
     private MetadataVersion parsePreRelease() {
         List<String> idents = new ArrayList<String>();
-        CharType end = nearestCharType(PLUS, EOL);
-        CharType before = nearestCharType(DOT, end);
         do {
             checkForEmptyIdentifier();
-            if (chars.positiveLookaheadBefore(before, LETTER, HYPHEN)) {
-                idents.add(alphanumericIdentifier());
-            } else {
-                idents.add(numericIdentifier());
-            }
-            if (before == DOT) {
+            idents.add(preReleaseIdentifier());
+            if (chars.positiveLookahead(DOT)) {
                 chars.consume(DOT);
-                before = nearestCharType(DOT, end);
             }
-        } while (!chars.positiveLookahead(end));
+        } while (!chars.positiveLookahead(PLUS, EOL));
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
+    }
+
+    /**
+     * Parses the {@literal <pre-release identifier>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <pre-release identifier> ::= <alphanumeric identifier>
+     *                            | <numeric identifier>
+     * }
+     * </pre>
+     *
+     * @return a single pre-release identifier
+     */
+    private String preReleaseIdentifier() {
+        CharType boundary = nearestCharType(DOT, PLUS, EOL);
+        if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
+            return alphanumericIdentifier();
+        } else {
+            return numericIdentifier();
+        }
     }
 
     /**
@@ -335,9 +346,6 @@ class VersionParser implements Parser<Version> {
      *
      * <dot-separated build identifiers> ::= <build identifier>
      *                | <build identifier> "." <dot-separated build identifiers>
-     *
-     * <build identifier> ::= <alphanumeric identifier>
-     *                      | <digits>
      * }
      * </pre>
      *
@@ -346,21 +354,35 @@ class VersionParser implements Parser<Version> {
      */
     private MetadataVersion parseBuild() {
         List<String> idents = new ArrayList<String>();
-        CharType end = EOL;
-        CharType before = nearestCharType(DOT, end);
         do {
             checkForEmptyIdentifier();
-            if (chars.positiveLookaheadBefore(before, LETTER, HYPHEN)) {
-                idents.add(alphanumericIdentifier());
-            } else {
-                idents.add(digits());
-            }
-            if (before == DOT) {
+            idents.add(buildIdentifier());
+            if (chars.positiveLookahead(DOT)) {
                 chars.consume(DOT);
-                before = nearestCharType(DOT, end);
             }
-        } while (!chars.positiveLookahead(end));
+        } while (!chars.positiveLookahead(EOL));
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
+    }
+
+    /**
+     * Parses the {@literal <build identifier>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <build identifier> ::= <alphanumeric identifier>
+     *                      | <digits>
+     * }
+     * </pre>
+     *
+     * @return a single build identifier
+     */
+    private String buildIdentifier() {
+        CharType boundary = nearestCharType(DOT, EOL);
+        if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
+            return alphanumericIdentifier();
+        } else {
+            return digits();
+        }
     }
 
     /**
