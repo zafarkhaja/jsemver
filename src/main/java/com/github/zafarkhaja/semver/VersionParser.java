@@ -257,15 +257,19 @@ class VersionParser implements Parser<Version> {
     private Version parseValidSemVer() {
         NormalVersion normal = parseVersionCore();
         MetadataVersion preRelease = MetadataVersion.NULL;
-        if (chars.positiveLookahead(HYPHEN)) {
-            chars.consume();
-            preRelease = parsePreRelease();
-        }
         MetadataVersion build = MetadataVersion.NULL;
-        if (chars.positiveLookahead(PLUS)) {
-            chars.consume();
+
+        Character next = consumeNextCharacter(HYPHEN, PLUS, EOL);
+        if (HYPHEN.isMatchedBy(next)) {
+            preRelease = parsePreRelease();
+            next = consumeNextCharacter(PLUS, EOL);
+            if (PLUS.isMatchedBy(next)) {
+                build = parseBuild();
+            }
+        } else if (PLUS.isMatchedBy(next)) {
             build = parseBuild();
         }
+        consumeNextCharacter(EOL);
         return new Version(normal, preRelease, build);
     }
 
@@ -282,9 +286,9 @@ class VersionParser implements Parser<Version> {
      */
     private NormalVersion parseVersionCore() {
         int major = Integer.parseInt(numericIdentifier());
-        chars.consume(DOT);
+        consumeNextCharacter(DOT);
         int minor = Integer.parseInt(numericIdentifier());
-        chars.consume(DOT);
+        consumeNextCharacter(DOT);
         int patch = Integer.parseInt(numericIdentifier());
         return new NormalVersion(major, minor, patch);
     }
@@ -305,14 +309,16 @@ class VersionParser implements Parser<Version> {
      * @throws ParseException if the pre-release version has empty identifier(s)
      */
     private MetadataVersion parsePreRelease() {
+        ensureValidLookahead(DIGIT, LETTER, HYPHEN);
         List<String> idents = new ArrayList<String>();
         do {
-            checkForEmptyIdentifier();
             idents.add(preReleaseIdentifier());
             if (chars.positiveLookahead(DOT)) {
-                chars.consume(DOT);
+                consumeNextCharacter(DOT);
+                continue;
             }
-        } while (!chars.positiveLookahead(PLUS, EOL));
+            break;
+        } while (true);
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
     }
 
@@ -329,6 +335,7 @@ class VersionParser implements Parser<Version> {
      * @return a single pre-release identifier
      */
     private String preReleaseIdentifier() {
+        checkForEmptyIdentifier();
         CharType boundary = nearestCharType(DOT, PLUS, EOL);
         if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
             return alphanumericIdentifier();
@@ -353,14 +360,16 @@ class VersionParser implements Parser<Version> {
      * @throws ParseException if the build metadata has empty identifier(s)
      */
     private MetadataVersion parseBuild() {
+        ensureValidLookahead(DIGIT, LETTER, HYPHEN);
         List<String> idents = new ArrayList<String>();
         do {
-            checkForEmptyIdentifier();
             idents.add(buildIdentifier());
             if (chars.positiveLookahead(DOT)) {
-                chars.consume(DOT);
+                consumeNextCharacter(DOT);
+                continue;
             }
-        } while (!chars.positiveLookahead(EOL));
+            break;
+        } while (true);
         return new MetadataVersion(idents.toArray(new String[idents.size()]));
     }
 
@@ -377,6 +386,7 @@ class VersionParser implements Parser<Version> {
      * @return a single build identifier
      */
     private String buildIdentifier() {
+        checkForEmptyIdentifier();
         CharType boundary = nearestCharType(DOT, EOL);
         if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
             return alphanumericIdentifier();
@@ -421,7 +431,7 @@ class VersionParser implements Parser<Version> {
     private String alphanumericIdentifier() {
         StringBuilder sb = new StringBuilder();
         do {
-            sb.append(chars.consume(DIGIT, LETTER, HYPHEN));
+            sb.append(consumeNextCharacter(DIGIT, LETTER, HYPHEN));
         } while (chars.positiveLookahead(DIGIT, LETTER, HYPHEN));
         return sb.toString();
     }
@@ -441,7 +451,7 @@ class VersionParser implements Parser<Version> {
     private String digits() {
         StringBuilder sb = new StringBuilder();
         do {
-            sb.append(chars.consume(DIGIT));
+            sb.append(consumeNextCharacter(DIGIT));
         } while (chars.positiveLookahead(DIGIT));
         return sb.toString();
     }
@@ -471,7 +481,7 @@ class VersionParser implements Parser<Version> {
     private void checkForLeadingZeroes() {
         Character la1 = chars.lookahead(1);
         Character la2 = chars.lookahead(2);
-        if (la1 == '0' && DIGIT.isMatchedBy(la2)) {
+        if (la1 != null && la1 == '0' && DIGIT.isMatchedBy(la2)) {
             throw new ParseException(
                 "Numeric identifier MUST NOT contain leading zeroes"
             );
@@ -485,8 +495,39 @@ class VersionParser implements Parser<Version> {
      *                        metadata have empty identifier(s)
      */
     private void checkForEmptyIdentifier() {
-        if (DOT.isMatchedBy(chars.lookahead(1))) {
-            throw new ParseException("Identifiers MUST NOT be empty");
+        Character la = chars.lookahead(1);
+        if (DOT.isMatchedBy(la) || PLUS.isMatchedBy(la) || EOL.isMatchedBy(la)) {
+            throw new ParseException(
+                "Identifiers MUST NOT be empty",
+                new UnexpectedCharacterException(la, DIGIT, LETTER, HYPHEN)
+            );
+        }
+    }
+
+    /**
+     * Tries to consume the next character in the stream.
+     *
+     * @param expected the expected types of the next character
+     * @return the next character in the stream
+     * @throws UnexpectedCharacterException if the next element is of an unexpected type
+     */
+    private Character consumeNextCharacter(CharType... expected) {
+        try {
+            return chars.consume(expected);
+        } catch (UnexpectedElementException e) {
+            throw new UnexpectedCharacterException(e);
+        }
+    }
+
+    /**
+     * Checks if the next character in the stream is valid.
+     *
+     * @param expected the expected types of the next character
+     * @throws UnexpectedCharacterException if the next element is not valid
+     */
+    private void ensureValidLookahead(CharType... expected) {
+        if (!chars.positiveLookahead(expected)) {
+            throw new UnexpectedCharacterException(chars.lookahead(1), expected);
         }
     }
 }

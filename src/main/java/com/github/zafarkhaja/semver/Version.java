@@ -139,6 +139,8 @@ public class Version implements Comparable<Version> {
          * Builds a {@code Version} object.
          *
          * @return a newly built {@code Version} instance
+         * @throws ParseException when invalid version string is provided
+         * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public Version build() {
             StringBuilder sb = new StringBuilder();
@@ -254,6 +256,8 @@ public class Version implements Comparable<Version> {
      * @param version the version string to parse
      * @return a new instance of the {@code Version} class
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when invalid version string is provided
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public static Version valueOf(String version) {
         return VersionParser.parseValidSemVer(version);
@@ -328,6 +332,8 @@ public class Version implements Comparable<Version> {
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when invalid version string is provided
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version incrementMajorVersion(String preRelease) {
         return new Version(
@@ -351,6 +357,8 @@ public class Version implements Comparable<Version> {
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when invalid version string is provided
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version incrementMinorVersion(String preRelease) {
         return new Version(
@@ -374,6 +382,8 @@ public class Version implements Comparable<Version> {
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when invalid version string is provided
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version incrementPatchVersion(String preRelease) {
         return new Version(
@@ -406,6 +416,8 @@ public class Version implements Comparable<Version> {
      * @param preRelease the pre-release version to set
      * @return a new instance of the {@code Version} class
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when invalid version string is provided
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version setPreReleaseVersion(String preRelease) {
         return new Version(normal, VersionParser.parsePreRelease(preRelease));
@@ -417,6 +429,8 @@ public class Version implements Comparable<Version> {
      * @param build the build metadata to set
      * @return a new instance of the {@code Version} class
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when invalid version string is provided
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version setBuildMetadata(String build) {
         return new Version(normal, preRelease, VersionParser.parseBuild(build));
