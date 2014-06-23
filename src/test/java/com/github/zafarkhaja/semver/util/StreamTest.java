@@ -203,4 +203,29 @@ public class StreamTest {
             }
         ));
     }
+
+    @Test
+    public void shouldPushBackOneElementAtATime() {
+        Stream<Character> stream = new Stream<Character>(
+            new Character[] {'a', 'b', 'c'}
+        );
+        assertEquals(Character.valueOf('a'), stream.consume());
+        stream.pushBack();
+        assertEquals(Character.valueOf('a'), stream.consume());
+    }
+
+    @Test
+    public void shouldStopPushingBackWhenThereAreNoElements() {
+        Stream<Character> stream = new Stream<Character>(
+            new Character[] {'a', 'b', 'c'}
+        );
+        assertEquals(Character.valueOf('a'), stream.consume());
+        assertEquals(Character.valueOf('b'), stream.consume());
+        assertEquals(Character.valueOf('c'), stream.consume());
+        stream.pushBack();
+        stream.pushBack();
+        stream.pushBack();
+        stream.pushBack();
+        assertEquals(Character.valueOf('a'), stream.consume());
+    }
 }

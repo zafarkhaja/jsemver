@@ -116,6 +116,15 @@ public class Stream<E> implements Iterable<E> {
     }
 
     /**
+     * Pushes back one element at a time.
+     */
+    public void pushBack() {
+        if (offset > 0) {
+            offset--;
+        }
+    }
+
+    /**
      * Returns the next element in this stream without consuming it.
      *
      * @return the next element in this stream
