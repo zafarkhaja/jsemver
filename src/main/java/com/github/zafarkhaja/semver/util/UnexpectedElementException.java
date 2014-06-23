@@ -84,7 +84,10 @@ public class UnexpectedElementException extends RuntimeException {
      */
     @Override
     public String toString() {
-        String message = String.format("Unexpected element '%s'", unexpected);
+        String message = String.format(
+            "Unexpected element '%s'",
+            unexpected
+        );
         if (expected.length > 0) {
             message += String.format(
                 ", expecting '%s'",
