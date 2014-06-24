@@ -173,9 +173,8 @@ class VersionParser implements Parser<Version> {
      *
      * @param input the input string to parse
      * @return a valid version object
-     * @throws ParseException when there is an error defined in
-     *                        the SemVer or the formal grammar
-     * @throws UnexpectedElementException when encounters an unexpected character type
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     @Override
     public Version parse(String input) {
@@ -188,9 +187,8 @@ class VersionParser implements Parser<Version> {
      * @param version the version string to parse
      * @return a valid version object
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when there is an error defined in
-     *                        the SemVer or the formal grammar
-     * @throws UnexpectedElementException when encounters an unexpected character type
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     static Version parseValidSemVer(String version) {
         VersionParser parser = new VersionParser(version);
@@ -203,9 +201,8 @@ class VersionParser implements Parser<Version> {
      * @param versionCore the version core string to parse
      * @return a valid normal version object
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when there is an error defined in
-     *                        the SemVer or the formal grammar
-     * @throws UnexpectedElementException when encounters an unexpected character type
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     static NormalVersion parseVersionCore(String versionCore) {
         VersionParser parser = new VersionParser(versionCore);
@@ -218,8 +215,8 @@ class VersionParser implements Parser<Version> {
      * @param preRelease the pre-release version string to parse
      * @return a valid pre-release version object
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when there is an error defined in
-     *                        the SemVer or the formal grammar
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     static MetadataVersion parsePreRelease(String preRelease) {
         VersionParser parser = new VersionParser(preRelease);
@@ -232,8 +229,8 @@ class VersionParser implements Parser<Version> {
      * @param build the build metadata string to parse
      * @return a valid build metadata object
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when there is an error defined in
-     *                        the SemVer or the formal grammar
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     static MetadataVersion parseBuild(String build) {
         VersionParser parser = new VersionParser(build);
@@ -306,7 +303,6 @@ class VersionParser implements Parser<Version> {
      * </pre>
      *
      * @return a valid pre-release version object
-     * @throws ParseException if the pre-release version has empty identifier(s)
      */
     private MetadataVersion parsePreRelease() {
         ensureValidLookahead(DIGIT, LETTER, HYPHEN);
@@ -357,7 +353,6 @@ class VersionParser implements Parser<Version> {
      * </pre>
      *
      * @return a valid build metadata object
-     * @throws ParseException if the build metadata has empty identifier(s)
      */
     private MetadataVersion parseBuild() {
         ensureValidLookahead(DIGIT, LETTER, HYPHEN);
@@ -407,7 +402,6 @@ class VersionParser implements Parser<Version> {
      * </pre>
      *
      * @return a string representing the numeric identifier
-     * @throws ParseException if the numeric identifier has leading zero(es)
      */
     private String numericIdentifier() {
         checkForLeadingZeroes();
@@ -509,7 +503,7 @@ class VersionParser implements Parser<Version> {
      *
      * @param expected the expected types of the next character
      * @return the next character in the stream
-     * @throws UnexpectedCharacterException if the next element is of an unexpected type
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     private Character consumeNextCharacter(CharType... expected) {
         try {
@@ -523,7 +517,7 @@ class VersionParser implements Parser<Version> {
      * Checks if the next character in the stream is valid.
      *
      * @param expected the expected types of the next character
-     * @throws UnexpectedCharacterException if the next element is not valid
+     * @throws UnexpectedCharacterException if the next character is not valid
      */
     private void ensureValidLookahead(CharType... expected) {
         if (!chars.positiveLookahead(expected)) {
