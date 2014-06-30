@@ -41,6 +41,11 @@ public class UnexpectedElementException extends RuntimeException {
     private final Object unexpected;
 
     /**
+     * The position of the unexpected element in the stream.
+     */
+    private final int position;
+
+    /**
      * The array of the expected element types.
      */
     private final ElementType<?>[] expected;
@@ -50,10 +55,16 @@ public class UnexpectedElementException extends RuntimeException {
      * with the unexpected element and the expected types.
      *
      * @param element the unexpected element in the stream
+     * @param position the position of the unexpected element
      * @param expected an array of the expected element types
      */
-    UnexpectedElementException(Object element, ElementType<?>... expected) {
-        unexpected = element;
+    UnexpectedElementException(
+        Object element,
+        int position,
+        ElementType<?>... expected
+    ) {
+        unexpected    = element;
+        this.position = position;
         this.expected = expected;
     }
 
@@ -64,6 +75,15 @@ public class UnexpectedElementException extends RuntimeException {
      */
     public Object getUnexpectedElement() {
         return unexpected;
+    }
+
+    /**
+     * Gets the position of the unexpected element.
+     *
+     * @return the position of the unexpected element
+     */
+    public int getPosition() {
+        return position;
     }
 
     /**
@@ -85,8 +105,9 @@ public class UnexpectedElementException extends RuntimeException {
     @Override
     public String toString() {
         String message = String.format(
-            "Unexpected element '%s'",
-            unexpected
+            "Unexpected element '%s' at position '%d'",
+            unexpected,
+            position
         );
         if (expected.length > 0) {
             message += String.format(

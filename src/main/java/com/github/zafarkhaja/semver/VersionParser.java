@@ -493,7 +493,11 @@ class VersionParser implements Parser<Version> {
         if (DOT.isMatchedBy(la) || PLUS.isMatchedBy(la) || EOL.isMatchedBy(la)) {
             throw new ParseException(
                 "Identifiers MUST NOT be empty",
-                new UnexpectedCharacterException(la, DIGIT, LETTER, HYPHEN)
+                new UnexpectedCharacterException(
+                    la,
+                    chars.currentOffset(),
+                    DIGIT, LETTER, HYPHEN
+                )
             );
         }
     }
@@ -521,7 +525,11 @@ class VersionParser implements Parser<Version> {
      */
     private void ensureValidLookahead(CharType... expected) {
         if (!chars.positiveLookahead(expected)) {
-            throw new UnexpectedCharacterException(chars.lookahead(1), expected);
+            throw new UnexpectedCharacterException(
+                chars.lookahead(1),
+                chars.currentOffset(),
+                expected
+            );
         }
     }
 }

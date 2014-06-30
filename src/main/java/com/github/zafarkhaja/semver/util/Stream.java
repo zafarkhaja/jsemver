@@ -112,7 +112,7 @@ public class Stream<E> implements Iterable<E> {
                 return consume();
             }
         }
-        throw new UnexpectedElementException(lookahead, expected);
+        throw new UnexpectedElementException(lookahead, offset, expected);
     }
 
     /**
@@ -147,6 +147,15 @@ public class Stream<E> implements Iterable<E> {
             return elements[idx];
         }
         return null;
+    }
+
+    /**
+     * Returns the current offset of this stream.
+     *
+     * @return the current offset of this stream
+     */
+    public int currentOffset() {
+        return offset;
     }
 
     /**

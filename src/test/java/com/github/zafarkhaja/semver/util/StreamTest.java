@@ -228,4 +228,17 @@ public class StreamTest {
         stream.pushBack();
         assertEquals(Character.valueOf('a'), stream.consume());
     }
+
+    @Test
+    public void shouldKeepTrackOfCurrentOffset() {
+        Stream<Character> stream = new Stream<Character>(
+            new Character[] {'a', 'b', 'c'}
+        );
+        assertEquals(0, stream.currentOffset());
+        stream.consume();
+        assertEquals(1, stream.currentOffset());
+        stream.consume();
+        stream.consume();
+        assertEquals(3, stream.currentOffset());
+    }
 }
