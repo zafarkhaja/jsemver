@@ -271,6 +271,7 @@ public class Version implements Comparable<Version> {
      *
      * @param major the major version number
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if a negative integer is passed
      * @since 0.7.0
      */
     public static Version forIntegers(int major) {
@@ -284,6 +285,7 @@ public class Version implements Comparable<Version> {
      * @param major the major version number
      * @param minor the minor version number
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if a negative integer is passed
      * @since 0.7.0
      */
     public static Version forIntegers(int major, int minor) {
@@ -298,6 +300,7 @@ public class Version implements Comparable<Version> {
      * @param minor the minor version number
      * @param patch the patch version number
      * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if a negative integer is passed
      * @since 0.7.0
      */
     public static Version forIntegers(int major, int minor, int patch) {
