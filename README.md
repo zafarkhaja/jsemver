@@ -18,6 +18,7 @@ development and its public API should not be considered stable.
   * [Incrementing Versions](#incrementing-versions)
   * [Comparing Versions](#comparing-versions)
 * [SemVer Expressions API (Ranges)](#semver-expressions-api-ranges)
+* [Exception Handling](#exception-handling)
 * [Bugs and Features](#bugs-and-features)
 * [License](#license)
 
@@ -252,6 +253,22 @@ other interesting capabilities of the SemVer Expressions DSL.
 * Negation operator - `!(1.*)` which is equivalent to `<1.0.0 & >=2.0.0`
 * Short notation - `1` which is equivalent to `=1.0.0`
 * Parenthesized expression - `~1.3 | (1.4.* & !=1.4.5) | ~2`
+
+
+Exception Handling
+------------------
+There are two types of errors that may arrise while using Java SemVer
+* `IllegalArgumentException` is thrown when the passed value is `NULL` or empty
+  if a method accepts `string` argument or a negative integer if a method accepts
+  `int` arguments.
+* `ParseException` is thrown by methods that perform parsing of SemVer version
+  strings or SemVer Expressions. There are few subtypes of the `ParseException`
+  error
+  - `UnexpectedCharacterException` is thrown when a SemVer version string contains
+    an unexpected or illegal character
+  - `LexerException` is thrown when a SemVer Expression contains an illegal character
+  - `UnexpectedTokenException` is thrown when an unexpected token is encountered
+    during the SemVer Expression parsing
 
 
 Bugs and Features
