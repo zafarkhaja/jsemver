@@ -222,8 +222,9 @@ Version v2 = Version.valueOf("1.0.0+build.2");
 
 int result = Version.BUILD_AWARE_ORDER.compare(v1, v2);  // < 0
 
-int result = v1.compareWithBuildsTo(v2);  // < 0
-boolean result = v1.equals(v2);           // false
+int result     = v1.compareTo(v2);            // = 0
+boolean result = v1.equals(v2);               // true
+int result     = v1.compareWithBuildsTo(v2);  // < 0
 ~~~
 
 
