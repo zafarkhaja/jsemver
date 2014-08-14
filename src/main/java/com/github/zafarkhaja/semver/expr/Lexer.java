@@ -64,15 +64,7 @@ class Lexer {
             LEFT_PAREN("\\("),
             RIGHT_PAREN("\\)"),
             WHITESPACE("\\s+"),
-            EOL("?!") {
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public boolean isMatchedBy(Token token) {
-                    return token == null;
-                }
-            };
+            EOL("?!");
 
             /**
              * A pattern matching this type.
@@ -123,14 +115,22 @@ class Lexer {
         final String lexeme;
 
         /**
-         * Constructs a {@code Token} instance with the type and lexeme.
+         * The position of this token.
+         */
+        final int position;
+
+        /**
+         * Constructs a {@code Token} instance
+         * with the type, lexeme and position.
          *
          * @param type the type of this token
          * @param lexeme the lexeme of this token
+         * @param position the position of this token
          */
-        Token(Type type, String lexeme) {
+        Token(Type type, String lexeme, int position) {
             this.type = type;
             this.lexeme = (lexeme == null) ? "" : lexeme;
+            this.position = position;
         }
 
         /**
@@ -145,7 +145,10 @@ class Lexer {
                 return false;
             }
             Token token = (Token) other;
-            return type.equals(token.type) && lexeme.equals(token.lexeme);
+            return
+                type.equals(token.type) &&
+                lexeme.equals(token.lexeme) &&
+                position == token.position;
         }
 
         /**
@@ -156,6 +159,7 @@ class Lexer {
             int hash = 5;
             hash = 71 * hash + type.hashCode();
             hash = 71 * hash + lexeme.hashCode();
+            hash = 71 * hash + position;
             return hash;
         }
 
@@ -166,7 +170,11 @@ class Lexer {
          */
         @Override
         public String toString() {
-            return type.name() + "(" + lexeme + ")";
+            return String.format(
+                "%s(%s) at position %d",
+                type.name(),
+                lexeme, position
+            );
         }
     }
 
@@ -186,6 +194,7 @@ class Lexer {
      */
     Stream<Token> tokenize(String input) {
         List<Token> tokens = new ArrayList<Token>();
+        int tokenPos = 0;
         while (!input.isEmpty()) {
             boolean matched = false;
             for (Token.Type tokenType : Token.Type.values()) {
@@ -194,8 +203,13 @@ class Lexer {
                     matched = true;
                     input = matcher.replaceFirst("");
                     if (tokenType != Token.Type.WHITESPACE) {
-                        tokens.add(new Token(tokenType, matcher.group()));
+                        tokens.add(new Token(
+                            tokenType,
+                            matcher.group(),
+                            tokenPos
+                        ));
                     }
+                    tokenPos += matcher.end();
                     break;
                 }
             }
@@ -203,6 +217,7 @@ class Lexer {
                 throw new LexerException(input);
             }
         }
+        tokens.add(new Token(Token.Type.EOL, null, tokenPos));
         return new Stream<Token>(tokens.toArray(new Token[tokens.size()]));
     }
 }

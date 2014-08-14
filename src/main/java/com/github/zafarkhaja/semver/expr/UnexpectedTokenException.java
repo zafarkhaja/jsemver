@@ -24,7 +24,8 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.ParseException;
-import com.github.zafarkhaja.semver.expr.Lexer.*;
+import com.github.zafarkhaja.semver.expr.Lexer.Token;
+import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.Arrays;
 
 /**
@@ -46,6 +47,17 @@ public class UnexpectedTokenException extends ParseException {
     private final Token.Type[] expected;
 
     /**
+     * Constructs a {@code UnexpectedTokenException} instance with
+     * the wrapped {@code UnexpectedElementException} exception.
+     *
+     * @param cause the wrapped exception
+     */
+    UnexpectedTokenException(UnexpectedElementException cause) {
+        unexpected = (Token) cause.getUnexpectedElement();
+        expected   = (Token.Type[]) cause.getExpectedElementTypes();
+    }
+
+    /**
      * Constructs a {@code UnexpectedTokenException} instance
      * with the unexpected token and the expected types.
      *
@@ -55,6 +67,24 @@ public class UnexpectedTokenException extends ParseException {
     UnexpectedTokenException(Token token, Token.Type... expected) {
         unexpected = token;
         this.expected = expected;
+    }
+
+    /**
+     * Gets the unexpected token.
+     *
+     * @return the unexpected token
+     */
+    Token getUnexpectedToken() {
+        return unexpected;
+    }
+
+    /**
+     * Gets the expected token types.
+     *
+     * @return an array of expected token types
+     */
+    Token.Type[] getExpectedTokenTypes() {
+        return expected;
     }
 
     /**

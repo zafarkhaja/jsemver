@@ -78,12 +78,14 @@ public class ExpressionParser implements Parser<Expression> {
      * @param input a string representing the SemVer Expression
      * @return the AST for the SemVer Expressions
      * @throws LexerException when encounters an illegal character
-     * @throws UnexpectedElementException when consumes a token of an unexpected type
+     * @throws UnexpectedTokenException when consumes a token of an unexpected type
      */
     @Override
     public Expression parse(String input) {
         tokens = lexer.tokenize(input);
-        return parseSemVerExpression();
+        Expression expr = parseSemVerExpression();
+        consumeNextToken(EOL);
+        return expr;
     }
 
     /**
@@ -104,13 +106,13 @@ public class ExpressionParser implements Parser<Expression> {
         Expression expr;
         if (tokens.positiveLookahead(NOT)) {
             tokens.consume();
-            tokens.consume(LEFT_PAREN);
+            consumeNextToken(LEFT_PAREN);
             expr = new Not(parseSemVerExpression());
-            tokens.consume(RIGHT_PAREN);
+            consumeNextToken(RIGHT_PAREN);
         } else if (tokens.positiveLookahead(LEFT_PAREN)) {
-            tokens.consume(LEFT_PAREN);
+            consumeNextToken(LEFT_PAREN);
             expr = parseSemVerExpression();
-            tokens.consume(RIGHT_PAREN);
+            consumeNextToken(RIGHT_PAREN);
         } else {
             expr = parseExpression();
         }
@@ -224,21 +226,21 @@ public class ExpressionParser implements Parser<Expression> {
      * @return the expression AST
      */
     private Expression parseTildeExpression() {
-        tokens.consume(TILDE);
-        int major = intOf(tokens.consume(NUMERIC).lexeme);
+        consumeNextToken(TILDE);
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
             return new GreaterOrEqual(versionOf(major, 0, 0));
         }
-        tokens.consume(DOT);
-        int minor = intOf(tokens.consume(NUMERIC).lexeme);
+        consumeNextToken(DOT);
+        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
             return new And(
                 new GreaterOrEqual(versionOf(major, minor, 0)),
                 new Less(versionOf(major + 1, 0, 0))
             );
         }
-        tokens.consume(DOT);
-        int patch = intOf(tokens.consume(NUMERIC).lexeme);
+        consumeNextToken(DOT);
+        int patch = intOf(consumeNextToken(NUMERIC).lexeme);
         return new And(
             new GreaterOrEqual(versionOf(major, minor, patch)),
             new Less(versionOf(major, minor + 1, 0))
@@ -270,8 +272,8 @@ public class ExpressionParser implements Parser<Expression> {
      * @return the expression AST
      */
     private Expression parseVersionExpression() {
-        int major = intOf(tokens.consume(NUMERIC).lexeme);
-        tokens.consume(DOT);
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
+        consumeNextToken(DOT);
         if (tokens.positiveLookahead(STAR)) {
             tokens.consume();
             return new And(
@@ -279,9 +281,9 @@ public class ExpressionParser implements Parser<Expression> {
                 new Less(versionOf(major + 1, 0, 0))
             );
         }
-        int minor = intOf(tokens.consume(NUMERIC).lexeme);
-        tokens.consume(DOT);
-        tokens.consume(STAR);
+        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
+        consumeNextToken(DOT);
+        consumeNextToken(STAR);
         return new And(
             new GreaterOrEqual(versionOf(major, minor, 0)),
             new Less(versionOf(major, minor + 1, 0))
@@ -313,7 +315,7 @@ public class ExpressionParser implements Parser<Expression> {
      */
     private Expression parseRangeExpression() {
         Expression ge = new GreaterOrEqual(parseVersion());
-        tokens.consume(HYPHEN);
+        consumeNextToken(HYPHEN);
         Expression le = new LessOrEqual(parseVersion());
         return new And(ge, le);
     }
@@ -332,16 +334,16 @@ public class ExpressionParser implements Parser<Expression> {
      * @return the parsed version
      */
     private Version parseVersion() {
-        int major = intOf(tokens.consume(NUMERIC).lexeme);
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
         int minor = 0;
         if (tokens.positiveLookahead(DOT)) {
             tokens.consume();
-            minor = intOf(tokens.consume(NUMERIC).lexeme);
+            minor = intOf(consumeNextToken(NUMERIC).lexeme);
         }
         int patch = 0;
         if (tokens.positiveLookahead(DOT)) {
             tokens.consume();
-            patch = intOf(tokens.consume(NUMERIC).lexeme);
+            patch = intOf(consumeNextToken(NUMERIC).lexeme);
         }
         return versionOf(major, minor, patch);
     }
@@ -390,5 +392,20 @@ public class ExpressionParser implements Parser<Expression> {
      */
     private int intOf(String value) {
         return Integer.parseInt(value);
+    }
+
+    /**
+     * Tries to consume the next token in the stream.
+     *
+     * @param expected the expected types of the next token
+     * @return the next token in the stream
+     * @throws UnexpectedTokenException when encounters an unexpected token type
+     */
+    private Token consumeNextToken(Token.Type... expected) {
+        try {
+            return tokens.consume(expected);
+        } catch (UnexpectedElementException e) {
+            throw new UnexpectedTokenException(e);
+        }
     }
 }

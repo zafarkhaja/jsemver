@@ -38,12 +38,13 @@ public class LexerTest {
     @Test
     public void shouldTokenizeVersionString() {
         Token[] expected = {
-            new Token(GREATER, ">"),
-            new Token(NUMERIC, "1"),
-            new Token(DOT,     "."),
-            new Token(NUMERIC, "0"),
-            new Token(DOT,     "."),
-            new Token(NUMERIC, "0"),
+            new Token(GREATER, ">",  0),
+            new Token(NUMERIC, "1",  1),
+            new Token(DOT,     ".",  2),
+            new Token(NUMERIC, "0",  3),
+            new Token(DOT,     ".",  4),
+            new Token(NUMERIC, "0",  5),
+            new Token(EOL,     null, 6),
         };
         Lexer lexer = new Lexer();
         Stream<Token> stream = lexer.tokenize(">1.0.0");
@@ -53,11 +54,27 @@ public class LexerTest {
     @Test
     public void shouldSkipWhitespaces() {
         Token[] expected = {
-            new Token(GREATER, ">"),
-            new Token(NUMERIC, "1"),
+            new Token(GREATER, ">",  0),
+            new Token(NUMERIC, "1",  2),
+            new Token(EOL,     null, 3),
         };
         Lexer lexer = new Lexer();
         Stream<Token> stream = lexer.tokenize("> 1");
+        assertArrayEquals(expected, stream.toArray());
+    }
+
+    @Test
+    public void shouldEndWithEol() {
+        Token[] expected = {
+            new Token(NUMERIC, "1",  0),
+            new Token(DOT,     ".",  1),
+            new Token(NUMERIC, "2",  2),
+            new Token(DOT,     ".",  3),
+            new Token(NUMERIC, "3",  4),
+            new Token(EOL,     null, 5),
+        };
+        Lexer lexer = new Lexer();
+        Stream<Token> stream = lexer.tokenize("1.2.3");
         assertArrayEquals(expected, stream.toArray());
     }
 
