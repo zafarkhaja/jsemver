@@ -1,4 +1,4 @@
-Java SemVer v0.7.2 (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/java-semver.png)](https://travis-ci.org/zafarkhaja/java-semver)
+Java SemVer v0.8.0 (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/java-semver.png)](https://travis-ci.org/zafarkhaja/java-semver)
 =============================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
@@ -33,7 +33,7 @@ project.
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.7.2</version>
+  <version>0.8.0</version>
 </dependency>
 ~~~
 
@@ -42,7 +42,7 @@ project.
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
 </dependency>
 ~~~
 **NOTE**: To use the development version you need to add the SNAPSHOT repository

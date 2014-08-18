@@ -1,11 +1,18 @@
 Java SemVer Changelog
 =====================
 
+### 0.8.0 (Aug 18, 2014) ###
+* Rearranged exceptions hierarchy
+* Refactored `VersionParser` and `ExpressionParser`
+* [[#7](https://github.com/zafarkhaja/java-semver/issues/7)] Improved error handling and error reporting in the Parsers
+* Made some minor improvements and bug fixes
+* Updated the `README` file with the "Exception Handling" section
+
 ### 0.7.2 (Dec 30, 2013) ###
-* [[Issue #8](https://github.com/zafarkhaja/java-semver/issues/8)] Fixed `Version.hashCode()` to comply with `Version.equals()`
+* [[#8](https://github.com/zafarkhaja/java-semver/issues/8)] Fixed `Version.hashCode()` to comply with `Version.equals()`
 
 ### 0.7.1 (Dec 01, 2013) ###
-* [[Issue #5](https://github.com/zafarkhaja/java-semver/issues/5)] Got rid of 'unchecked' warnings
+* [[#5](https://github.com/zafarkhaja/java-semver/issues/5)] Got rid of 'unchecked' warnings
 * Made minor Javadoc corrections
 * Made small code improvements
 * Configured `maven-compiler-plugin` to show all warnings
@@ -13,9 +20,9 @@ Java SemVer Changelog
 
 ### 0.7.0 (Nov 16, 2013) ###
 * Adapted the library to the SemVer 2.0.0
-* [[Issue #1](https://github.com/zafarkhaja/java-semver/issues/1)] Created the SemVer Expressions Parser
-* [[Issue #2](https://github.com/zafarkhaja/java-semver/issues/2)] Added Javadoc to the source code
-* [[Issue #4](https://github.com/zafarkhaja/java-semver/issues/4)] Deployed to the Maven Central Repository
+* [[#1](https://github.com/zafarkhaja/java-semver/issues/1)] Created the SemVer Expressions Parser
+* [[#2](https://github.com/zafarkhaja/java-semver/issues/2)] Added Javadoc to the source code
+* [[#4](https://github.com/zafarkhaja/java-semver/issues/4)] Deployed to the Maven Central Repository
 * Implemented a parser instead of RegExps for the version parsing
 * Created the `MetadataVersion.NULL` object, refactored
 * Made some refactoring and minor improvements to the code
