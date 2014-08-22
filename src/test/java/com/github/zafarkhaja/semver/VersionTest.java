@@ -26,6 +26,7 @@ package com.github.zafarkhaja.semver;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
 import static org.junit.Assert.*;
 
 /**
@@ -307,10 +308,17 @@ public class VersionTest {
         }
 
         @Test
-        public void shouldCheckIfVersionSatisfiesExpression() {
+        public void shouldCheckIfVersionSatisfiesExpressionString() {
             Version v = Version.valueOf("2.0.0-beta");
             assertTrue(v.satisfies("~1.0"));
             assertFalse(v.satisfies(">=2.0 & <3.0"));
+        }
+
+        @Test
+        public void shouldCheckIfVersionSatisfiesExpression() {
+            Version v = Version.valueOf("2.0.0-beta");
+            assertTrue(v.satisfies(gte("1.0.0").and(lt("2.0.0"))));
+            assertFalse(v.satisfies(gte("2.0.0").and(lt("3.0.0"))));
         }
     }
 

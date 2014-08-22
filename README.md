@@ -231,12 +231,26 @@ int result     = v1.compareWithBuildsTo(v2);  // < 0
 
 SemVer Expressions API (Ranges)
 ----------------------
-Since version 0.7.0 Java SemVer supports the SemVer Expressions API which is
-implemented as an external DSL. The BNF grammar for the SemVer Expressions DSL
-can be found in the corresponding issue
-"[Implement the SemVer Expressions API](https://github.com/zafarkhaja/java-semver/issues/1)".
+Java SemVer supports the SemVer Expressions API which is implemented as both
+internal DSL and external DSL. The entry point for the API are
+the `Version.satisfies` methods.
 
-The entry point for the API is the `Version.satisfies` method.
+### Internal DSL ###
+The internal DSL is implemented by the `CompositeExpression` class using fluent
+interface. For convenience, it also provides the `Helper` class with static
+helper methods.
+
+~~~ java
+import com.github.zafarkhaja.semver.Version;
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
+
+Version v = Version.valueOf("1.0.0-beta");
+boolean result = v.satisfies(gte("1.0.0").and(lt("2.0.0")));  // false
+~~~
+
+### External DSL ###
+The BNF grammar for the external DSL can be found in the corresponding
+[issue](https://github.com/zafarkhaja/java-semver/issues/1).
 
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
@@ -246,7 +260,7 @@ boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
 ~~~
 
 Below are examples of some common use cases, as well as syntactic sugar and some
-other interesting capabilities of the SemVer Expressions DSL.
+other interesting capabilities of the SemVer Expressions external DSL.
 * Wildcard - `1.*` which is equivalent to `>=1.0.0 & <2.0.0`
 * Tilde operator - `~1.5` which is equivalent to `>=1.5.0 & <2.0.0`
 * Range - `1.0-2.0` which is equivalent to `>=1.0.0 & <=2.0.0`
