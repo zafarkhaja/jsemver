@@ -266,6 +266,16 @@ public class Version implements Comparable<Version> {
     }
 
     /**
+     * Creates a new instance of {@code Version} leniently parsing the version-core only.
+     *
+     * @param version the version string to parse
+     * @return a new instance of the {@code Version} class
+     */
+    public static Version valueOfLenient(String version) {
+        return new Version(VersionParser.parseVersionCore(version));
+    }
+
+    /**
      * Creates a new instance of {@code Version}
      * for the specified version numbers.
      *

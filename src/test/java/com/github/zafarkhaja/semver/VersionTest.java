@@ -376,6 +376,14 @@ public class VersionTest {
             Version v2 = Version.valueOf("2.3.7-beta");
             assertTrue(v1.equals(v2));
         }
+
+        @Test
+        public void shouldIgnoreMoreThanFourDigitsInLenientVersion() {
+            Version fourDigitVersion = Version.valueOfLenient("2.3.7.123");
+            Version semverValidVersion = Version.valueOf("2.3.7");
+            assertTrue(fourDigitVersion.equals(semverValidVersion));
+        }
+
     }
 
     public static class HashCodeMethodTest {
