@@ -206,7 +206,7 @@ public class CompositeExpression implements Expression {
     /**
      * The underlying expression tree.
      */
-    private Expression expr;
+    private Expression exprTree;
 
     /**
      * Constructs a {@code CompositeExpression}
@@ -215,7 +215,7 @@ public class CompositeExpression implements Expression {
      * @param expr the underlying expression
      */
     public CompositeExpression(Expression expr) {
-        this.expr = expr;
+        exprTree = expr;
     }
 
     /**
@@ -226,7 +226,7 @@ public class CompositeExpression implements Expression {
      * @return this {@code CompositeExpression}
      */
     public CompositeExpression and(Expression expr) {
-        this.expr = new And(this.expr, expr);
+        exprTree = new And(exprTree, expr);
         return this;
     }
 
@@ -239,7 +239,7 @@ public class CompositeExpression implements Expression {
      * @return this {@code CompositeExpression}
      */
     public CompositeExpression or(Expression expr) {
-        this.expr = new Or(this.expr, expr);
+        exprTree = new Or(exprTree, expr);
         return this;
     }
 
@@ -261,6 +261,6 @@ public class CompositeExpression implements Expression {
      */
     @Override
     public boolean interpret(Version version) {
-        return expr.interpret(version);
+        return exprTree.interpret(version);
     }
 }
