@@ -230,16 +230,16 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(TILDE);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionOf(major, 0, 0));
+            return gte(versionOf(major));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionOf(major, minor, 0)).and(lt(versionOf(major + 1, 0, 0)));
+            return gte(versionOf(major, minor)).and(lt(versionOf(major + 1)));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        return gte(versionOf(major, minor, patch)).and(lt(versionOf(major, minor + 1, 0)));
+        return gte(versionOf(major, minor, patch)).and(lt(versionOf(major, minor + 1)));
     }
 
     /**
@@ -271,12 +271,12 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(DOT);
         if (tokens.positiveLookahead(STAR)) {
             tokens.consume();
-            return gte(versionOf(major, 0, 0)).and(lt(versionOf(major + 1, 0, 0)));
+            return gte(versionOf(major)).and(lt(versionOf(major + 1)));
         }
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         consumeNextToken(DOT);
         consumeNextToken(STAR);
-        return gte(versionOf(major, minor, 0)).and(lt(versionOf(major, minor + 1, 0)));
+        return gte(versionOf(major, minor)).and(lt(versionOf(major, minor + 1)));
     }
 
     /**
@@ -361,12 +361,35 @@ public class ExpressionParser implements Parser<Expression> {
     }
 
     /**
-     * Creates a {@code Version} instance for the specified integers.
+     * Creates a {@code Version} instance for the specified major version.
+     *
+     * @param major the major version number
+     * @return the version for the specified major version
+     */
+    private Version versionOf(int major) {
+        return versionOf(major, 0, 0);
+    }
+
+    /**
+     * Creates a {@code Version} instance for
+     * the specified major and minor versions.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @return the version for the specified major and minor versions
+     */
+    private Version versionOf(int major, int minor) {
+        return versionOf(major, minor, 0);
+    }
+
+    /**
+     * Creates a {@code Version} instance for the
+     * specified major, minor and patch versions.
      *
      * @param major the major version number
      * @param minor the minor version number
      * @param patch the patch version number
-     * @return the version for the specified integers
+     * @return the version for the specified major, minor and patch versions
      */
     private Version versionOf(int major, int minor, int patch) {
         return Version.forIntegers(major, minor, patch);
