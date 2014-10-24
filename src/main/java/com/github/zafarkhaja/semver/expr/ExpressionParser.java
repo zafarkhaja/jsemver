@@ -230,16 +230,16 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(TILDE);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionOf(major));
+            return gte(versionFor(major));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionOf(major, minor)).and(lt(versionOf(major + 1)));
+            return gte(versionFor(major, minor)).and(lt(versionFor(major + 1)));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        return gte(versionOf(major, minor, patch)).and(lt(versionOf(major, minor + 1)));
+        return gte(versionFor(major, minor, patch)).and(lt(versionFor(major, minor + 1)));
     }
 
     /**
@@ -271,12 +271,12 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(DOT);
         if (tokens.positiveLookahead(STAR)) {
             tokens.consume();
-            return gte(versionOf(major)).and(lt(versionOf(major + 1)));
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         consumeNextToken(DOT);
         consumeNextToken(STAR);
-        return gte(versionOf(major, minor)).and(lt(versionOf(major, minor + 1)));
+        return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
     }
 
     /**
@@ -333,7 +333,7 @@ public class ExpressionParser implements Parser<Expression> {
             tokens.consume();
             patch = intOf(consumeNextToken(NUMERIC).lexeme);
         }
-        return versionOf(major, minor, patch);
+        return versionFor(major, minor, patch);
     }
 
     /**
@@ -366,8 +366,8 @@ public class ExpressionParser implements Parser<Expression> {
      * @param major the major version number
      * @return the version for the specified major version
      */
-    private Version versionOf(int major) {
-        return versionOf(major, 0, 0);
+    private Version versionFor(int major) {
+        return versionFor(major, 0, 0);
     }
 
     /**
@@ -378,8 +378,8 @@ public class ExpressionParser implements Parser<Expression> {
      * @param minor the minor version number
      * @return the version for the specified major and minor versions
      */
-    private Version versionOf(int major, int minor) {
-        return versionOf(major, minor, 0);
+    private Version versionFor(int major, int minor) {
+        return versionFor(major, minor, 0);
     }
 
     /**
@@ -391,7 +391,7 @@ public class ExpressionParser implements Parser<Expression> {
      * @param patch the patch version number
      * @return the version for the specified major, minor and patch versions
      */
-    private Version versionOf(int major, int minor, int patch) {
+    private Version versionFor(int major, int minor, int patch) {
         return Version.forIntegers(major, minor, patch);
     }
 
