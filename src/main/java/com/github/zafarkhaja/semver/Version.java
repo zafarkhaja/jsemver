@@ -308,11 +308,11 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * Checks if this version satisfies the specified SemVer Expression.
+     * Checks if this version satisfies the specified SemVer Expression string.
      *
      * This method is a part of the SemVer Expressions API.
      *
-     * @param expr the SemVer Expression
+     * @param expr the SemVer Expression string
      * @return {@code true} if this version satisfies the specified
      *         SemVer Expression or {@code false} otherwise
      * @throws ParseException in case of a general parse error
@@ -322,7 +322,21 @@ public class Version implements Comparable<Version> {
      */
     public boolean satisfies(String expr) {
         Parser<Expression> parser = ExpressionParser.newInstance();
-        return parser.parse(expr).interpret(this);
+        return satisfies(parser.parse(expr));
+    }
+
+    /**
+     * Checks if this version satisfies the specified SemVer Expression.
+     *
+     * This method is a part of the SemVer Expressions API.
+     *
+     * @param expr the SemVer Expression
+     * @return {@code true} if this version satisfies the specified
+     *         SemVer Expression or {@code false} otherwise
+     * @since 0.9.0
+     */
+    public boolean satisfies(Expression expr) {
+        return expr.interpret(this);
     }
 
     /**

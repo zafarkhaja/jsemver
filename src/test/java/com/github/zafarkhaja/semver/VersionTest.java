@@ -26,6 +26,9 @@ package com.github.zafarkhaja.semver;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.lt;
 import static org.junit.Assert.*;
 
 /**
@@ -307,10 +310,86 @@ public class VersionTest {
         }
 
         @Test
+        public void shouldCheckIfPrereleaseVersionSatisfiesExpression() {
+            Version v = Version.valueOf("2.1.0-beta");
+            assertTrue(v.satisfies("*")); // >=0.0.0
+            assertTrue(v.satisfies("x")); // >=0.0.0
+            assertTrue(v.satisfies("X")); // >=0.0.0
+            assertTrue(v.satisfies("2.*")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.x")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.X")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.0.*")); // >=2.0.0 <2.1.0
+            assertTrue(v.satisfies("2.0.x")); // >=2.0.0 <2.1.0
+            assertTrue(v.satisfies("2.0.X")); // >=2.0.0 <2.1.0
+            assertTrue(v.satisfies("2")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.0")); // >=2.0.0 <2.1.0
+            assertTrue(v.satisfies("2.0.0")); // >=2.0.0
+            assertTrue(v.satisfies("~2")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("~2.0")); // >=2.0.0 <2.1.0
+            assertTrue(v.satisfies("~2.0.0")); // >=2.0.0 <2.1.0
+            assertTrue(v.satisfies(">=2.0 & <3.0")); // >=2.0.0 & <3.0.0
+            assertTrue(v.satisfies("2.0.0 - 2.1.0")); // >=2.0.0 & <=2.1.0
+            assertTrue(v.satisfies("2.0 - 2.1")); // >=2.0.0 & <=2.1.0
+            assertTrue(v.satisfies("^2")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("^2.0.3")); // >=2.0.3 <3.0.0
+            assertFalse(v.satisfies("2.1.*")); // >=2.1.0 <2.2.0
+            assertFalse(v.satisfies("2.1.x")); // >=2.1.0 <2.2.0
+            assertFalse(v.satisfies("2.1.X")); // >=2.1.0 <2.2.0
+            assertFalse(v.satisfies("~1")); // >=1.0.0 <2.0.0
+            assertFalse(v.satisfies("~1.2.3")); // >=1.2.3 <1.3.0
+            assertFalse(v.satisfies("~1.2")); // >=1.2.0 <1.3.0
+            assertFalse(v.satisfies("~2.2.3")); // >=2.2.3 <2.3.0
+            assertFalse(v.satisfies("^0.2.3")); // >=0.2.3 <0.3.0
+            assertFalse(v.satisfies("^0.0.3")); // >=0.0.3 <0.0.4
+            assertFalse(v.satisfies("^0")); // >=0.0.0 <0.1.0
+            assertFalse(v.satisfies("^0.0")); // >=0.0.0 <0.1.0
+            assertFalse(v.satisfies("^0.0.0")); // >=0.0.0 <0.0.0
+            assertFalse(v.satisfies(">=1.0 & <2.0")); // >=1.0.0 & <2.0.0
+            assertFalse(v.satisfies("1 - 2")); // >=1.0.0 & <2.0.0
+        }
+
+        @Test
+        public void shouldCheckIfStableVersionSatisfiesExpression() {
+            Version v = Version.valueOf("2.1.0");
+            assertTrue(v.satisfies("*")); // >=0.0.0
+            assertTrue(v.satisfies("x")); // >=0.0.0
+            assertTrue(v.satisfies("X")); // >=0.0.0
+            assertTrue(v.satisfies("2.*")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.x")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.X")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.1.*")); // >=2.1.0 <2.2.0
+            assertTrue(v.satisfies("2.1.x")); // >=2.1.0 <2.2.0
+            assertTrue(v.satisfies("2.1.X")); // >=2.1.0 <2.2.0
+            assertTrue(v.satisfies("2")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("2.0.0")); // >=2.0.0
+            assertTrue(v.satisfies("~2")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies(">=2.0 & <3.0")); // >=2.0.0 & <3.0.0
+            assertTrue(v.satisfies("2.0.0 - 2.1.0")); // >=2.0.0 & <=2.1.0
+            assertTrue(v.satisfies("2.0 - 2.1")); // >=2.0.0 & <=2.1.0
+            assertTrue(v.satisfies("^2")); // >=2.0.0 <3.0.0
+            assertTrue(v.satisfies("^2.0.3")); // >=2.0.3 <3.0.0
+            assertFalse(v.satisfies("2.0")); // >=2.0.0 <2.1.0
+            assertFalse(v.satisfies("2.0.*")); // >=2.0.0 <2.1.0
+            assertFalse(v.satisfies("~2.0.0")); // >=2.0.0 <2.1.0
+            assertFalse(v.satisfies("~2.0")); // >=2.0.0 <2.1.0
+            assertFalse(v.satisfies("~1")); // >=1.0.0 <2.0.0
+            assertFalse(v.satisfies("~1.2.3")); // >=1.2.3 <1.3.0
+            assertFalse(v.satisfies("~1.2")); // >=1.2.0 <1.3.0
+            assertFalse(v.satisfies("~2.2.3")); // >=2.2.3 <2.3.0
+            assertFalse(v.satisfies("^0.2.3")); // >=0.2.3 <0.3.0
+            assertFalse(v.satisfies("^0.0.3")); // >=0.0.3 <0.0.4
+            assertFalse(v.satisfies("^0")); // >=0.0.0 <0.1.0
+            assertFalse(v.satisfies("^0.0")); // >=0.0.0 <0.1.0
+            assertFalse(v.satisfies("^0.0.0")); // >=0.0.0 <0.0.0
+            assertFalse(v.satisfies(">=1.0 & <2.0")); // >=1.0.0 & <2.0.0
+            assertFalse(v.satisfies("1 - 2")); // >=1.0.0 & <2.0.0
+        }
+
+        @Test
         public void shouldCheckIfVersionSatisfiesExpression() {
             Version v = Version.valueOf("2.0.0-beta");
-            assertTrue(v.satisfies("~1.0"));
-            assertFalse(v.satisfies(">=2.0 & <3.0"));
+            assertTrue(v.satisfies(gte("1.0.0").and(lt("2.0.0"))));
+            assertFalse(v.satisfies(gte("2.0.0").and(lt("3.0.0"))));
         }
     }
 

@@ -29,8 +29,11 @@ import com.github.zafarkhaja.semver.expr.Lexer.Token;
 import com.github.zafarkhaja.semver.util.Stream;
 import com.github.zafarkhaja.semver.util.Stream.ElementType;
 import com.github.zafarkhaja.semver.util.UnexpectedElementException;
+
 import java.util.EnumSet;
 import java.util.Iterator;
+
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
 
 /**
@@ -102,12 +105,12 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private Expression parseSemVerExpression() {
-        Expression expr;
+    private CompositeExpression parseSemVerExpression() {
+        CompositeExpression expr;
         if (tokens.positiveLookahead(NOT)) {
             tokens.consume();
             consumeNextToken(LEFT_PAREN);
-            expr = new Not(parseSemVerExpression());
+            expr = not(parseSemVerExpression());
             consumeNextToken(RIGHT_PAREN);
         } else if (tokens.positiveLookahead(LEFT_PAREN)) {
             consumeNextToken(LEFT_PAREN);
@@ -132,13 +135,13 @@ public class ExpressionParser implements Parser<Expression> {
      * @param expr the left-hand expression of the logical operators
      * @return the expression AST
      */
-    private Expression parseBooleanExpression(Expression expr) {
+    private CompositeExpression parseBooleanExpression(CompositeExpression expr) {
         if (tokens.positiveLookahead(AND)) {
             tokens.consume();
-            expr = new And(expr, parseSemVerExpression());
+            expr = expr.and(parseSemVerExpression());
         } else if (tokens.positiveLookahead(OR)) {
             tokens.consume();
-            expr = new Or(expr, parseSemVerExpression());
+            expr = expr.or(parseSemVerExpression());
         }
         return expr;
     }
@@ -151,15 +154,18 @@ public class ExpressionParser implements Parser<Expression> {
      * <expr> ::= <comparison-expr>
      *          | <version-expr>
      *          | <tilde-expr>
+     *          | <caret-expr>
      *          | <range-expr>
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private Expression parseExpression() {
+    private CompositeExpression parseExpression() {
         if (tokens.positiveLookahead(TILDE)) {
             return parseTildeExpression();
+        } if (tokens.positiveLookahead(CARET)) {
+            return parseCaretExpression();
         } else if (isVersionExpression()) {
             return parseVersionExpression();
         } else if (isRangeExpression()) {
@@ -180,36 +186,36 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private Expression parseComparisonExpression() {
+    private CompositeExpression parseComparisonExpression() {
         Token token = tokens.lookahead();
-        Expression expr;
+        CompositeExpression expr;
         switch (token.type) {
             case EQUAL:
                 tokens.consume();
-                expr = new Equal(parseVersion());
+                expr = eq(parseVersion());
                 break;
             case NOT_EQUAL:
                 tokens.consume();
-                expr = new NotEqual(parseVersion());
+                expr = neq(parseVersion());
                 break;
             case GREATER:
                 tokens.consume();
-                expr = new Greater(parseVersion());
+                expr = gt(parseVersion());
                 break;
             case GREATER_EQUAL:
                 tokens.consume();
-                expr = new GreaterOrEqual(parseVersion());
+                expr = gte(parseVersion());
                 break;
             case LESS:
                 tokens.consume();
-                expr = new Less(parseVersion());
+                expr = lt(parseVersion());
                 break;
             case LESS_EQUAL:
                 tokens.consume();
-                expr = new LessOrEqual(parseVersion());
+                expr = lte(parseVersion());
                 break;
             default:
-                expr = new Equal(parseVersion());
+                expr = eq(parseVersion());
         }
         return expr;
     }
@@ -225,26 +231,59 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private Expression parseTildeExpression() {
+    private CompositeExpression parseTildeExpression() {
         consumeNextToken(TILDE);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return new GreaterOrEqual(versionOf(major, 0, 0));
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return new And(
-                new GreaterOrEqual(versionOf(major, minor, 0)),
-                new Less(versionOf(major + 1, 0, 0))
-            );
+            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        return new And(
-            new GreaterOrEqual(versionOf(major, minor, patch)),
-            new Less(versionOf(major, minor + 1, 0))
-        );
+        return gte(versionFor(major, minor, patch)).and(lt(versionFor(major, minor + 1)));
+    }
+
+    /**
+     * Parses the {@literal <caret-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <caret-expr> ::= "^" <version>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
+    private CompositeExpression parseCaretExpression() {
+        consumeNextToken(CARET);
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
+        if (!tokens.positiveLookahead(DOT)) {
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+        }
+        consumeNextToken(DOT);
+        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
+        if (!tokens.positiveLookahead(DOT)) {
+            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+        }
+        consumeNextToken(DOT);
+        int patch = intOf(consumeNextToken(NUMERIC).lexeme);
+        CompositeExpression ltExp;
+        if (major > 0) {
+            ltExp = lt(versionFor(major + 1));
+        } else if (minor > 0) {
+            ltExp = lt(versionFor(major, minor + 1));
+        } else {
+            if (patch > 0) {
+                ltExp = lt(versionFor(major, minor, patch + 1));
+            } else {
+                ltExp = lt(versionFor(major, minor, patch));
+            }
+        }
+        return gte(versionFor(major, minor, patch)).and(ltExp);
     }
 
     /**
@@ -256,7 +295,7 @@ public class ExpressionParser implements Parser<Expression> {
      *         {@code false} otherwise
      */
     private boolean isVersionExpression() {
-        return isVersionFollowedBy(STAR);
+        return isVersionFollowedBy(STAR) || isVersionFollowedBy(EOL);
     }
 
     /**
@@ -264,30 +303,53 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * <pre>
      * {@literal
-     * <version-expr> ::= <major> "." "*"
+     * <version-expr> ::= "*"
+     *                  | "x"
+     *                  | "X"
+     *                  | <major> "." "*"
+     *                  | <major> "." "x"
+     *                  | <major> "." "X"
      *                  | <major> "." <minor> "." "*"
+     *                  | <major> "." <minor> "." "x"
+     *                  | <major> "." <minor> "." "X"
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private Expression parseVersionExpression() {
-        int major = intOf(consumeNextToken(NUMERIC).lexeme);
-        consumeNextToken(DOT);
+    private CompositeExpression parseVersionExpression() {
         if (tokens.positiveLookahead(STAR)) {
             tokens.consume();
-            return new And(
-                new GreaterOrEqual(versionOf(major, 0, 0)),
-                new Less(versionOf(major + 1, 0, 0))
-            );
+            return gte(versionFor(0, 0, 0));
+        }
+        
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
+        if (tokens.positiveLookahead(DOT)) {
+            consumeNextToken(DOT);
+        }
+        if (tokens.positiveLookahead(STAR) || tokens.positiveLookahead(EOL)) {
+            if (tokens.positiveLookahead(STAR)) {
+                tokens.consume();
+            }
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+        }
+        if (tokens.positiveLookahead(STAR)) {
+            tokens.consume();
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
-        consumeNextToken(DOT);
-        consumeNextToken(STAR);
-        return new And(
-            new GreaterOrEqual(versionOf(major, minor, 0)),
-            new Less(versionOf(major, minor + 1, 0))
-        );
+        if (tokens.positiveLookahead(DOT)) {
+            consumeNextToken(DOT);
+        }
+        if (tokens.positiveLookahead(STAR) || tokens.positiveLookahead(EOL)) {
+            if (tokens.positiveLookahead(STAR)) {
+                tokens.consume();
+            }
+            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+        }
+
+        int patch = intOf(consumeNextToken(NUMERIC).lexeme);
+        return gte(versionFor(major, minor, patch));
     }
 
     /**
@@ -313,11 +375,10 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private Expression parseRangeExpression() {
-        Expression ge = new GreaterOrEqual(parseVersion());
+    private CompositeExpression parseRangeExpression() {
+        CompositeExpression gte = gte(parseVersion());
         consumeNextToken(HYPHEN);
-        Expression le = new LessOrEqual(parseVersion());
-        return new And(ge, le);
+        return gte.and(lte(parseVersion()));
     }
 
     /**
@@ -345,7 +406,7 @@ public class ExpressionParser implements Parser<Expression> {
             tokens.consume();
             patch = intOf(consumeNextToken(NUMERIC).lexeme);
         }
-        return versionOf(major, minor, patch);
+        return versionFor(major, minor, patch);
     }
 
     /**
@@ -373,14 +434,37 @@ public class ExpressionParser implements Parser<Expression> {
     }
 
     /**
-     * Creates a {@code Version} instance for the specified integers.
+     * Creates a {@code Version} instance for the specified major version.
+     *
+     * @param major the major version number
+     * @return the version for the specified major version
+     */
+    private Version versionFor(int major) {
+        return versionFor(major, 0, 0);
+    }
+
+    /**
+     * Creates a {@code Version} instance for
+     * the specified major and minor versions.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @return the version for the specified major and minor versions
+     */
+    private Version versionFor(int major, int minor) {
+        return versionFor(major, minor, 0);
+    }
+
+    /**
+     * Creates a {@code Version} instance for the
+     * specified major, minor and patch versions.
      *
      * @param major the major version number
      * @param minor the minor version number
      * @param patch the patch version number
-     * @return the version for the specified integers
+     * @return the version for the specified major, minor and patch versions
      */
-    private Version versionOf(int major, int minor, int patch) {
+    private Version versionFor(int major, int minor, int patch) {
         return Version.forIntegers(major, minor, patch);
     }
 

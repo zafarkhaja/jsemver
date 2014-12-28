@@ -24,6 +24,7 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.util.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,7 +58,8 @@ class Lexer {
             LESS("<(?!=)"),
             LESS_EQUAL("<="),
             TILDE("~"),
-            STAR("\\*"),
+            STAR("[\\*xX]"),
+            CARET("\\^"),
             AND("&"),
             OR("\\|"),
             NOT("!(?!=)"),
