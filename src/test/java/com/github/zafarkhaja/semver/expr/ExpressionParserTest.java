@@ -25,6 +25,7 @@ package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -89,7 +90,7 @@ public class ExpressionParserTest {
         ExpressionParser parser = new ExpressionParser(new Lexer());
         Expression expr1 = parser.parse("~1");
         assertTrue(expr1.interpret(Version.valueOf("1.2.3")));
-        assertTrue(expr1.interpret(Version.valueOf("3.2.1")));
+        assertFalse(expr1.interpret(Version.valueOf("3.2.1")));
         Expression expr2 = parser.parse("~1.2");
         assertTrue(expr2.interpret(Version.valueOf("1.2.3")));
         assertFalse(expr2.interpret(Version.valueOf("2.0.0")));
