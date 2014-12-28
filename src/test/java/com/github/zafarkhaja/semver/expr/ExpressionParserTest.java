@@ -89,7 +89,7 @@ public class ExpressionParserTest {
         ExpressionParser parser = new ExpressionParser(new Lexer());
         Expression expr1 = parser.parse("~1");
         assertTrue(expr1.interpret(Version.valueOf("1.2.3")));
-        assertTrue(expr1.interpret(Version.valueOf("3.2.1")));
+        assertFalse(expr1.interpret(Version.valueOf("3.2.1")));
         Expression expr2 = parser.parse("~1.2");
         assertTrue(expr2.interpret(Version.valueOf("1.2.3")));
         assertFalse(expr2.interpret(Version.valueOf("2.0.0")));
@@ -200,5 +200,82 @@ public class ExpressionParserTest {
             return;
         }
         fail("Should raise error if closing parenthesis is missing");
+    }
+
+    @Test
+    public void shouldCheckIfPrereleaseVersionSatisfiesExpression() {
+        Version v = Version.valueOf("2.1.0-beta");
+        assertTrue(v.satisfies("*")); // >=0.0.0
+        assertTrue(v.satisfies("x")); // >=0.0.0
+        assertTrue(v.satisfies("X")); // >=0.0.0
+        assertTrue(v.satisfies("2.*")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.x")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.X")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.0.*")); // >=2.0.0 <2.1.0
+        assertTrue(v.satisfies("2.0.x")); // >=2.0.0 <2.1.0
+        assertTrue(v.satisfies("2.0.X")); // >=2.0.0 <2.1.0
+        assertTrue(v.satisfies("2")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.0")); // >=2.0.0 <2.1.0
+        assertTrue(v.satisfies("2.0.0")); // >=2.0.0
+        assertTrue(v.satisfies("~2")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("~2.0")); // >=2.0.0 <2.1.0
+        assertTrue(v.satisfies("~2.0.0")); // >=2.0.0 <2.1.0
+        assertTrue(v.satisfies(">=2.0 & <3.0")); // >=2.0.0 & <3.0.0
+        assertTrue(v.satisfies("2.0.0 - 2.1.0")); // >=2.0.0 & <=2.1.0
+        assertTrue(v.satisfies("2.0 - 2.1")); // >=2.0.0 & <=2.1.0
+        assertTrue(v.satisfies("^2")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("^2.0.3")); // >=2.0.3 <3.0.0
+        assertFalse(v.satisfies("2.1.*")); // >=2.1.0 <2.2.0
+        assertFalse(v.satisfies("2.1.x")); // >=2.1.0 <2.2.0
+        assertFalse(v.satisfies("2.1.X")); // >=2.1.0 <2.2.0
+        assertFalse(v.satisfies("~1")); // >=1.0.0 <2.0.0
+        assertFalse(v.satisfies("~1.2.3")); // >=1.2.3 <1.3.0
+        assertFalse(v.satisfies("~1.2")); // >=1.2.0 <1.3.0
+        assertFalse(v.satisfies("~2.2.3")); // >=2.2.3 <2.3.0
+        assertFalse(v.satisfies("^0.2.3")); // >=0.2.3 <0.3.0
+        assertFalse(v.satisfies("^0.0.3")); // >=0.0.3 <0.0.4
+        assertFalse(v.satisfies("^0")); // >=0.0.0 <0.1.0
+        assertFalse(v.satisfies("^0.0")); // >=0.0.0 <0.1.0
+        assertFalse(v.satisfies("^0.0.0")); // >=0.0.0 <0.0.0
+        assertFalse(v.satisfies(">=1.0 & <2.0")); // >=1.0.0 & <2.0.0
+        assertFalse(v.satisfies("1 - 2")); // >=1.0.0 & <2.0.0
+    }
+
+    @Test
+    public void shouldCheckIfStableVersionSatisfiesExpression() {
+        Version v = Version.valueOf("2.1.0");
+        assertTrue(v.satisfies("*")); // >=0.0.0
+        assertTrue(v.satisfies("x")); // >=0.0.0
+        assertTrue(v.satisfies("X")); // >=0.0.0
+        assertTrue(v.satisfies("2.*")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.x")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.X")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.1.*")); // >=2.1.0 <2.2.0
+        assertTrue(v.satisfies("2.1.x")); // >=2.1.0 <2.2.0
+        assertTrue(v.satisfies("2.1.X")); // >=2.1.0 <2.2.0
+        assertTrue(v.satisfies("2")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("2.0.0")); // >=2.0.0
+        assertTrue(v.satisfies("~2")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies(">=2.0 & <3.0")); // >=2.0.0 & <3.0.0
+        assertTrue(v.satisfies("2.0.0 - 2.1.0")); // >=2.0.0 & <=2.1.0
+        assertTrue(v.satisfies("2.0 - 2.1")); // >=2.0.0 & <=2.1.0
+        assertTrue(v.satisfies("^2")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("^2.0")); // >=2.0.0 <3.0.0
+        assertTrue(v.satisfies("^2.0.3")); // >=2.0.3 <3.0.0
+        assertFalse(v.satisfies("2.0")); // >=2.0.0 <2.1.0
+        assertFalse(v.satisfies("2.0.*")); // >=2.0.0 <2.1.0
+        assertFalse(v.satisfies("~2.0.0")); // >=2.0.0 <2.1.0
+        assertFalse(v.satisfies("~2.0")); // >=2.0.0 <2.1.0
+        assertFalse(v.satisfies("~1")); // >=1.0.0 <2.0.0
+        assertFalse(v.satisfies("~1.2.3")); // >=1.2.3 <1.3.0
+        assertFalse(v.satisfies("~1.2")); // >=1.2.0 <1.3.0
+        assertFalse(v.satisfies("~2.2.3")); // >=2.2.3 <2.3.0
+        assertFalse(v.satisfies("^0.2.3")); // >=0.2.3 <0.3.0
+        assertFalse(v.satisfies("^0.0.3")); // >=0.0.3 <0.0.4
+        assertFalse(v.satisfies("^0")); // >=0.0.0 <0.1.0
+        assertFalse(v.satisfies("^0.0")); // >=0.0.0 <0.1.0
+        assertFalse(v.satisfies("^0.0.0")); // >=0.0.0 <0.0.0
+        assertFalse(v.satisfies(">=1.0 & <2.0")); // >=1.0.0 & <2.0.0
+        assertFalse(v.satisfies("1 - 2")); // >=1.0.0 & <2.0.0
     }
 }

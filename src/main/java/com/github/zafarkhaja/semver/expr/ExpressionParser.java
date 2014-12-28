@@ -31,8 +31,8 @@ import com.github.zafarkhaja.semver.util.Stream.ElementType;
 import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.EnumSet;
 import java.util.Iterator;
-import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
+import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
 
 /**
  * A parser for the SemVer Expressions.
@@ -152,6 +152,7 @@ public class ExpressionParser implements Parser<Expression> {
      * <expr> ::= <comparison-expr>
      *          | <version-expr>
      *          | <tilde-expr>
+     *          | <caret-expr>
      *          | <range-expr>
      * }
      * </pre>
@@ -161,6 +162,8 @@ public class ExpressionParser implements Parser<Expression> {
     private CompositeExpression parseExpression() {
         if (tokens.positiveLookahead(TILDE)) {
             return parseTildeExpression();
+        } if (tokens.positiveLookahead(CARET)) {
+            return parseCaretExpression();
         } else if (isVersionExpression()) {
             return parseVersionExpression();
         } else if (isRangeExpression()) {
@@ -230,16 +233,59 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(TILDE);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionFor(major));
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionFor(major, minor)).and(lt(versionFor(major + 1)));
+            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
         return gte(versionFor(major, minor, patch)).and(lt(versionFor(major, minor + 1)));
+    }
+
+    /**
+     * Parses the {@literal <caret-expr>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <caret-expr> ::= "^" <version>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
+    private CompositeExpression parseCaretExpression() {
+        consumeNextToken(CARET);
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
+        if (!tokens.positiveLookahead(DOT)) {
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+        }
+        consumeNextToken(DOT);
+        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
+        if (!tokens.positiveLookahead(DOT)) {
+            if (major > 0) {
+                return gte(versionFor(major, minor)).and(lt(versionFor(major + 1, minor)));
+            } else {
+                return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+            }
+        }
+        consumeNextToken(DOT);
+        int patch = intOf(consumeNextToken(NUMERIC).lexeme);
+        CompositeExpression ltExp;
+        if (major > 0) {
+            ltExp = lt(versionFor(major + 1));
+        } else if (minor > 0) {
+            ltExp = lt(versionFor(major, minor + 1));
+        } else {
+            if (patch > 0) {
+                ltExp = lt(versionFor(major, minor, patch + 1));
+            } else {
+                ltExp = lt(versionFor(major, minor, patch));
+            }
+        }
+        return gte(versionFor(major, minor, patch)).and(ltExp);
     }
 
     /**
@@ -251,7 +297,7 @@ public class ExpressionParser implements Parser<Expression> {
      *         {@code false} otherwise
      */
     private boolean isVersionExpression() {
-        return isVersionFollowedBy(STAR);
+        return isVersionFollowedBy(WILDCARD) || isVersionFollowedBy(EOL);
     }
 
     /**
@@ -259,24 +305,48 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * <pre>
      * {@literal
-     * <version-expr> ::= <major> "." "*"
-     *                  | <major> "." <minor> "." "*"
+     * <version-expr> ::= <wildcard>
+     *                  | <major> "." <wildcard>
+     *                  | <major> "." <minor> "." <wildcard>
+     *
+     * <wildcard> ::= "*" | "x" | "X"
      * }
      * </pre>
      *
      * @return the expression AST
      */
     private CompositeExpression parseVersionExpression() {
+        if (tokens.positiveLookahead(WILDCARD)) {
+            tokens.consume();
+            return gte(versionFor(0, 0, 0));
+        }
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
-        consumeNextToken(DOT);
-        if (tokens.positiveLookahead(STAR)) {
+        if (tokens.positiveLookahead(DOT)) {
+            consumeNextToken(DOT);
+        }
+        if (tokens.positiveLookahead(WILDCARD) || tokens.positiveLookahead(EOL)) {
+            if (tokens.positiveLookahead(WILDCARD)) {
+                tokens.consume();
+            }
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+        }
+        if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
             return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
-        consumeNextToken(DOT);
-        consumeNextToken(STAR);
-        return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+        if (tokens.positiveLookahead(DOT)) {
+            consumeNextToken(DOT);
+        }
+        if (tokens.positiveLookahead(WILDCARD) || tokens.positiveLookahead(EOL)) {
+            if (tokens.positiveLookahead(WILDCARD)) {
+                tokens.consume();
+            }
+            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+        }
+
+        int patch = intOf(consumeNextToken(NUMERIC).lexeme);
+        return gte(versionFor(major, minor, patch));
     }
 
     /**
