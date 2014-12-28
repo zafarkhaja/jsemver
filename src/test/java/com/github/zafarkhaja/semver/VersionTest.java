@@ -26,7 +26,8 @@ package com.github.zafarkhaja.semver;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
-import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.lt;
 import static org.junit.Assert.*;
 
 /**
@@ -305,13 +306,6 @@ public class VersionTest {
             Version v2 = Version.valueOf("1.3.7-beta+build.2");
             assertTrue(0 == v1.compareTo(v2));
             assertTrue(0 > v1.compareWithBuildsTo(v2));
-        }
-
-        @Test
-        public void shouldCheckIfVersionSatisfiesExpressionString() {
-            Version v = Version.valueOf("2.0.0-beta");
-            assertTrue(v.satisfies("~1.0"));
-            assertFalse(v.satisfies(">=2.0 & <3.0"));
         }
 
         @Test
