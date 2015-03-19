@@ -1,5 +1,5 @@
-Java SemVer v0.8.0 (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/java-semver.png)](https://travis-ci.org/zafarkhaja/java-semver)
-=============================
+Java SemVer v0.9.0 (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/jsemver.png)](https://travis-ci.org/zafarkhaja/jsemver)
+============================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
 (http://semver.org/).
@@ -33,7 +33,7 @@ project.
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.8.0</version>
+  <version>0.9.0</version>
 </dependency>
 ~~~
 
@@ -42,7 +42,7 @@ project.
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.10.0-SNAPSHOT</version>
 </dependency>
 ~~~
 **NOTE**: To use the development version you need to add the SNAPSHOT repository
@@ -250,7 +250,7 @@ boolean result = v.satisfies(gte("1.0.0").and(lt("2.0.0")));  // false
 
 ### External DSL ###
 The BNF grammar for the external DSL can be found in the corresponding
-[issue](https://github.com/zafarkhaja/java-semver/issues/1).
+[issue](https://github.com/zafarkhaja/jsemver/issues/1).
 
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
@@ -288,7 +288,7 @@ There are two types of errors that may arrise while using Java SemVer
 
 Bugs and Features
 -----------------
-Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/java-semver/issues.
+Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/jsemver/issues.
 
 
 License

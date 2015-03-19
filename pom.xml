@@ -15,7 +15,7 @@
 
   <name>Java SemVer</name>
   <description>Java implementation of the SemVer Specification</description>
-  <url>https://github.com/zafarkhaja/java-semver</url>
+  <url>https://github.com/zafarkhaja/jsemver</url>
 
   <licenses>
     <license>
@@ -30,14 +30,14 @@
       <id>zafarkhaja</id>
       <name>Zafar Khaja</name>
       <email>zafarkhaja@gmail.com</email>
-      <timezone>+4</timezone>
+      <timezone>+3</timezone>
     </developer>
   </developers>
 
   <scm>
-    <url>https://github.com/zafarkhaja/java-semver</url>
-    <connection>scm:git:git://github.com/zafarkhaja/java-semver.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/zafarkhaja/java-semver.git</developerConnection>
+    <url>https://github.com/zafarkhaja/jsemver</url>
+    <connection>scm:git:git://github.com/zafarkhaja/jsemver.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/zafarkhaja/jsemver.git</developerConnection>
   </scm>
 
   <dependencies>
