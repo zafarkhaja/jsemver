@@ -65,7 +65,7 @@ class Lexer {
             LEFT_PAREN("\\("),
             RIGHT_PAREN("\\)"),
             WHITESPACE("\\s+"),
-            EOL("?!");
+            EOI("?!");
 
             /**
              * A pattern matching this type.
@@ -218,7 +218,7 @@ class Lexer {
                 throw new LexerException(input);
             }
         }
-        tokens.add(new Token(Token.Type.EOL, null, tokenPos));
+        tokens.add(new Token(Token.Type.EOI, null, tokenPos));
         return new Stream<Token>(tokens.toArray(new Token[tokens.size()]));
     }
 }

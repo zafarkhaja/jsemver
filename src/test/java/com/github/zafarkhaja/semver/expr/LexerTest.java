@@ -44,7 +44,7 @@ public class LexerTest {
             new Token(NUMERIC, "0",  3),
             new Token(DOT,     ".",  4),
             new Token(NUMERIC, "0",  5),
-            new Token(EOL,     null, 6),
+            new Token(EOI,     null, 6),
         };
         Lexer lexer = new Lexer();
         Stream<Token> stream = lexer.tokenize(">1.0.0");
@@ -56,7 +56,7 @@ public class LexerTest {
         Token[] expected = {
             new Token(GREATER, ">",  0),
             new Token(NUMERIC, "1",  2),
-            new Token(EOL,     null, 3),
+            new Token(EOI,     null, 3),
         };
         Lexer lexer = new Lexer();
         Stream<Token> stream = lexer.tokenize("> 1");
@@ -71,7 +71,7 @@ public class LexerTest {
             new Token(NUMERIC, "2",  2),
             new Token(DOT,     ".",  3),
             new Token(NUMERIC, "3",  4),
-            new Token(EOL,     null, 5),
+            new Token(EOI,     null, 5),
         };
         Lexer lexer = new Lexer();
         Stream<Token> stream = lexer.tokenize("1.2.3");

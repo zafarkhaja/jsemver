@@ -104,7 +104,7 @@ class VersionParser implements Parser<Version> {
                 return chr == '+';
             }
         },
-        EOL {
+        EOI {
             /**
              * {@inheritDoc}
              */
@@ -256,17 +256,17 @@ class VersionParser implements Parser<Version> {
         MetadataVersion preRelease = MetadataVersion.NULL;
         MetadataVersion build = MetadataVersion.NULL;
 
-        Character next = consumeNextCharacter(HYPHEN, PLUS, EOL);
+        Character next = consumeNextCharacter(HYPHEN, PLUS, EOI);
         if (HYPHEN.isMatchedBy(next)) {
             preRelease = parsePreRelease();
-            next = consumeNextCharacter(PLUS, EOL);
+            next = consumeNextCharacter(PLUS, EOI);
             if (PLUS.isMatchedBy(next)) {
                 build = parseBuild();
             }
         } else if (PLUS.isMatchedBy(next)) {
             build = parseBuild();
         }
-        consumeNextCharacter(EOL);
+        consumeNextCharacter(EOI);
         return new Version(normal, preRelease, build);
     }
 
@@ -332,7 +332,7 @@ class VersionParser implements Parser<Version> {
      */
     private String preReleaseIdentifier() {
         checkForEmptyIdentifier();
-        CharType boundary = nearestCharType(DOT, PLUS, EOL);
+        CharType boundary = nearestCharType(DOT, PLUS, EOI);
         if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
             return alphanumericIdentifier();
         } else {
@@ -382,7 +382,7 @@ class VersionParser implements Parser<Version> {
      */
     private String buildIdentifier() {
         checkForEmptyIdentifier();
-        CharType boundary = nearestCharType(DOT, EOL);
+        CharType boundary = nearestCharType(DOT, EOI);
         if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
             return alphanumericIdentifier();
         } else {
@@ -454,7 +454,7 @@ class VersionParser implements Parser<Version> {
      * Finds the nearest character type.
      *
      * @param types the character types to choose from
-     * @return the nearest character type or {@code EOL}
+     * @return the nearest character type or {@code EOI}
      */
     private CharType nearestCharType(CharType... types) {
         for (Character chr : chars) {
@@ -464,7 +464,7 @@ class VersionParser implements Parser<Version> {
                 }
             }
         }
-        return EOL;
+        return EOI;
     }
 
     /**
@@ -490,7 +490,7 @@ class VersionParser implements Parser<Version> {
      */
     private void checkForEmptyIdentifier() {
         Character la = chars.lookahead(1);
-        if (DOT.isMatchedBy(la) || PLUS.isMatchedBy(la) || EOL.isMatchedBy(la)) {
+        if (DOT.isMatchedBy(la) || PLUS.isMatchedBy(la) || EOI.isMatchedBy(la)) {
             throw new ParseException(
                 "Identifiers MUST NOT be empty",
                 new UnexpectedCharacterException(

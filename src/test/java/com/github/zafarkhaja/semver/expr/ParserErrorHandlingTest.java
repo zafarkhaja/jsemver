@@ -69,10 +69,10 @@ public class ParserErrorHandlingTest {
     @Parameters(name = "{0}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "1)",           new Token(RIGHT_PAREN, ")", 1),  new Token.Type[] { EOL } },
-            { "(>1.0.1",      new Token(EOL, null, 7),         new Token.Type[] { RIGHT_PAREN } },
-            { "((>=1 & <2)",  new Token(EOL, null, 11),        new Token.Type[] { RIGHT_PAREN } },
-            { ">=1.0.0 &",    new Token(EOL, null, 9),         new Token.Type[] { NUMERIC } },
+            { "1)",           new Token(RIGHT_PAREN, ")", 1),  new Token.Type[] { EOI } },
+            { "(>1.0.1",      new Token(EOI, null, 7),         new Token.Type[] { RIGHT_PAREN } },
+            { "((>=1 & <2)",  new Token(EOI, null, 11),        new Token.Type[] { RIGHT_PAREN } },
+            { ">=1.0.0 &",    new Token(EOI, null, 9),         new Token.Type[] { NUMERIC } },
             { "(>2.0 |)",     new Token(RIGHT_PAREN, ")", 7),  new Token.Type[] { NUMERIC } },
             { "& 1.2",        new Token(AND, "&", 0),          new Token.Type[] { NUMERIC } },
         });

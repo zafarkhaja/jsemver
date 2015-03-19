@@ -76,10 +76,10 @@ public class VersionParserCharTypeTest {
 
     @Test
     public void shouldBeMatchedByEol() {
-        assertTrue(EOL.isMatchedBy(null));
-        assertFalse(EOL.isMatchedBy('-'));
-        assertFalse(EOL.isMatchedBy('a'));
-        assertFalse(EOL.isMatchedBy('0'));
+        assertTrue(EOI.isMatchedBy(null));
+        assertFalse(EOI.isMatchedBy('-'));
+        assertFalse(EOI.isMatchedBy('a'));
+        assertFalse(EOI.isMatchedBy('0'));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class VersionParserCharTypeTest {
         assertEquals(DOT,     CharType.forCharacter('.'));
         assertEquals(HYPHEN,  CharType.forCharacter('-'));
         assertEquals(PLUS,    CharType.forCharacter('+'));
-        assertEquals(EOL,     CharType.forCharacter(null));
+        assertEquals(EOI,     CharType.forCharacter(null));
         assertEquals(ILLEGAL, CharType.forCharacter('!'));
     }
 }

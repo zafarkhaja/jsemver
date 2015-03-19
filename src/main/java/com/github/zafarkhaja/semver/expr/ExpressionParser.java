@@ -85,7 +85,7 @@ public class ExpressionParser implements Parser<Expression> {
     public Expression parse(String input) {
         tokens = lexer.tokenize(input);
         Expression expr = parseSemVerExpression();
-        consumeNextToken(EOL);
+        consumeNextToken(EOI);
         return expr;
     }
 
