@@ -1,5 +1,5 @@
-Java SemVer v0.9.0 (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/jsemver.png)](https://travis-ci.org/zafarkhaja/jsemver)
-============================
+Java SemVer v0.10.0-SNAPSHOT (SemVer 2) [![Build Status](https://travis-ci.org/zafarkhaja/jsemver.png)](https://travis-ci.org/zafarkhaja/jsemver)
+=======================================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
 (http://semver.org/).
