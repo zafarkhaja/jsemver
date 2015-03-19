@@ -96,8 +96,8 @@ public class ExpressionParser implements Parser<Expression> {
      * {@literal
      * <semver-expr> ::= "(" <semver-expr> ")"
      *                 | "!" "(" <semver-expr> ")"
-     *                 | <semver-expr> <boolean-expr>
-     *                 | <expr>
+     *                 | <semver-expr> <more-expr>
+     *                 | <range>
      * }
      * </pre>
      *
@@ -115,25 +115,24 @@ public class ExpressionParser implements Parser<Expression> {
             expr = parseSemVerExpression();
             consumeNextToken(RIGHT_PAREN);
         } else {
-            expr = parseExpression();
+            expr = parseRange();
         }
-        return parseBooleanExpression(expr);
+        return parseMoreExpressions(expr);
     }
 
     /**
-     * Parses the {@literal <boolean-expr>} non-terminal.
+     * Parses the {@literal <more-expr>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <boolean-expr> ::= <boolean-op> <semver-expr>
-     *                  | <epsilon>
+     * <more-expr> ::= <boolean-op> <semver-expr> | epsilon
      * }
      * </pre>
      *
      * @param expr the left-hand expression of the logical operators
      * @return the expression AST
      */
-    private CompositeExpression parseBooleanExpression(CompositeExpression expr) {
+    private CompositeExpression parseMoreExpressions(CompositeExpression expr) {
         if (tokens.positiveLookahead(AND)) {
             tokens.consume();
             expr = expr.and(parseSemVerExpression());
@@ -145,46 +144,48 @@ public class ExpressionParser implements Parser<Expression> {
     }
 
     /**
-     * Parses the {@literal <expr>} non-terminal.
+     * Parses the {@literal <range>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <expr> ::= <comparison-expr>
-     *          | <version-expr>
-     *          | <tilde-expr>
-     *          | <caret-expr>
-     *          | <range-expr>
+     * <expr> ::= <comparison-range>
+     *          | <wildcard-expr>
+     *          | <tilde-range>
+     *          | <caret-range>
+     *          | <hyphen-range>
+     *          | <partial-version-range>
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private CompositeExpression parseExpression() {
+    private CompositeExpression parseRange() {
         if (tokens.positiveLookahead(TILDE)) {
-            return parseTildeExpression();
-        } if (tokens.positiveLookahead(CARET)) {
-            return parseCaretExpression();
-        } else if (isVersionExpression()) {
-            return parseVersionExpression();
-        } else if (isRangeExpression()) {
-            return parseRangeExpression();
+            return parseTildeRange();
+        } else if (tokens.positiveLookahead(CARET)) {
+            return parseCaretRange();
+        } else if (isWildcardRange()) {
+            return parseWildcardRange();
+        } else if (isHyphenRange()) {
+            return parseHyphenRange();
+        } else if (isPartialVersionRange()) {
+            return parsePartialVersionRange();
         }
-        return parseComparisonExpression();
+        return parseComparisonRange();
     }
 
     /**
-     * Parses the {@literal <comparison-expr>} non-terminal.
+     * Parses the {@literal <comparison-range>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <comparison-expr> ::= <comparison-op> <version>
-     *                     | <version>
+     * <comparison-range> ::= <comparison-op> <version> | <version>
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private CompositeExpression parseComparisonExpression() {
+    private CompositeExpression parseComparisonRange() {
         Token token = tokens.lookahead();
         CompositeExpression expr;
         switch (token.type) {
@@ -219,17 +220,17 @@ public class ExpressionParser implements Parser<Expression> {
     }
 
     /**
-     * Parses the {@literal <tilde-expr>} non-terminal.
+     * Parses the {@literal <tilde-range>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <tilde-expr> ::= "~" <version>
+     * <tilde-range> ::= "~" <version>
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private CompositeExpression parseTildeExpression() {
+    private CompositeExpression parseTildeRange() {
         consumeNextToken(TILDE);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
@@ -246,17 +247,17 @@ public class ExpressionParser implements Parser<Expression> {
     }
 
     /**
-     * Parses the {@literal <caret-expr>} non-terminal.
+     * Parses the {@literal <caret-range>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <caret-expr> ::= "^" <version>
+     * <caret-range> ::= "^" <version>
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private CompositeExpression parseCaretExpression() {
+    private CompositeExpression parseCaretRange() {
         consumeNextToken(CARET);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
@@ -265,49 +266,44 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            if (major > 0) {
-                return gte(versionFor(major, minor)).and(lt(versionFor(major + 1, minor)));
-            } else {
-                return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
-            }
+            Version lower = versionFor(major, minor);
+            Version upper = major > 0 ? lower.incrementMajorVersion() : lower.incrementMinorVersion();
+            return gte(lower).and(lt(upper));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        CompositeExpression ltExp;
+        Version version = versionFor(major, minor, patch);
+        CompositeExpression gte = gte(version);
         if (major > 0) {
-            ltExp = lt(versionFor(major + 1));
+            return gte.and(lt(version.incrementMajorVersion()));
         } else if (minor > 0) {
-            ltExp = lt(versionFor(major, minor + 1));
-        } else {
-            if (patch > 0) {
-                ltExp = lt(versionFor(major, minor, patch + 1));
-            } else {
-                ltExp = lt(versionFor(major, minor, patch));
-            }
+            return gte.and(lt(version.incrementMinorVersion()));
+        } else if (patch > 0) {
+            return gte.and(lt(version.incrementPatchVersion()));
         }
-        return gte(versionFor(major, minor, patch)).and(ltExp);
+        return eq(version);
     }
 
     /**
      * Determines if the following version terminals are part
-     * of the {@literal <version-expr>} non-terminal.
+     * of the {@literal <wildcard-range>} non-terminal.
      *
      * @return {@code true} if the following version terminals are
-     *         part of the {@literal <version-expr>} non-terminal or
+     *         part of the {@literal <wildcard-range>} non-terminal or
      *         {@code false} otherwise
      */
-    private boolean isVersionExpression() {
-        return isVersionFollowedBy(WILDCARD) || isVersionFollowedBy(EOL);
+    private boolean isWildcardRange() {
+        return isVersionFollowedBy(WILDCARD);
     }
 
     /**
-     * Parses the {@literal <version-expr>} non-terminal.
+     * Parses the {@literal <wildcard-range>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <version-expr> ::= <wildcard>
-     *                  | <major> "." <wildcard>
-     *                  | <major> "." <minor> "." <wildcard>
+     * <wildcard-range> ::= <wildcard>
+     *                    | <major> "." <wildcard>
+     *                    | <major> "." <minor> "." <wildcard>
      *
      * <wildcard> ::= "*" | "x" | "X"
      * }
@@ -315,67 +311,89 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private CompositeExpression parseVersionExpression() {
+    private CompositeExpression parseWildcardRange() {
         if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
             return gte(versionFor(0, 0, 0));
         }
+
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
-        if (tokens.positiveLookahead(DOT)) {
-            consumeNextToken(DOT);
-        }
-        if (tokens.positiveLookahead(WILDCARD) || tokens.positiveLookahead(EOL)) {
-            if (tokens.positiveLookahead(WILDCARD)) {
-                tokens.consume();
-            }
-            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
-        }
+        consumeNextToken(DOT);
         if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
             return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
-        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
-        if (tokens.positiveLookahead(DOT)) {
-            consumeNextToken(DOT);
-        }
-        if (tokens.positiveLookahead(WILDCARD) || tokens.positiveLookahead(EOL)) {
-            if (tokens.positiveLookahead(WILDCARD)) {
-                tokens.consume();
-            }
-            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
-        }
 
-        int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        return gte(versionFor(major, minor, patch));
+        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
+        consumeNextToken(DOT);
+        consumeNextToken(WILDCARD);
+        return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
     }
 
     /**
      * Determines if the following version terminals are
-     * part of the {@literal <range-expr>} non-terminal.
+     * part of the {@literal <hyphen-range>} non-terminal.
      *
      * @return {@code true} if the following version terminals are
-     *         part of the {@literal <range-expr>} non-terminal or
+     *         part of the {@literal <hyphen-range>} non-terminal or
      *         {@code false} otherwise
      */
-    private boolean isRangeExpression() {
+    private boolean isHyphenRange() {
         return isVersionFollowedBy(HYPHEN);
     }
 
     /**
-     * Parses the {@literal <range-expr>} non-terminal.
+     * Parses the {@literal <hyphen-range>} non-terminal.
      *
      * <pre>
      * {@literal
-     * <range-expr> ::= <version> "-" <version>
+     * <hyphen-range> ::= <version> "-" <version>
      * }
      * </pre>
      *
      * @return the expression AST
      */
-    private CompositeExpression parseRangeExpression() {
+    private CompositeExpression parseHyphenRange() {
         CompositeExpression gte = gte(parseVersion());
         consumeNextToken(HYPHEN);
         return gte.and(lte(parseVersion()));
+    }
+
+    /**
+     * Determines if the following version terminals are part
+     * of the {@literal <partial-version-range>} non-terminal.
+     *
+     * @return {@code true} if the following version terminals are part
+     *         of the {@literal <partial-version-range>} non-terminal or
+     *         {@code false} otherwise
+     */
+    private boolean isPartialVersionRange() {
+        if (!tokens.positiveLookahead(NUMERIC)) {
+            return false;
+        }
+        EnumSet<Token.Type> expected = EnumSet.complementOf(EnumSet.of(NUMERIC, DOT));
+        return tokens.positiveLookaheadUntil(5, expected.toArray(new Token.Type[expected.size()]));
+    }
+
+    /**
+     * Parses the {@literal <partial-version-range>} non-terminal.
+     *
+     * <pre>
+     * {@literal
+     * <partial-version-range> ::= <major> | <major> "." <minor>
+     * }
+     * </pre>
+     *
+     * @return the expression AST
+     */
+    private CompositeExpression parsePartialVersionRange() {
+        int major = intOf(consumeNextToken(NUMERIC).lexeme);
+        if (!tokens.positiveLookahead(DOT)) {
+            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+        }
+        consumeNextToken(DOT);
+        int minor = intOf(consumeNextToken(NUMERIC).lexeme);
+        return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
     }
 
     /**

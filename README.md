@@ -261,12 +261,13 @@ boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
 
 Below are examples of some common use cases, as well as syntactic sugar and some
 other interesting capabilities of the SemVer Expressions external DSL.
-* Wildcard - `1.*` which is equivalent to `>=1.0.0 & <2.0.0`
-* Tilde operator - `~1.5` which is equivalent to `>=1.5.0 & <2.0.0`
-* Range - `1.0-2.0` which is equivalent to `>=1.0.0 & <=2.0.0`
-* Negation operator - `!(1.*)` which is equivalent to `<1.0.0 & >=2.0.0`
-* Short notation - `1` which is equivalent to `=1.0.0`
-* Parenthesized expression - `~1.3 | (1.4.* & !=1.4.5) | ~2`
+* Wildcard Ranges (`*`|`X`|`x`) - `1.*` which is equivalent to `>=1.0.0 & <2.0.0`
+* Tilde Ranges (`~`) - `~1.5` which is equivalent to `>=1.5.0 & <1.6.0`
+* Hyphen Ranges (`-`) - `1.0-2.0` which is equivalent to `>=1.0.0 & <=2.0.0`
+* Caret Ranges (`^`) - `^0.2.3` which is equivalent to `>=0.2.3 & <0.3.0`
+* Partial Version Ranges - `1` which is equivalent to `1.X` or `>=1.0.0 & <2.0.0`
+* Negation operator - `!(1.x)` which is equivalent to `<1.0.0 & >=2.0.0`
+* Parenthesized expressions - `~1.3 | (1.4.* & !=1.4.5) | ~2`
 
 
 Exception Handling
