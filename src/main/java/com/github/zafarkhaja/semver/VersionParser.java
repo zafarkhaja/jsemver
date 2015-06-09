@@ -171,7 +171,8 @@ class VersionParser implements Parser<Version> {
     /**
      * Parses the input string.
      *
-     * @param input the input string to parse
+     * @param input the input string to parse. Although {@code input} is not used
+     *        in the method, it's present to override {@code Parser.parse(String)}
      * @return a valid version object
      * @throws ParseException when there is a grammar error
      * @throws UnexpectedCharacterException when encounters an unexpected character type
