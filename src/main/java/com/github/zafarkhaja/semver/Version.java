@@ -561,6 +561,39 @@ public class Version implements Comparable<Version> {
     }
 
     /**
+     * Checks if this version is compatible with the
+     * other version in terms of their major versions.
+     *
+     * When checking compatibility no assumptions
+     * are made about the versions' precedence.
+     *
+     * @param other the other version to check with
+     * @return {@code true} if this version is compatible with
+     *         the other version or {@code false} otherwise
+     * @since 0.10.0
+     */
+    public boolean isMajorVersionCompatible(Version other) {
+        return this.getMajorVersion() == other.getMajorVersion();
+    }
+
+    /**
+     * Checks if this version is compatible with the
+     * other version in terms of their minor versions.
+     *
+     * When checking compatibility no assumptions
+     * are made about the versions' precedence.
+     *
+     * @param other the other version to check with
+     * @return {@code true} if this version is compatible with
+     *         the other version or {@code false} otherwise
+     * @since 0.10.0
+     */
+    public boolean isMinorVersionCompatible(Version other) {
+        return this.getMajorVersion() == other.getMajorVersion()
+            && this.getMinorVersion() == other.getMinorVersion();
+    }
+
+    /**
      * Checks if this version equals the other version.
      *
      * The comparison is done by the {@code Version.compareTo} method.
