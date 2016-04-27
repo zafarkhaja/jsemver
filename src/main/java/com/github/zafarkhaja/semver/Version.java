@@ -463,7 +463,7 @@ public class Version implements Comparable<Version> {
      *
      * @return the major version number
      */
-    public int getMajorVersion() {
+    public long getMajorVersion() {
         return normal.getMajor();
     }
 
@@ -472,7 +472,7 @@ public class Version implements Comparable<Version> {
      *
      * @return the minor version number
      */
-    public int getMinorVersion() {
+    public long getMinorVersion() {
         return normal.getMinor();
     }
 
@@ -481,7 +481,7 @@ public class Version implements Comparable<Version> {
      *
      * @return the patch version number
      */
-    public int getPatchVersion() {
+    public long getPatchVersion() {
         return normal.getPatch();
     }
 
