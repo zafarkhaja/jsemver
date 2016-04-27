@@ -124,4 +124,15 @@ public class VersionParserTest {
             fail("Should raise error for illegal input string");
         }
     }
+
+    @Test
+    public void shouldParseLongVersionNumbers() {
+        NormalVersion version
+            = VersionParser.parseVersionCore("9007199254740991"
+                                             + ".9007199254740991"
+                                             + ".9007199254740991");
+        assertEquals(new NormalVersion(9007199254740991l,
+                                       9007199254740991l,
+                                       9007199254740991l), version);
+    }
 }
