@@ -49,6 +49,11 @@ class NormalVersion implements Comparable<NormalVersion> {
     private final int patch;
 
     /**
+     * True if patch versions not used
+     */
+	private final boolean hasPatchVersion;
+
+    /**
      * Constructs a {@code NormalVersion} with the
      * major, minor and patch version numbers.
      *
@@ -66,6 +71,28 @@ class NormalVersion implements Comparable<NormalVersion> {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
+        this.hasPatchVersion = true;
+    }
+
+    /**
+     * Constructs a {@code NormalVersion} with the
+     * major, minor and patch version numbers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     * @throws IllegalArgumentException if one of the version numbers is a negative integer
+     */
+    NormalVersion(int major, int minor) {
+        if (major < 0 || minor < 0) {
+            throw new IllegalArgumentException(
+                "Major and minor versions MUST be non-negative integers."
+            );
+        }
+        this.major = major;
+        this.minor = minor;
+        this.patch = 0;
+        this.hasPatchVersion = false;
     }
 
     /**
@@ -92,7 +119,14 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return the patch version number
      */
     int getPatch() {
+        checkIfPatchVersionEnabled();
         return patch;
+    }
+
+    private void checkIfPatchVersionEnabled() {
+        if (!hasPatchVersion) {
+            throw new IllegalStateException("This version has no patch version");
+        }
     }
 
     /**
@@ -101,7 +135,11 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return a new instance of the {@code NormalVersion} class
      */
     NormalVersion incrementMajor() {
-        return new NormalVersion(major + 1, 0, 0);
+        if (hasPatchVersion) {
+            return new NormalVersion(major + 1, 0, 0);
+        } else {
+            return new NormalVersion(major + 1, 0);
+        }
     }
 
     /**
@@ -110,7 +148,11 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return a new instance of the {@code NormalVersion} class
      */
     NormalVersion incrementMinor() {
-        return new NormalVersion(major, minor + 1, 0);
+        if (hasPatchVersion) {
+            return new NormalVersion(major, minor + 1, 0);
+        } else {
+            return new NormalVersion(major, minor + 1);
+        }
     }
 
     /**
@@ -119,6 +161,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return a new instance of the {@code NormalVersion} class
      */
     NormalVersion incrementPatch() {
+        checkIfPatchVersionEnabled();
         return new NormalVersion(major, minor, patch + 1);
     }
 
@@ -159,7 +202,9 @@ class NormalVersion implements Comparable<NormalVersion> {
         int hash = 17;
         hash = 31 * hash + major;
         hash = 31 * hash + minor;
-        hash = 31 * hash + patch;
+        if (hasPatchVersion) {
+            hash = 31 * hash + patch;
+        }
         return hash;
     }
 
@@ -174,6 +219,10 @@ class NormalVersion implements Comparable<NormalVersion> {
      */
     @Override
     public String toString() {
-        return String.format("%d.%d.%d", major, minor, patch);
+        if (hasPatchVersion) {
+            return String.format("%d.%d.%d", major, minor, patch);
+        } else {
+            return String.format("%d.%d", major, minor);
+        }
     }
 }
