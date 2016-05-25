@@ -276,6 +276,7 @@ class VersionParser implements Parser<Version> {
      * <pre>
      * {@literal
      * <version core> ::= <major> "." <minor> "." <patch>
+     *                  | <major> "." <minor>
      * }
      * </pre>
      *
@@ -285,9 +286,13 @@ class VersionParser implements Parser<Version> {
         int major = Integer.parseInt(numericIdentifier());
         consumeNextCharacter(DOT);
         int minor = Integer.parseInt(numericIdentifier());
-        consumeNextCharacter(DOT);
-        int patch = Integer.parseInt(numericIdentifier());
-        return new NormalVersion(major, minor, patch);
+        if (chars.positiveLookahead(DOT)) {
+            consumeNextCharacter(DOT);
+            int patch = Integer.parseInt(numericIdentifier());
+            return new NormalVersion(major, minor, patch);
+        } else {
+            return new NormalVersion(major, minor);
+        }
     }
 
     /**

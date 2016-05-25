@@ -70,6 +70,24 @@ public class VersionTest {
         }
 
         @Test
+        public void shouldIgnorePatchIfNotGivenWhenDeterminingVersionPrecedence() {
+            Version v1 = Version.valueOf("1.3");
+            Version v2 = Version.valueOf("1.3");
+            assertTrue(0 == v1.compareTo(v2));
+        }
+
+        @Test
+        public void shouldAssumePatchZeroIfNotGivenWhenDeterminingVersionPrecedence() {
+            Version v1 = Version.valueOf("1.3");
+            Version v2 = Version.valueOf("1.3.7");
+            Version v3 = Version.valueOf("1.3.0");
+            assertTrue(0 == v1.compareTo(v3));
+            assertTrue(0 == v3.compareTo(v1));
+            assertTrue(0 > v1.compareTo(v2));
+            assertTrue(0 < v2.compareTo(v1));
+        }
+
+        @Test
         public void shouldHaveGreaterThanMethodReturningBoolean() {
             Version v1 = Version.valueOf("2.3.7");
             Version v2 = Version.valueOf("1.3.7");

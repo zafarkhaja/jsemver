@@ -84,7 +84,6 @@ public class ParserErrorHandlingTest {
             { "1",            null, 1,  new CharType[] { DOT } },
             { "1 ",           ' ',  1,  new CharType[] { DOT } },
             { "1.",           null, 2,  new CharType[] { DIGIT } },
-            { "1.2",          null, 3,  new CharType[] { DOT } },
             { "1.2.",         null, 4,  new CharType[] { DIGIT } },
             { "a.b.c",        'a',  0,  new CharType[] { DIGIT } },
             { "1.b.c",        'b',  2,  new CharType[] { DIGIT } },

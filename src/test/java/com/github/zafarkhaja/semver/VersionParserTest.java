@@ -39,6 +39,12 @@ public class VersionParserTest {
     }
 
     @Test
+    public void optionalPatchVersionShouldDefaultToZero() {
+        NormalVersion version = VersionParser.parseVersionCore("1.0");
+        assertEquals(new NormalVersion(1, 0, 0), version);
+    }
+
+    @Test
     public void shouldRaiseErrorIfNumericIdentifierHasLeadingZeroes() {
         try {
             VersionParser.parseVersionCore("01.1.0");
