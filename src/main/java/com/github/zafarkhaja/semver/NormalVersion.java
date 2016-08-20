@@ -23,6 +23,8 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.io.Serializable;
+
 /**
  * The {@code NormalVersion} class represents the version core.
  *
@@ -31,7 +33,9 @@ package com.github.zafarkhaja.semver;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.2.0
  */
-class NormalVersion implements Comparable<NormalVersion> {
+class NormalVersion implements Comparable<NormalVersion>, Serializable {
+
+    private static final long serialVersionUID = -5646200921684070847L;
 
     /**
      * The major version number.

@@ -23,6 +23,7 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -32,7 +33,9 @@ import java.util.Arrays;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.2.0
  */
-class MetadataVersion implements Comparable<MetadataVersion> {
+class MetadataVersion implements Comparable<MetadataVersion>, Serializable {
+
+    private static final long serialVersionUID = -1722535646295099910L;
 
     /**
      * Null metadata, the implementation of the Null Object design pattern.
