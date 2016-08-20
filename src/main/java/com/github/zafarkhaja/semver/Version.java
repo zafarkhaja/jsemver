@@ -27,6 +27,8 @@ import com.github.zafarkhaja.semver.expr.Expression;
 import com.github.zafarkhaja.semver.expr.ExpressionParser;
 import com.github.zafarkhaja.semver.expr.LexerException;
 import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
+
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -38,7 +40,9 @@ import java.util.Comparator;
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  * @since 0.1.0
  */
-public class Version implements Comparable<Version> {
+public class Version implements Comparable<Version>, Serializable {
+
+    private static final long serialVersionUID = -2008891377046871654L;
 
     /**
      * The normal version.

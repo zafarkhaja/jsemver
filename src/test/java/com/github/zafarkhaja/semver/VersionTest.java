@@ -26,6 +26,9 @@ package com.github.zafarkhaja.semver;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+
+import java.io.*;
+
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.lt;
 import static org.junit.Assert.*;
@@ -466,6 +469,52 @@ public class VersionTest {
                 Version v2 = Version.valueOf(versions[i]);
                 assertTrue(0 > Version.BUILD_AWARE_ORDER.compare(v1, v2));
             }
+        }
+    }
+
+    public static class SerializationTest {
+
+        @Test
+        public void shouldSerializeAndDeserialize() throws IOException, ClassNotFoundException {
+            String[] versions = {
+                    "1.0.0-alpha",
+                    "1.0.0-alpha.1",
+                    "1.0.0-beta.2",
+                    "1.0.0-beta.11",
+                    "1.0.0-rc.1",
+                    "1.0.0-rc.1+build.1",
+                    "1.0.0",
+                    "1.0.0+0.3.7",
+                    "1.3.7+build",
+                    "1.3.7+build.2.b8f12d7",
+                    "1.3.7+build.11.e0f985a"
+            };
+
+            for (int i = 1; i < versions.length; i++) {
+                Version v1a = Version.valueOf(versions[i-1]);
+                byte[] v1ba = pickle(v1a);
+                Version v1b = unpickle(v1ba, Version.class);
+                assertTrue(v1a.equals(v1b));
+            }
+        }
+
+        private static <T extends Serializable> byte[] pickle(T obj)
+                throws IOException
+        {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(obj);
+            oos.close();
+            return baos.toByteArray();
+        }
+
+        private static <T extends Serializable> T unpickle(byte[] b, Class<T> cl)
+                throws IOException, ClassNotFoundException
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(b);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            Object o = ois.readObject();
+            return cl.cast(o);
         }
     }
 }
