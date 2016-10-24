@@ -67,7 +67,7 @@ Java SemVer Changelog
 * Added incrementor methods for the `NormalVersion`
 
 ### 0.2.1 (Mar 3, 2013) ###
-* Made minor imrovements to the code
+* Made minor improvements to the code
 
 ### 0.2.0 (Mar 3, 2013) ###
 * Separated the logic into different classes
