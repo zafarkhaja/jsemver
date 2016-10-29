@@ -36,17 +36,17 @@ class NormalVersion implements Comparable<NormalVersion> {
     /**
      * The major version number.
      */
-    private final int major;
+    private final long major;
 
     /**
      * The minor version number.
      */
-    private final int minor;
+    private final long minor;
 
     /**
      * The patch version number.
      */
-    private final int patch;
+    private final long patch;
 
     /**
      * Constructs a {@code NormalVersion} with the
@@ -57,7 +57,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @param patch the patch version number
      * @throws IllegalArgumentException if one of the version numbers is a negative integer
      */
-    NormalVersion(int major, int minor, int patch) {
+    NormalVersion(long major, long minor, long patch) {
         if (major < 0 || minor < 0 || patch < 0) {
             throw new IllegalArgumentException(
                 "Major, minor and patch versions MUST be non-negative integers."
@@ -73,7 +73,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      *
      * @return the major version number
      */
-    int getMajor() {
+    long getMajor() {
         return major;
     }
 
@@ -82,7 +82,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      *
      * @return the minor version number
      */
-    int getMinor() {
+    long getMinor() {
         return minor;
     }
 
@@ -91,7 +91,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      *
      * @return the patch version number
      */
-    int getPatch() {
+    long getPatch() {
         return patch;
     }
 
@@ -127,14 +127,17 @@ class NormalVersion implements Comparable<NormalVersion> {
      */
     @Override
     public int compareTo(NormalVersion other) {
-        int result = major - other.major;
+        long result = major - other.major;
         if (result == 0) {
             result = minor - other.minor;
             if (result == 0) {
                 result = patch - other.patch;
+                if (result == 0) {
+                    return 0;
+                }
             }
         }
-        return result;
+        return result < 0 ? -1 : 1;
     }
 
     /**
@@ -156,11 +159,11 @@ class NormalVersion implements Comparable<NormalVersion> {
      */
     @Override
     public int hashCode() {
-        int hash = 17;
+        long hash = 17L;
         hash = 31 * hash + major;
         hash = 31 * hash + minor;
         hash = 31 * hash + patch;
-        return hash;
+        return (int) hash;
     }
 
     /**
