@@ -49,6 +49,10 @@ public class LexerException extends ParseException {
         this.expr = expr;
     }
 
+    public String getExpr() {
+        return expr;
+    }
+
     /**
      * Returns the string representation of this exception.
      *

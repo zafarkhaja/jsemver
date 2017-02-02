@@ -239,7 +239,9 @@ public class CompositeExpression implements Expression {
      * @return this {@code CompositeExpression}
      */
     public CompositeExpression or(Expression expr) {
-        exprTree = new Or(exprTree, expr);
+        if (expr != null) {
+            exprTree = new Or(exprTree, expr);
+        }
         return this;
     }
 
