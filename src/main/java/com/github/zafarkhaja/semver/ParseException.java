@@ -58,6 +58,19 @@ public class ParseException extends RuntimeException {
         super(message);
         initCause(cause);
     }
+    
+    /**
+     * Returns the message of this exception. If the message is not set, 
+     * returns the string representation provided by toString()
+     *
+     * @return the message of this exception
+     */
+    @Override
+    public String getMessage() {
+        if (super.getMessage() != null)
+            return super.getMessage();
+        return toString();
+    }
 
     /**
      * Returns the string representation of this exception.
