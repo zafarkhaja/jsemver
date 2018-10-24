@@ -321,6 +321,12 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(DOT);
         if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
+            if(tokens.positiveLookahead(DOT)) {
+                tokens.consume();
+                if (tokens.positiveLookahead(WILDCARD)) {
+                    tokens.consume();
+                }
+            }
             return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
 

@@ -2,15 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>9</version>
-  </parent>
-
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Java SemVer</name>
@@ -35,10 +29,32 @@
   </developers>
 
   <scm>
-    <url>https://github.com/zafarkhaja/jsemver</url>
-    <connection>scm:git:git://github.com/zafarkhaja/jsemver.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/zafarkhaja/jsemver.git</developerConnection>
+    <url>https://github.com/puppetlabs/jsemver</url>
+    <connection>scm:git:git://github.com/puppetlabs/jsemver.git</connection>
+    <tag>HEAD</tag>
+    <developerConnection>scm:git:ssh://git@github.com/puppetlabs/jsemver.git</developerConnection>
   </scm>
+
+  <repositories>
+    <repository>
+      <id>distelli-mvn-repo</id>
+      <url>s3://distelli-mvn-repo/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>distelli-mvn-repo</id>
+      <url>s3://distelli-mvn-repo/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
