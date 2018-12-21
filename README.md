@@ -25,7 +25,7 @@ development and its public API should not be considered stable.
 
 Installation
 ------------
-To install the Java SemVer libary add the following dependency to your Maven
+To install the Java SemVer library add the following dependency to your Maven
 project.
 
 **Current stable version**
@@ -272,7 +272,7 @@ other interesting capabilities of the SemVer Expressions external DSL.
 
 Exception Handling
 ------------------
-There are two types of errors that may arrise while using Java SemVer
+There are two types of errors that may arise while using Java SemVer
 * `IllegalArgumentException` is thrown when the passed value is `NULL` or empty
   if a method accepts `string` argument or a negative integer if a method accepts
   `int` arguments.
