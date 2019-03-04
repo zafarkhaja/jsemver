@@ -200,28 +200,56 @@ class VersionParser implements Parser<Version> {
         VersionParser parser = new VersionParser(version);
         return parser.parseValidSemVer();
     }
-    
+
     /**
-     * Parses the whole version including pre-release version and build metadata.<br>
-     * Allow missing version increment. A missing increment is replaced by 0
+     * Parses the whole version including pre-release version and build metadata.<br> Allow version
+     * without MINOR and / or PATCH increment.
      *
      * @param version the version string to parse
      * @return a valid version object
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is a grammar error
      * @throws UnexpectedCharacterException when encounters an unexpected character type
+     * @see #parseCompatibleSemVer(String, MissingIncrementStrategy, MissingIncrementStrategy)
      */
     static Version parseCompatibleSemVer(String version) {
-        return parseCompatibleSemVer(version, DefaultValueMissingIncrementStrategy.ZERO, DefaultValueMissingIncrementStrategy.ZERO);
+        return parseCompatibleSemVer(version, DefaultValueMissingIncrementStrategy.ZERO,
+            DefaultValueMissingIncrementStrategy.ZERO);
     }
-    
-    static Version parseCompatibleSemVer(String version, MissingIncrementStrategy missingPatchStrategy) {
+
+    /**
+     * Parses the whole version including pre-release version and build metadata.
+     *
+     * @param version the version string to parse
+     * @param missingPatchStrategy strategy used on missing PATCH version increment
+     * @return a valid version object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
+     * @see #parseCompatibleSemVer(String, MissingIncrementStrategy, MissingIncrementStrategy)
+     */
+    static Version parseCompatibleSemVer(String version,
+        MissingIncrementStrategy missingPatchStrategy) {
         VersionParser parser = new VersionParser(version);
         parser.missingPatchStrategy = missingPatchStrategy;
         return parser.parseValidSemVer();
     }
-    
-    static Version parseCompatibleSemVer(String version, MissingIncrementStrategy missingPatchStrategy, MissingIncrementStrategy missingMinorStrategy) {
+
+    /**
+     * Parses the whole version including pre-release version and build metadata.
+     *
+     * @param version the version string to parse
+     * @param missingPatchStrategy strategy used on missing PATCH version increment
+     * @param missingMinorStrategy strategy used on missing MINOR version increment
+     * @return a valid version object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
+     * @see #parseCompatibleSemVer(String, MissingIncrementStrategy, MissingIncrementStrategy)
+     */
+    static Version parseCompatibleSemVer(String version,
+        MissingIncrementStrategy missingPatchStrategy,
+        MissingIncrementStrategy missingMinorStrategy) {
         VersionParser parser = new VersionParser(version);
         parser.missingPatchStrategy = missingPatchStrategy;
         parser.missingMinorStrategy = missingMinorStrategy;

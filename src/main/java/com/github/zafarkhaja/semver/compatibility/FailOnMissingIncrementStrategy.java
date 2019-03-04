@@ -2,6 +2,9 @@ package com.github.zafarkhaja.semver.compatibility;
 
 import com.github.zafarkhaja.semver.ParseException;
 
+/**
+ * Strategy used to throw an exception when an increment is missing.
+ */
 public class FailOnMissingIncrementStrategy implements MissingIncrementStrategy
 {
 	

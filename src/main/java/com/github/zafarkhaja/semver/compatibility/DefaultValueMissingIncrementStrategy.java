@@ -2,6 +2,9 @@ package com.github.zafarkhaja.semver.compatibility;
 
 import com.github.zafarkhaja.semver.ParseException;
 
+/**
+ * Strategy used to set missing increment to a default value.
+ */
 public class DefaultValueMissingIncrementStrategy implements MissingIncrementStrategy
 {
 	
