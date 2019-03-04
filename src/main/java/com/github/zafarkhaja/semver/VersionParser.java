@@ -23,6 +23,9 @@
  */
 package com.github.zafarkhaja.semver;
 
+import com.github.zafarkhaja.semver.compatibility.DefaultValueMissingIncrementStrategy;
+import com.github.zafarkhaja.semver.compatibility.FailOnMissingIncrementStrategy;
+import com.github.zafarkhaja.semver.compatibility.MissingIncrementStrategy;
 import com.github.zafarkhaja.semver.util.Stream;
 import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 import java.util.ArrayList;
@@ -149,6 +152,9 @@ class VersionParser implements Parser<Version> {
      * The stream of characters.
      */
     private final Stream<Character> chars;
+    private final MissingIncrementStrategy missingMajorStrategy = FailOnMissingIncrementStrategy.MAJOR;
+    private MissingIncrementStrategy missingMinorStrategy = FailOnMissingIncrementStrategy.MINOR;
+    private MissingIncrementStrategy missingPatchStrategy = FailOnMissingIncrementStrategy.PATCH;
 
     /**
      * Constructs a {@code VersionParser} instance
@@ -192,6 +198,33 @@ class VersionParser implements Parser<Version> {
      */
     static Version parseValidSemVer(String version) {
         VersionParser parser = new VersionParser(version);
+        return parser.parseValidSemVer();
+    }
+    
+    /**
+     * Parses the whole version including pre-release version and build metadata.<br>
+     * Allow missing version increment. A missing increment is replaced by 0
+     *
+     * @param version the version string to parse
+     * @return a valid version object
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
+     */
+    static Version parseCompatibleSemVer(String version) {
+        return parseCompatibleSemVer(version, DefaultValueMissingIncrementStrategy.ZERO, DefaultValueMissingIncrementStrategy.ZERO);
+    }
+    
+    static Version parseCompatibleSemVer(String version, MissingIncrementStrategy missingPatchStrategy) {
+        VersionParser parser = new VersionParser(version);
+        parser.missingPatchStrategy = missingPatchStrategy;
+        return parser.parseValidSemVer();
+    }
+    
+    static Version parseCompatibleSemVer(String version, MissingIncrementStrategy missingPatchStrategy, MissingIncrementStrategy missingMinorStrategy) {
+        VersionParser parser = new VersionParser(version);
+        parser.missingPatchStrategy = missingPatchStrategy;
+        parser.missingMinorStrategy = missingMinorStrategy;
         return parser.parseValidSemVer();
     }
 
@@ -282,11 +315,45 @@ class VersionParser implements Parser<Version> {
      * @return a valid normal version object
      */
     private NormalVersion parseVersionCore() {
-        int major = Integer.parseInt(numericIdentifier());
-        consumeNextCharacter(DOT);
-        int minor = Integer.parseInt(numericIdentifier());
-        consumeNextCharacter(DOT);
-        int patch = Integer.parseInt(numericIdentifier());
+        return this.parseVersionMajorCore();
+    }
+    private NormalVersion parseVersionMajorCore() {
+        int major;
+        int minor;
+        int patch;
+        try {
+            major = Integer.parseInt(numericIdentifier());
+            return this.parseVersionMinorCore(major);
+        } catch (UnexpectedCharacterException e) {
+            major = this.missingMajorStrategy.missingIncrementValue();
+            minor = this.missingMinorStrategy.missingIncrementValue();
+            patch = this.missingPatchStrategy.missingIncrementValue();
+        }
+        return new NormalVersion(major, minor, patch);
+    }
+    
+    private NormalVersion parseVersionMinorCore(int major) {
+        int minor;
+        int patch;
+        try {
+            consumeNextCharacter(DOT);
+            minor = Integer.parseInt(numericIdentifier());
+            return this.parseVersionPatchCore(major, minor);
+        } catch (UnexpectedCharacterException e) {
+            minor = this.missingMinorStrategy.missingIncrementValue();
+            patch = this.missingPatchStrategy.missingIncrementValue();
+        }
+        return new NormalVersion(major, minor, patch);
+    }
+    
+    private NormalVersion parseVersionPatchCore(int major, int minor) {
+        int patch;
+        try {
+            consumeNextCharacter(DOT);
+            patch = Integer.parseInt(numericIdentifier());
+        } catch (UnexpectedCharacterException e) {
+            patch = this.missingPatchStrategy.missingIncrementValue();
+        }
         return new NormalVersion(major, minor, patch);
     }
 
