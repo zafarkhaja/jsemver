@@ -33,7 +33,7 @@ import static org.junit.Assert.fail;
 /**
  * @author Zafar Khaja <zafarkhaja@gmail.com>
  */
-public class CampatibleVersionParserTest
+public class CompatibleVersionParserTest
 {
 	
 	@Test
