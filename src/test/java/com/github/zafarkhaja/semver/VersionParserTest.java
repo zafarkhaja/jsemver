@@ -37,6 +37,36 @@ public class VersionParserTest {
         NormalVersion version = VersionParser.parseVersionCore("1.0.0");
         assertEquals(new NormalVersion(1, 0, 0), version);
     }
+    
+    @Test
+    public void missingMajorRevision() {
+        try {
+            VersionParser.parseValidSemVer("alpha");
+        } catch (ParseException e) {
+            return;
+        }
+        fail("Missing major increment!");
+    }
+    
+    @Test
+    public void missingMinorRevision() {
+        try {
+            VersionParser.parseValidSemVer("1-alpha");
+        } catch (ParseException e) {
+            return;
+        }
+        fail("Missing patch increment!");
+    }
+    
+    @Test
+    public void missingPatchRevision() {
+        try {
+            VersionParser.parseValidSemVer("1.0-alpha");
+        } catch (ParseException e) {
+            return;
+        }
+        fail("Missing patch increment!");
+    }
 
     @Test
     public void shouldRaiseErrorIfNumericIdentifierHasLeadingZeroes() {
@@ -112,7 +142,7 @@ public class VersionParserTest {
             version
         );
     }
-
+    
     @Test
     public void shouldRaiseErrorForIllegalInputString() {
         for (String illegal : new String[] { "", null }) {
