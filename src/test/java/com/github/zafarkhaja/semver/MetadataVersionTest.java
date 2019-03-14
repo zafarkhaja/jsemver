@@ -118,7 +118,7 @@ public class MetadataVersionTest {
                 new String[] {"alpha"}
             );
             MetadataVersion v2 = v1.increment();
-            assertEquals("alpha.1", v2.toString());
+            assertEquals("alpha.0", v2.toString());
         }
 
         @Test
@@ -171,12 +171,8 @@ public class MetadataVersionTest {
 
         @Test
         public void shouldThrowNullPointerExceptionIfIncremented() {
-            try {
-                MetadataVersion.NULL.increment();
-            } catch (NullPointerException e) {
-                return;
-            }
-            fail("Should throw NullPointerException when incremented");
+            MetadataVersion v2 = MetadataVersion.NULL.increment();
+            assertEquals("0", v2.toString());
         }
     }
 
