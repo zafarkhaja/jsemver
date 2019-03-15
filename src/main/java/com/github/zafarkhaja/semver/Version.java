@@ -345,7 +345,7 @@ public class Version implements Comparable<Version> {
      * @return a new instance of the {@code Version} class
      */
     public Version incrementMajorVersion() {
-        if (preRelease == MetadataVersion.NULL) {
+        if (preRelease == MetadataVersion.NULL || normal.getPatch() != 0 || normal.getMinor() != 0) {
             return new Version(normal.incrementMajor());
         }
         return new Version(normal);
@@ -377,7 +377,7 @@ public class Version implements Comparable<Version> {
      * @return a new instance of the {@code Version} class
      */
     public Version incrementMinorVersion() {
-        if (preRelease == MetadataVersion.NULL) {            
+        if (preRelease == MetadataVersion.NULL || normal.getPatch() != 0) {
             return new Version(normal.incrementMinor());
         }
         return new Version(normal);

@@ -195,14 +195,14 @@ public class VersionTest {
             Version v = Version.valueOf("1.2.3-alpha+build");
 
             Version major1 = v.incrementMajorVersion();
-            assertEquals("1.2.3", major1.toString());
+            assertEquals("2.0.0", major1.toString());
             Version major2 = v.incrementMajorVersion("beta");
             assertEquals("2.0.0-beta", major2.toString());
             Version major3 = v.incrementPreMajorVersion();
             assertEquals("2.0.0-0", major3.toString());
 
             Version minor1 = v.incrementMinorVersion();
-            assertEquals("1.2.3", minor1.toString());
+            assertEquals("1.3.0", minor1.toString());
             Version minor2 = v.incrementMinorVersion("beta");
             assertEquals("1.3.0-beta", minor2.toString());
             Version minor3 = v.incrementPreMinorVersion();
@@ -214,6 +214,36 @@ public class VersionTest {
             assertEquals("1.2.4-beta", patch2.toString());
             Version patch3 = v.incrementPrePatchVersion();
             assertEquals("1.2.4-0", patch3.toString());
+        }
+
+        @Test
+        public void shouldDropPreMetadataWhenIncrementingWithZero() {
+            Version major = Version.valueOf("1.0.0-alpha");
+
+            Version major1 = major.incrementMajorVersion();
+            assertEquals("1.0.0", major1.toString());
+            Version major2 = major.incrementMinorVersion();
+            assertEquals("1.0.0", major2.toString());
+            Version major3 = major.incrementPatchVersion();
+            assertEquals("1.0.0", major3.toString());
+
+            Version minor = Version.valueOf("1.2.0-alpha");
+
+            Version minor1 = minor.incrementMajorVersion();
+            assertEquals("2.0.0", minor1.toString());
+            Version minor2 = minor.incrementMinorVersion();
+            assertEquals("1.2.0", minor2.toString());
+            Version minor3 = minor.incrementPatchVersion();
+            assertEquals("1.2.0", minor3.toString());
+
+            Version patch = Version.valueOf("1.2.3-alpha");
+
+            Version patch1 = patch.incrementMajorVersion();
+            assertEquals("2.0.0", patch1.toString());
+            Version patch2 = patch.incrementMinorVersion();
+            assertEquals("1.3.0", patch2.toString());
+            Version patch3 = patch.incrementPatchVersion();
+            assertEquals("1.2.3", patch3.toString());
         }
 
         @Test
