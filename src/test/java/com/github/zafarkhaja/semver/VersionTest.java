@@ -198,16 +198,52 @@ public class VersionTest {
             assertEquals("2.0.0", major1.toString());
             Version major2 = v.incrementMajorVersion("beta");
             assertEquals("2.0.0-beta", major2.toString());
+            Version major3 = v.incrementPreMajorVersion();
+            assertEquals("2.0.0-0", major3.toString());
 
             Version minor1 = v.incrementMinorVersion();
             assertEquals("1.3.0", minor1.toString());
             Version minor2 = v.incrementMinorVersion("beta");
             assertEquals("1.3.0-beta", minor2.toString());
+            Version minor3 = v.incrementPreMinorVersion();
+            assertEquals("1.3.0-0", minor3.toString());
 
             Version patch1 = v.incrementPatchVersion();
-            assertEquals("1.2.4", patch1.toString());
+            assertEquals("1.2.3", patch1.toString());
             Version patch2 = v.incrementPatchVersion("beta");
             assertEquals("1.2.4-beta", patch2.toString());
+            Version patch3 = v.incrementPrePatchVersion();
+            assertEquals("1.2.4-0", patch3.toString());
+        }
+
+        @Test
+        public void shouldDropPreMetadataWhenIncrementingWithZero() {
+            Version major = Version.valueOf("1.0.0-alpha");
+
+            Version major1 = major.incrementMajorVersion();
+            assertEquals("1.0.0", major1.toString());
+            Version major2 = major.incrementMinorVersion();
+            assertEquals("1.0.0", major2.toString());
+            Version major3 = major.incrementPatchVersion();
+            assertEquals("1.0.0", major3.toString());
+
+            Version minor = Version.valueOf("1.2.0-alpha");
+
+            Version minor1 = minor.incrementMajorVersion();
+            assertEquals("2.0.0", minor1.toString());
+            Version minor2 = minor.incrementMinorVersion();
+            assertEquals("1.2.0", minor2.toString());
+            Version minor3 = minor.incrementPatchVersion();
+            assertEquals("1.2.0", minor3.toString());
+
+            Version patch = Version.valueOf("1.2.3-alpha");
+
+            Version patch1 = patch.incrementMajorVersion();
+            assertEquals("2.0.0", patch1.toString());
+            Version patch2 = patch.incrementMinorVersion();
+            assertEquals("1.3.0", patch2.toString());
+            Version patch3 = patch.incrementPatchVersion();
+            assertEquals("1.2.3", patch3.toString());
         }
 
         @Test
@@ -241,12 +277,8 @@ public class VersionTest {
         @Test
         public void shouldThrowExceptionWhenIncrementingPreReleaseIfItsNull() {
             Version v1 = Version.valueOf("1.0.0");
-            try {
-                v1.incrementPreReleaseVersion();
-            } catch (NullPointerException e) {
-                return;
-            }
-            fail("Method was expected to throw NullPointerException");
+            Version v2 = v1.incrementPreReleaseVersion();
+            assertEquals("1.0.0-0", v2.toString());
         }
 
         @Test
@@ -266,12 +298,8 @@ public class VersionTest {
         @Test
         public void shouldThrowExceptionWhenIncrementingBuildIfItsNull() {
             Version v1 = Version.valueOf("1.0.0");
-            try {
-                v1.incrementBuildMetadata();
-            } catch (NullPointerException e) {
-                return;
-            }
-            fail("Method was expected to throw NullPointerException");
+            Version v2 = v1.incrementBuildMetadata();
+            assertEquals("1.0.0+0", v2.toString());
         }
 
         @Test
