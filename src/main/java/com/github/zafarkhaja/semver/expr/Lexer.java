@@ -24,6 +24,7 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.util.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,14 +58,17 @@ class Lexer {
             LESS("<(?!=)"),
             LESS_EQUAL("<="),
             TILDE("~"),
-            WILDCARD("[\\*xX]"),
+            STAR_WILDCARD("\\*"),
+            X_WILDCARD("[xX]"),
             CARET("\\^"),
-            AND("&"),
-            OR("\\|"),
-            NOT("!(?!=)"),
-            LEFT_PAREN("\\("),
-            RIGHT_PAREN("\\)"),
+//            AND("&(&)?"),
+            OR("\\s*\\|\\|\\s*"),
+//            NOT("!(?!=)"),
+//            LEFT_PAREN("\\("),
+//            RIGHT_PAREN("\\)"),
             WHITESPACE("\\s+"),
+            ALPHA("[A-Za-z]+"),
+            PLUS("\\+"),
             EOI("?!");
 
             /**
@@ -124,8 +128,8 @@ class Lexer {
          * Constructs a {@code Token} instance
          * with the type, lexeme and position.
          *
-         * @param type the type of this token
-         * @param lexeme the lexeme of this token
+         * @param type     the type of this token
+         * @param lexeme   the lexeme of this token
          * @param position the position of this token
          */
         Token(Type type, String lexeme, int position) {
@@ -147,9 +151,9 @@ class Lexer {
             }
             Token token = (Token) other;
             return
-                type.equals(token.type) &&
-                lexeme.equals(token.lexeme) &&
-                position == token.position;
+                    type.equals(token.type) &&
+                            lexeme.equals(token.lexeme) &&
+                            position == token.position;
         }
 
         /**
@@ -172,9 +176,9 @@ class Lexer {
         @Override
         public String toString() {
             return String.format(
-                "%s(%s) at position %d",
-                type.name(),
-                lexeme, position
+                    "%s(%s) at position %d",
+                    type.name(),
+                    lexeme, position
             );
         }
     }
@@ -203,13 +207,13 @@ class Lexer {
                 if (matcher.find()) {
                     matched = true;
                     input = matcher.replaceFirst("");
-                    if (tokenType != Token.Type.WHITESPACE) {
+//                    if (tokenType != Token.Type.WHITESPACE) {
                         tokens.add(new Token(
                             tokenType,
                             matcher.group(),
                             tokenPos
                         ));
-                    }
+//                    }
                     tokenPos += matcher.end();
                     break;
                 }

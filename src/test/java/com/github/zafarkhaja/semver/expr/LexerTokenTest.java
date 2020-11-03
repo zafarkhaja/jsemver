@@ -80,7 +80,7 @@ public class LexerTokenTest {
 
         @Test
         public void shouldReturnFalseIfOtherVersionIsNull() {
-            Token t1 = new Token(AND, "&", 0);
+            Token t1 = new Token(OR, "||", 0);
             Token t2 = null;
             assertFalse(t1.equals(t2));
         }

@@ -84,7 +84,7 @@ public class ExpressionParser implements Parser<Expression> {
     @Override
     public Expression parse(String input) {
         tokens = lexer.tokenize(input);
-        Expression expr = parseSemVerExpression();
+        Expression expr = parseRangeSet();
         consumeNextToken(EOI);
         return expr;
     }
@@ -103,21 +103,32 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private CompositeExpression parseSemVerExpression() {
-        CompositeExpression expr;
-        if (tokens.positiveLookahead(NOT)) {
-            tokens.consume();
-            consumeNextToken(LEFT_PAREN);
-            expr = not(parseSemVerExpression());
-            consumeNextToken(RIGHT_PAREN);
-        } else if (tokens.positiveLookahead(LEFT_PAREN)) {
-            consumeNextToken(LEFT_PAREN);
-            expr = parseSemVerExpression();
-            consumeNextToken(RIGHT_PAREN);
-        } else {
-            expr = parseRange();
+    private CompositeExpression parseRangeSet() {
+        CompositeExpression expr = parseRange();
+        while (tokens.positiveLookahead(OR)) {
+            tokens.consume(OR);
+            if (expr == null) {
+                expr = parseRange();
+            }
+            expr = expr.or(parseRange());
         }
-        return parseMoreExpressions(expr);
+        return expr;
+    }
+
+    private CompositeExpression parseRange() {
+        if (tokens.positiveLookahead(OR)) {
+            return null;
+        }
+        if (isHyphenRange()) {
+            return parseHyphenRange();
+        } else {
+            CompositeExpression expr = parseSimple();
+            if (tokens.positiveLookahead(WHITESPACE)) {
+                consumeWhiteSpaces();
+                expr = expr.and(parseRange());
+            }
+            return expr;
+        }
     }
 
     /**
@@ -133,12 +144,12 @@ public class ExpressionParser implements Parser<Expression> {
      * @return the expression AST
      */
     private CompositeExpression parseMoreExpressions(CompositeExpression expr) {
-        if (tokens.positiveLookahead(AND)) {
+        if (tokens.positiveLookahead(OR)) {
             tokens.consume();
-            expr = expr.and(parseSemVerExpression());
-        } else if (tokens.positiveLookahead(OR)) {
-            tokens.consume();
-            expr = expr.or(parseSemVerExpression());
+            CompositeExpression expression = parseRangeSet();
+            if (expression != null) {
+                expr = expr.or(expression);
+            }
         }
         return expr;
     }
@@ -159,15 +170,13 @@ public class ExpressionParser implements Parser<Expression> {
      *
      * @return the expression AST
      */
-    private CompositeExpression parseRange() {
+    private CompositeExpression parseSimple() {
         if (tokens.positiveLookahead(TILDE)) {
             return parseTildeRange();
         } else if (tokens.positiveLookahead(CARET)) {
             return parseCaretRange();
         } else if (isWildcardRange()) {
             return parseWildcardRange();
-        } else if (isHyphenRange()) {
-            return parseHyphenRange();
         } else if (isPartialVersionRange()) {
             return parsePartialVersionRange();
         }
@@ -243,7 +252,9 @@ public class ExpressionParser implements Parser<Expression> {
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        return gte(versionFor(major, minor, patch)).and(lt(versionFor(major, minor + 1)));
+        Version version = versionFor(major, minor, patch);
+        Version qualifiedVersion = parseQualifier(version);
+        return gte(qualifiedVersion).and(lt(versionFor(major, minor + 1)));
     }
 
     /**
@@ -273,7 +284,8 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
         Version version = versionFor(major, minor, patch);
-        CompositeExpression gte = gte(version);
+        Version qualifiedVersion = version = parseQualifier(version);
+        CompositeExpression gte = gte(qualifiedVersion);
         if (major > 0) {
             return gte.and(lt(version.incrementMajorVersion()));
         } else if (minor > 0) {
@@ -293,7 +305,29 @@ public class ExpressionParser implements Parser<Expression> {
      *         {@code false} otherwise
      */
     private boolean isWildcardRange() {
-        return isVersionFollowedBy(WILDCARD);
+        Token.Type expected = NUMERIC;
+        Iterator<Token> it = tokens.iterator();
+        Token lookahead = null;
+        while (it.hasNext()) {
+            lookahead = it.next();
+
+            if (NUMERIC.isMatchedBy(lookahead)) {
+                if (it.hasNext()) {
+                    lookahead = it.next();
+                    if (!DOT.isMatchedBy(lookahead)) {
+                        return false;
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+        for (ElementType<Token> elementType : EnumSet.of(STAR_WILDCARD, X_WILDCARD)) {
+            if (elementType.isMatchedBy(lookahead)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -312,21 +346,21 @@ public class ExpressionParser implements Parser<Expression> {
      * @return the expression AST
      */
     private CompositeExpression parseWildcardRange() {
-        if (tokens.positiveLookahead(WILDCARD)) {
+        if (tokens.positiveLookahead(STAR_WILDCARD, X_WILDCARD)) {
             tokens.consume();
             return gte(versionFor(0, 0, 0));
         }
 
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         consumeNextToken(DOT);
-        if (tokens.positiveLookahead(WILDCARD)) {
+        if (tokens.positiveLookahead(STAR_WILDCARD, X_WILDCARD)) {
             tokens.consume();
             return gte(versionFor(major)).and(lt(versionFor(major + 1)));
         }
 
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         consumeNextToken(DOT);
-        consumeNextToken(WILDCARD);
+        consumeNextToken(STAR_WILDCARD, X_WILDCARD);
         return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
     }
 
@@ -339,7 +373,22 @@ public class ExpressionParser implements Parser<Expression> {
      *         {@code false} otherwise
      */
     private boolean isHyphenRange() {
-        return isVersionFollowedBy(HYPHEN);
+        EnumSet<Token.Type> expected = EnumSet.of(NUMERIC, DOT, ALPHA, HYPHEN, X_WILDCARD);
+        Iterator<Token> it = tokens.iterator();
+        Token lookahead = null;
+        while (it.hasNext()) {
+            lookahead = it.next();
+            if (!expected.contains(lookahead.type)) {
+                break;
+            }
+        }
+        if (WHITESPACE.isMatchedBy(lookahead) && it.hasNext()) {
+            lookahead = it.next();
+            if (HYPHEN.isMatchedBy(lookahead)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -355,7 +404,9 @@ public class ExpressionParser implements Parser<Expression> {
      */
     private CompositeExpression parseHyphenRange() {
         CompositeExpression gte = gte(parseVersion());
+        consumeNextToken(WHITESPACE);
         consumeNextToken(HYPHEN);
+        consumeNextToken(WHITESPACE);
         return gte.and(lte(parseVersion()));
     }
 
@@ -368,7 +419,7 @@ public class ExpressionParser implements Parser<Expression> {
      *         {@code false} otherwise
      */
     private boolean isPartialVersionRange() {
-        if (!tokens.positiveLookahead(NUMERIC)) {
+        if (!tokens.positiveLookahead(NUMERIC) ) {
             return false;
         }
         EnumSet<Token.Type> expected = EnumSet.complementOf(EnumSet.of(NUMERIC, DOT));
@@ -421,31 +472,30 @@ public class ExpressionParser implements Parser<Expression> {
             tokens.consume();
             patch = intOf(consumeNextToken(NUMERIC).lexeme);
         }
-        return versionFor(major, minor, patch);
+        Version version = versionFor(major, minor, patch);
+        version = parseQualifier(version);
+        return version;
     }
 
-    /**
-     * Determines if the version terminals are
-     * followed by the specified token type.
-     *
-     * This method is essentially a {@code lookahead(k)} method
-     * which allows to solve the grammar's ambiguities.
-     *
-     * @param type the token type to check
-     * @return {@code true} if the version terminals are followed by
-     *         the specified token type or {@code false} otherwise
-     */
-    private boolean isVersionFollowedBy(ElementType<Token> type) {
-        EnumSet<Token.Type> expected = EnumSet.of(NUMERIC, DOT);
-        Iterator<Token> it = tokens.iterator();
-        Token lookahead = null;
-        while (it.hasNext()) {
-            lookahead = it.next();
-            if (!expected.contains(lookahead.type)) {
-                break;
+    private Version parseQualifier(Version version) {
+        if (tokens.positiveLookahead(HYPHEN)) {
+            tokens.consume();
+            StringBuilder preRelease = new StringBuilder();
+            while (tokens.positiveLookahead(HYPHEN, NUMERIC, ALPHA, X_WILDCARD, DOT)) {
+                preRelease.append(consumeNextToken(HYPHEN, NUMERIC, ALPHA, X_WILDCARD, DOT).lexeme);
             }
+            version = version.setPreReleaseVersion(preRelease.toString());
         }
-        return type.isMatchedBy(lookahead);
+        if (tokens.positiveLookahead(PLUS)) {
+            tokens.consume();
+            StringBuilder build = new StringBuilder();
+            while (tokens.positiveLookahead(HYPHEN, NUMERIC, ALPHA, X_WILDCARD, DOT)) {
+                build.append(consumeNextToken(HYPHEN, NUMERIC, ALPHA, X_WILDCARD, DOT).lexeme);
+            }
+            version = version.setBuildMetadata(build.toString());
+
+        }
+        return version;
     }
 
     /**
@@ -505,6 +555,12 @@ public class ExpressionParser implements Parser<Expression> {
             return tokens.consume(expected);
         } catch (UnexpectedElementException e) {
             throw new UnexpectedTokenException(e);
+        }
+    }
+
+    private void consumeWhiteSpaces() {
+        if (tokens.positiveLookahead(WHITESPACE)) {
+            tokens.consume(WHITESPACE);
         }
     }
 }

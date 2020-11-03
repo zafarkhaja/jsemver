@@ -52,18 +52,6 @@ public class LexerTest {
     }
 
     @Test
-    public void shouldSkipWhitespaces() {
-        Token[] expected = {
-            new Token(GREATER, ">",  0),
-            new Token(NUMERIC, "1",  2),
-            new Token(EOI,     null, 3),
-        };
-        Lexer lexer = new Lexer();
-        Stream<Token> stream = lexer.tokenize("> 1");
-        assertArrayEquals(expected, stream.toArray());
-    }
-
-    @Test
     public void shouldEndWithEol() {
         Token[] expected = {
             new Token(NUMERIC, "1",  0),
