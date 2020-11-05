@@ -1,1 +1,4 @@
 language: java
+arch:
+  - amd64
+  - ppc64le
