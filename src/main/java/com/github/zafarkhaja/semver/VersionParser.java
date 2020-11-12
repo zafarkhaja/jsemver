@@ -283,11 +283,11 @@ class VersionParser implements Parser<Version> {
      * @return a valid normal version object
      */
     private NormalVersion parseVersionCore() {
-        int major = Integer.parseInt(numericIdentifier());
+        long major = Long.parseLong(numericIdentifier());
         consumeNextCharacter(DOT);
-        int minor = Integer.parseInt(numericIdentifier());
+        long minor = Long.parseLong(numericIdentifier());
         consumeNextCharacter(DOT);
-        int patch = Integer.parseInt(numericIdentifier());
+        long patch = Long.parseLong(numericIdentifier());
         return new NormalVersion(major, minor, patch);
     }
 

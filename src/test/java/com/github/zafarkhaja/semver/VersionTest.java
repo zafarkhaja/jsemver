@@ -26,9 +26,14 @@ package com.github.zafarkhaja.semver;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.lt;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -331,6 +336,15 @@ public class VersionTest {
             Version v3 = Version.valueOf("1.2.3");
             assertTrue(v1.isMinorVersionCompatible(v2));
             assertFalse(v1.isMinorVersionCompatible(v3));
+        }
+
+        @Test
+        public void shouldParseLongPatchVersionCorrectly() {
+            try {
+                Version.valueOf("3.2.1477710197605");
+            } catch (NumberFormatException e) {
+                fail("Incorrectly got number format exception. " + e.getLocalizedMessage());
+            }
         }
     }
 
