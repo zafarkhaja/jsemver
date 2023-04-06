@@ -11,8 +11,9 @@ Java SemVer is versioned according to the SemVer Specification.
 zero, which according to the SemVer p.4 means that the library is under initial
 development and its public API should not be considered stable.
 
-### Bugs and Features ###
-Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/jsemver/issues.
+### Contributing ###
+For the guidelines on how to report bugs, request features, submit code changes,
+and contribute in various other ways please refer to the `CONTRIBUTING.md` file.
 
 ### License ###
 Java SemVer is licensed under the MIT License - see the `LICENSE` file for details.
