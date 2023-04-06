@@ -1,5 +1,5 @@
 Java SemVer v0.9.0 (SemVer 2)
-============================
+=============================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
 (http://semver.org/).
@@ -11,21 +11,26 @@ Java SemVer is versioned according to the SemVer Specification.
 zero which according to the SemVer p.4 means that the library is under initial
 development and its public API should not be considered stable.
 
-### Table of Contents ###
+### Bugs and Features ###
+Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/jsemver/issues.
+
+### License ###
+Java SemVer is licensed under the MIT License - see the `LICENSE` file for details.
+
+
+Library Usage
+-------------
 * [Installation](#installation)
-* [Usage](#usage)
+* [Common Use Cases](#common-use-cases)
   * [Creating Versions](#creating-versions)
   * [Incrementing Versions](#incrementing-versions)
   * [Comparing Versions](#comparing-versions)
 * [SemVer Expressions API (Ranges)](#semver-expressions-api-ranges)
 * [Exception Handling](#exception-handling)
-* [Bugs and Features](#bugs-and-features)
-* [License](#license)
 
 
-Installation
-------------
-To install the Java SemVer libary add the following dependency to your Maven
+## Installation ##
+To install the Java SemVer library add the following dependency to your Maven
 project.
 
 **Current stable version**
@@ -48,8 +53,8 @@ project.
 **NOTE**: To use the development version you need to add the SNAPSHOT repository
 to your `pom.xml` file: http://oss.sonatype.org/content/repositories/snapshots/.
 
-Usage
------
+
+## Common Use Cases ##
 Below are some common use cases for the Java SemVer library.
 
 ### Creating Versions ###
@@ -229,8 +234,7 @@ int result     = v1.compareWithBuildsTo(v2);  // < 0
 ~~~
 
 
-SemVer Expressions API (Ranges)
-----------------------
+## SemVer Expressions API (Ranges) ##
 Java SemVer supports the SemVer Expressions API which is implemented as both
 internal DSL and external DSL. The entry point for the API are
 the `Version.satisfies` methods.
@@ -270,9 +274,8 @@ other interesting capabilities of the SemVer Expressions external DSL.
 * Parenthesized expressions - `~1.3 | (1.4.* & !=1.4.5) | ~2`
 
 
-Exception Handling
-------------------
-There are two types of errors that may arrise while using Java SemVer
+## Exception Handling ##
+There are two types of errors that may arise while using Java SemVer
 * `IllegalArgumentException` is thrown when the passed value is `NULL` or empty
   if a method accepts `string` argument or a negative integer if a method accepts
   `int` arguments.
@@ -284,13 +287,3 @@ There are two types of errors that may arrise while using Java SemVer
   - `LexerException` is thrown when a SemVer Expression contains an illegal character
   - `UnexpectedTokenException` is thrown when an unexpected token is encountered
     during the SemVer Expression parsing
-
-
-Bugs and Features
------------------
-Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/jsemver/issues.
-
-
-License
--------
-Java SemVer is licensed under the MIT License - see the `LICENSE` file for details.
