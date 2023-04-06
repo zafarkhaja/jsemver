@@ -7,28 +7,32 @@ Java SemVer is a Java implementation of the Semantic Versioning Specification
 ### Versioning ###
 Java SemVer is versioned according to the SemVer Specification.
 
-**NOTE**: The current release of the Java SemVer library has a major version of
-zero which according to the SemVer p.4 means that the library is under initial
+**NOTE**: The current version of the Java SemVer library has a major version of
+zero, which according to the SemVer p.4 means that the library is under initial
 development and its public API should not be considered stable.
 
-### Table of Contents ###
+### Bugs and Features ###
+Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/jsemver/issues.
+
+### License ###
+Java SemVer is licensed under the MIT License - see the `LICENSE` file for details.
+
+
+Library Usage
+-------------
 * [Installation](#installation)
-* [Usage](#usage)
+* [Common Use Cases](#common-use-cases)
   * [Creating Versions](#creating-versions)
   * [Incrementing Versions](#incrementing-versions)
   * [Comparing Versions](#comparing-versions)
-* [SemVer Expressions API (Ranges)](#semver-expressions-api-ranges)
+* [Range Expressions](#range-expressions)
 * [Exception Handling](#exception-handling)
-* [Bugs and Features](#bugs-and-features)
-* [License](#license)
 
 
-Installation
-------------
-To install the Java SemVer libary add the following dependency to your Maven
-project.
+## Installation ##
+To install the Java SemVer library add the following dependency to your project
 
-**Current stable version**
+**Latest stable version**
 ~~~ xml
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
@@ -37,7 +41,7 @@ project.
 </dependency>
 ~~~
 
-**Development version**
+**Current development version**
 ~~~ xml
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
@@ -45,12 +49,23 @@ project.
   <version>0.10.0-SNAPSHOT</version>
 </dependency>
 ~~~
-**NOTE**: To use the development version you need to add the SNAPSHOT repository
-to your `pom.xml` file: http://oss.sonatype.org/content/repositories/snapshots/.
+**NOTE**: To use the development version you need to add the Snapshot repository
+(https://oss.sonatype.org/content/repositories/snapshots/) to your build
+configuration file.
 
-Usage
------
-Below are some common use cases for the Java SemVer library.
+
+## Common Use Cases ##
+The Java SemVer library is built around the `Version` class which represents
+version as defined by the SemVer Specification. The `Version` class contains
+methods for parsing version strings, incrementing obtained versions, checking
+their individual characteristics, comparing with each other and determining
+their relative precedence.
+
+Below are some common use cases of the `Version` class
+
+~~~ java
+import com.github.zafarkhaja.semver.Version;
+~~~
 
 ### Creating Versions ###
 The main class of the Java SemVer library is `Version` which implements the
@@ -62,8 +77,6 @@ provides few _static factory methods_.
 One of the methods is the `Version.valueOf` method.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v = Version.valueOf("1.0.0-rc.1+build.1");
 
 int major = v.getMajorVersion(); // 1
@@ -81,8 +94,6 @@ The other static factory method is `Version.forIntegers` which is also
 overloaded to allow fewer arguments.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v1 = Version.forIntegers(1);
 Version v2 = Version.forIntegers(1, 2);
 Version v3 = Version.forIntegers(1, 2, 3);
@@ -91,8 +102,6 @@ Version v3 = Version.forIntegers(1, 2, 3);
 Another way to create a `Version` is to use a _builder_ class `Version.Builder`.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version.Builder builder = new Version.Builder("1.0.0");
 builder.setPreReleaseVersion("rc.1");
 builder.setBuildMetadata("build.1");
@@ -117,8 +126,6 @@ version incrementors has an overloaded method that takes a pre-release version
 as an argument.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v1 = Version.valueOf("1.2.3");
 
 // Incrementing the major version
@@ -141,8 +148,6 @@ There are also incrementor methods for the pre-release version and the build
 metadata.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 // Incrementing the pre-release version
 Version v1 = Version.valueOf("1.2.3-rc");        // considered as "rc.0"
 Version v2 = v1.incrementPreReleaseVersion();    // "1.2.3-rc.1"
@@ -158,8 +163,6 @@ When incrementing the normal or pre-release versions the build metadata is
 always dropped.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v1 = Version.valueOf("1.2.3-beta+build");
 
 // Incrementing the normal version
@@ -185,8 +188,6 @@ Comparing versions with Java SemVer is easy. The `Version` class implements the
 some more methods for convenient comparing.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v1 = Version.valueOf("1.0.0-rc.1+build.1");
 Version v2 = Version.valueOf("1.3.7+build.2.b8f12d7");
 
@@ -202,8 +203,6 @@ boolean result = v1.lessThanOrEqualTo(v2);     // true
 When determining version precedence the build metadata is ignored (SemVer p.10).
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v1 = Version.valueOf("1.0.0+build.1");
 Version v2 = Version.valueOf("1.0.0+build.2");
 
@@ -216,8 +215,6 @@ in mind. For such cases Java SemVer provides a _comparator_ `Version.BUILD_AWARE
 and a convenience method `Version.compareWithBuildsTo`.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v1 = Version.valueOf("1.0.0+build.1");
 Version v2 = Version.valueOf("1.0.0+build.2");
 
@@ -229,8 +226,7 @@ int result     = v1.compareWithBuildsTo(v2);  // < 0
 ~~~
 
 
-SemVer Expressions API (Ranges)
-----------------------
+## Range Expressions ##
 Java SemVer supports the SemVer Expressions API which is implemented as both
 internal DSL and external DSL. The entry point for the API are
 the `Version.satisfies` methods.
@@ -241,7 +237,6 @@ interface. For convenience, it also provides the `Helper` class with static
 helper methods.
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
 
 Version v = Version.valueOf("1.0.0-beta");
@@ -253,8 +248,6 @@ The BNF grammar for the external DSL can be found in the corresponding
 [issue](https://github.com/zafarkhaja/jsemver/issues/1).
 
 ~~~ java
-import com.github.zafarkhaja.semver.Version;
-
 Version v = Version.valueOf("1.0.0-beta");
 boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
 ~~~
@@ -270,27 +263,9 @@ other interesting capabilities of the SemVer Expressions external DSL.
 * Parenthesized expressions - `~1.3 | (1.4.* & !=1.4.5) | ~2`
 
 
-Exception Handling
-------------------
-There are two types of errors that may arrise while using Java SemVer
-* `IllegalArgumentException` is thrown when the passed value is `NULL` or empty
-  if a method accepts `string` argument or a negative integer if a method accepts
-  `int` arguments.
-* `ParseException` is thrown by methods that perform parsing of SemVer version
-  strings or SemVer Expressions. There are few subtypes of the `ParseException`
-  error
-  - `UnexpectedCharacterException` is thrown when a SemVer version string contains
-    an unexpected or illegal character
-  - `LexerException` is thrown when a SemVer Expression contains an illegal character
-  - `UnexpectedTokenException` is thrown when an unexpected token is encountered
-    during the SemVer Expression parsing
-
-
-Bugs and Features
------------------
-Bug reports and feature requests can be submitted at https://github.com/zafarkhaja/jsemver/issues.
-
-
-License
--------
-Java SemVer is licensed under the MIT License - see the `LICENSE` file for details.
+## Exception Handling ##
+These are the exceptions you can expect when working with the `Version` class:
+* `IllegalArgumentException`, depending on the method and the parameter type, is
+  thrown if you pass a `null` reference, an empty `String`, or a negative number
+* `ParseException` and its subtypes are thrown if the specified string argument
+  can't be parsed
