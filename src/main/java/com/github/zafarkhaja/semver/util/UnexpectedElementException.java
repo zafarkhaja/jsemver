@@ -35,6 +35,8 @@ import java.util.Arrays;
  */
 public class UnexpectedElementException extends RuntimeException {
 
+    private static final long serialVersionUID = 0L;
+
     /**
      * The unexpected element in the stream.
      */

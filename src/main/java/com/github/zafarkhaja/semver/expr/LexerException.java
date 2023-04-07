@@ -34,6 +34,8 @@ import com.github.zafarkhaja.semver.ParseException;
  */
 public class LexerException extends ParseException {
 
+    private static final long serialVersionUID = 0L;
+
     /**
      * The string being analyzed starting from an illegal character.
      */
