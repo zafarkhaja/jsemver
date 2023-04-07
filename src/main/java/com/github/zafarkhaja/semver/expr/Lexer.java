@@ -194,7 +194,7 @@ class Lexer {
      * @throws LexerException when encounters an illegal character
      */
     Stream<Token> tokenize(String input) {
-        List<Token> tokens = new ArrayList<Token>();
+        List<Token> tokens = new ArrayList<>();
         int tokenPos = 0;
         while (!input.isEmpty()) {
             boolean matched = false;
@@ -219,6 +219,6 @@ class Lexer {
             }
         }
         tokens.add(new Token(Token.Type.EOI, null, tokenPos));
-        return new Stream<Token>(tokens.toArray(new Token[tokens.size()]));
+        return new Stream<>(tokens.toArray(new Token[tokens.size()]));
     }
 }

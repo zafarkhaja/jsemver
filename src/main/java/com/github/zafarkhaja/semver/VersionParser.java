@@ -165,7 +165,7 @@ class VersionParser implements Parser<Version> {
         for (int i = 0; i < input.length(); i++) {
             elements[i] = input.charAt(i);
         }
-        chars = new Stream<Character>(elements);
+        chars = new Stream<>(elements);
     }
 
     /**
@@ -306,7 +306,7 @@ class VersionParser implements Parser<Version> {
      */
     private MetadataVersion parsePreRelease() {
         ensureValidLookahead(DIGIT, LETTER, HYPHEN);
-        List<String> idents = new ArrayList<String>();
+        List<String> idents = new ArrayList<>();
         do {
             idents.add(preReleaseIdentifier());
             if (chars.positiveLookahead(DOT)) {
@@ -356,7 +356,7 @@ class VersionParser implements Parser<Version> {
      */
     private MetadataVersion parseBuild() {
         ensureValidLookahead(DIGIT, LETTER, HYPHEN);
-        List<String> idents = new ArrayList<String>();
+        List<String> idents = new ArrayList<>();
         do {
             idents.add(buildIdentifier());
             if (chars.positiveLookahead(DOT)) {
