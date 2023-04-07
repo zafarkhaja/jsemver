@@ -37,6 +37,8 @@ import java.util.Arrays;
  */
 public class UnexpectedCharacterException extends ParseException {
 
+    private static final long serialVersionUID = 0L;
+
     /**
      * The unexpected character.
      */

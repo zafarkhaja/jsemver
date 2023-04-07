@@ -31,6 +31,8 @@ package com.github.zafarkhaja.semver;
  */
 public class ParseException extends RuntimeException {
 
+    private static final long serialVersionUID = 0L;
+
     /**
      * Constructs a {@code ParseException} instance with no error message.
      */
