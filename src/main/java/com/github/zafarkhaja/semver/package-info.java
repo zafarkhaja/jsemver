@@ -29,7 +29,7 @@
  * package is the {@code Version} class, which implements the Facade design
  * pattern.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.1.0
  */
 package com.github.zafarkhaja.semver;

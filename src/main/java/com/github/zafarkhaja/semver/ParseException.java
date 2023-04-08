@@ -26,7 +26,7 @@ package com.github.zafarkhaja.semver;
 /**
  * Thrown to indicate an error during the parsing.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 public class ParseException extends RuntimeException {

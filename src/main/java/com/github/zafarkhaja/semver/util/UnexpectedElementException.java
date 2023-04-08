@@ -29,7 +29,7 @@ import java.util.Arrays;
 /**
  * Thrown when attempting to consume a stream element of unexpected types.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @see Stream#consume(Stream.ElementType...)
  * @since 0.7.0
  */

@@ -32,7 +32,7 @@ import java.util.NoSuchElementException;
  *
  * @param <E> the type of elements held in this stream
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @see com.github.zafarkhaja.semver.VersionParser
  * @see com.github.zafarkhaja.semver.expr.Lexer
  * @see com.github.zafarkhaja.semver.expr.ExpressionParser

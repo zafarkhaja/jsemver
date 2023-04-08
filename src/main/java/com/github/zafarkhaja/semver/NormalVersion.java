@@ -28,7 +28,7 @@ package com.github.zafarkhaja.semver;
  *
  * This class is immutable and hence thread-safe.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.2.0
  */
 class NormalVersion implements Comparable<NormalVersion> {

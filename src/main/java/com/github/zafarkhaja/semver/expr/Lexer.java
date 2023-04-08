@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 /**
  * A lexer for the SemVer Expressions.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 class Lexer {

@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
 public class VersionParserCharTypeTest {
 

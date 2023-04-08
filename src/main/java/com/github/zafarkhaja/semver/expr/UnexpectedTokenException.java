@@ -31,7 +31,7 @@ import java.util.Arrays;
 /**
  * Thrown when a token of unexpected types is encountered during the parsing.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 public class UnexpectedTokenException extends ParseException {

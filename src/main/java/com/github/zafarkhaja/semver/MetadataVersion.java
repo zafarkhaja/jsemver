@@ -29,7 +29,7 @@ import java.util.Arrays;
  * The {@code MetadataVersion} class is used to represent
  * the pre-release version and the build metadata.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.2.0
  */
 class MetadataVersion implements Comparable<MetadataVersion> {

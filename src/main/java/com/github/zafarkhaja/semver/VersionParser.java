@@ -33,7 +33,7 @@ import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
 /**
  * A parser for the SemVer Version.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 class VersionParser implements Parser<Version> {

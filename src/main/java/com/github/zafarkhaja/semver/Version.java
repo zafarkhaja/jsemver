@@ -35,7 +35,7 @@ import java.util.Comparator;
  * This class implements the Facade design pattern.
  * It is also immutable, which makes the class thread-safe.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.1.0
  */
 public class Version implements Comparable<Version> {

@@ -37,7 +37,7 @@ import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
 /**
  * A parser for the SemVer Expressions.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 public class ExpressionParser implements Parser<Expression> {
