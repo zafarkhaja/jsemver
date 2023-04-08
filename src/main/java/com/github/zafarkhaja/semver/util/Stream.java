@@ -33,9 +33,6 @@ import java.util.NoSuchElementException;
  * @param <E> the type of elements held in this stream
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
- * @see com.github.zafarkhaja.semver.VersionParser
- * @see com.github.zafarkhaja.semver.expr.Lexer
- * @see com.github.zafarkhaja.semver.expr.ExpressionParser
  * @since 0.7.0
  */
 public class Stream<E> implements Iterable<E> {
