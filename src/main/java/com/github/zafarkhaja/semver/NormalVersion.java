@@ -25,10 +25,10 @@ package com.github.zafarkhaja.semver;
 
 /**
  * The {@code NormalVersion} class represents the version core.
- *
+ * <p>
  * This class is immutable and hence thread-safe.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.2.0
  */
 class NormalVersion implements Comparable<NormalVersion> {
@@ -165,7 +165,7 @@ class NormalVersion implements Comparable<NormalVersion> {
 
     /**
      * Returns the string representation of this normal version.
-     *
+     * <p>
      * A normal version number MUST take the form X.Y.Z where X, Y, and Z are
      * non-negative integers. X is the major version, Y is the minor version,
      * and Z is the patch version. (SemVer p.2)

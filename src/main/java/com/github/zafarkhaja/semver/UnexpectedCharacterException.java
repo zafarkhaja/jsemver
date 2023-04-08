@@ -29,10 +29,10 @@ import java.util.Arrays;
 
 /**
  * Thrown when attempting to consume a character of unexpected types.
- *
+ * <p>
  * This exception is a wrapper exception extending {@code ParseException}.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.8.0
  */
 public class UnexpectedCharacterException extends ParseException {

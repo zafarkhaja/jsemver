@@ -31,11 +31,11 @@ import java.util.Comparator;
 
 /**
  * The {@code Version} class is the main class of the Java SemVer library.
- *
+ * <p>
  * This class implements the Facade design pattern.
  * It is also immutable, which makes the class thread-safe.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.1.0
  */
 public class Version implements Comparable<Version> {
@@ -182,11 +182,11 @@ public class Version implements Comparable<Version> {
         /**
          * Compares two {@code Version} instances taking
          * into account their build metadata.
-         *
+         * <p>
          * When compared build metadata is divided into identifiers. The
          * numeric identifiers are compared numerically, and the alphanumeric
          * identifiers are compared in the ASCII sort order.
-         *
+         * <p>
          * If one of the compared versions has no defined build
          * metadata, this version is considered to have a lower
          * precedence than that of the other.
@@ -201,7 +201,7 @@ public class Version implements Comparable<Version> {
                 if (v1.build == MetadataVersion.NULL ||
                     v2.build == MetadataVersion.NULL
                 ) {
-                    /**
+                    /*
                      * Build metadata should have a higher precedence
                      * than the associated normal version which is the
                      * opposite compared to pre-release versions.
@@ -309,7 +309,7 @@ public class Version implements Comparable<Version> {
 
     /**
      * Checks if this version satisfies the specified SemVer Expression string.
-     *
+     * <p>
      * This method is a part of the SemVer Expressions API.
      *
      * @param expr the SemVer Expression string
@@ -327,7 +327,7 @@ public class Version implements Comparable<Version> {
 
     /**
      * Checks if this version satisfies the specified SemVer Expression.
-     *
+     * <p>
      * This method is a part of the SemVer Expressions API.
      *
      * @param expr the SemVer Expression
@@ -562,7 +562,7 @@ public class Version implements Comparable<Version> {
 
     /**
      * Checks if this version equals the other version.
-     *
+     * <p>
      * The comparison is done by the {@code Version.compareTo} method.
      *
      * @param other the other version to compare to
@@ -609,7 +609,7 @@ public class Version implements Comparable<Version> {
 
     /**
      * Compares this version to the other version.
-     *
+     * <p>
      * This method does not take into account the versions' build
      * metadata. If you want to compare the versions' build metadata
      * use the {@code Version.compareWithBuildsTo} method or the
@@ -633,7 +633,7 @@ public class Version implements Comparable<Version> {
     /**
      * Compare this version to the other version
      * taking into account the build metadata.
-     *
+     * <p>
      * The method makes use of the {@code Version.BUILD_AWARE_ORDER} comparator.
      *
      * @param other the other version to compare to

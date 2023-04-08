@@ -37,7 +37,7 @@ import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
 /**
  * A parser for the SemVer Expressions.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 public class ExpressionParser implements Parser<Expression> {
@@ -64,7 +64,7 @@ public class ExpressionParser implements Parser<Expression> {
 
     /**
      * Creates and returns new instance of the {@code ExpressionParser} class.
-     *
+     * <p>
      * This method implements the Static Factory Method pattern.
      *
      * @return a new instance of the {@code ExpressionParser} class
@@ -427,7 +427,7 @@ public class ExpressionParser implements Parser<Expression> {
     /**
      * Determines if the version terminals are
      * followed by the specified token type.
-     *
+     * <p>
      * This method is essentially a {@code lookahead(k)} method
      * which allows to solve the grammar's ambiguities.
      *

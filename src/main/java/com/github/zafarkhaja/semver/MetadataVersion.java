@@ -29,7 +29,7 @@ import java.util.Arrays;
  * The {@code MetadataVersion} class is used to represent
  * the pre-release version and the build metadata.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.2.0
  */
 class MetadataVersion implements Comparable<MetadataVersion> {
@@ -89,7 +89,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         @Override
         public int compareTo(MetadataVersion other) {
             if (!equals(other)) {
-                /**
+                /*
                  * Pre-release versions have a lower precedence than
                  * the associated normal version. (SemVer p.9)
                  */
@@ -170,7 +170,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
     @Override
     public int compareTo(MetadataVersion other) {
         if (other == MetadataVersion.NULL) {
-            /**
+            /*
              * Pre-release versions have a lower precedence than
              * the associated normal version. (SemVer p.9)
              */
@@ -178,7 +178,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         }
         int result = compareIdentifierArrays(other.idents);
         if (result == 0) {
-            /**
+            /*
              * A larger set of pre-release fields has a higher
              * precedence than a smaller set, if all of the
              * preceding identifiers are equal. (SemVer p.11)

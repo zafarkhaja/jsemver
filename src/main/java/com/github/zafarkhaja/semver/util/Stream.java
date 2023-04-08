@@ -32,10 +32,7 @@ import java.util.NoSuchElementException;
  *
  * @param <E> the type of elements held in this stream
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
- * @see com.github.zafarkhaja.semver.VersionParser
- * @see com.github.zafarkhaja.semver.expr.Lexer
- * @see com.github.zafarkhaja.semver.expr.ExpressionParser
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 public class Stream<E> implements Iterable<E> {
@@ -72,7 +69,7 @@ public class Stream<E> implements Iterable<E> {
 
     /**
      * Constructs a stream containing the specified elements.
-     *
+     * <p>
      * The stream does not store the real elements but the defensive copy.
      *
      * @param elements the elements to be streamed
@@ -250,7 +247,7 @@ public class Stream<E> implements Iterable<E> {
             /**
              * The index to indicate the current position
              * of this iterator.
-             *
+             * <p>
              * The starting point is set to the current
              * value of this stream's offset, so that it
              * doesn't iterate over consumed elements.
@@ -289,7 +286,7 @@ public class Stream<E> implements Iterable<E> {
     /**
      * Returns an array containing all of the
      * elements that are left in this stream.
-     *
+     * <p>
      * The returned array is a safe copy.
      *
      * @return an array containing all of elements in this stream

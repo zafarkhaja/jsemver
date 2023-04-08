@@ -29,7 +29,7 @@ import com.github.zafarkhaja.semver.ParseException;
  * Thrown during the lexical analysis when
  * an illegal character is encountered.
  *
- * @author Zafar Khaja <zafarkhaja@gmail.com>
+ * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
 public class LexerException extends ParseException {
