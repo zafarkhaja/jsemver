@@ -23,19 +23,18 @@
  */
 package com.github.zafarkhaja.semver;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Enclosed.class)
 public class MetadataVersionTest {
 
-    public static class CoreFunctionalityTest {
+    @Nested
+    class CoreFunctionalityTest {
 
         @Test
         public void mustCompareEachIdentifierSeparately() {
@@ -131,7 +130,8 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class NullMetadataVersionTest {
+    @Nested
+    class NullMetadataVersionTest {
 
         @Test
         public void shouldReturnEmptyStringOnToString() {
@@ -180,7 +180,8 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class EqualsMethodTest {
+    @Nested
+    class EqualsMethodTest {
 
         @Test
         public void shouldBeReflexive() {
@@ -249,7 +250,8 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class HashCodeMethodTest {
+    @Nested
+    class HashCodeMethodTest {
 
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
@@ -264,7 +266,8 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class ToStringMethodTest {
+    @Nested
+    class ToStringMethodTest {
 
         @Test
         public void shouldReturnStringRepresentation() {

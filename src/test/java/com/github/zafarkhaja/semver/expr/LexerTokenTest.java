@@ -24,20 +24,19 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.expr.Lexer.Token;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Enclosed.class)
 public class LexerTokenTest {
 
-    public static class EqualsMethodTest {
+    @Nested
+    class EqualsMethodTest {
 
         @Test
         public void shouldBeReflexive() {
@@ -107,7 +106,8 @@ public class LexerTokenTest {
         }
     }
 
-    public static class HashCodeMethodTest {
+    @Nested
+    class HashCodeMethodTest {
 
         @Test
         public void shouldReturnSameHashCodeIfTokensAreEqual() {

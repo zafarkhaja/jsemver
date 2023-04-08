@@ -25,9 +25,9 @@ package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.expr.Lexer.*;
 import com.github.zafarkhaja.semver.util.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *

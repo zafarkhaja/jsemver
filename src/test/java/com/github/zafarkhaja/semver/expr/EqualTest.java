@@ -24,8 +24,8 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *

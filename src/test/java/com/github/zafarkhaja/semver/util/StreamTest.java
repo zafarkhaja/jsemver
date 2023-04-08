@@ -25,8 +25,8 @@ package com.github.zafarkhaja.semver.util;
 
 import com.github.zafarkhaja.semver.util.Stream.ElementType;
 import java.util.Iterator;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *

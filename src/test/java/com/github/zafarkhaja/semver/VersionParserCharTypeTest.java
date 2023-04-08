@@ -24,9 +24,9 @@
 package com.github.zafarkhaja.semver;
 
 import com.github.zafarkhaja.semver.VersionParser.CharType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *

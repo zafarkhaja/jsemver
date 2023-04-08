@@ -23,21 +23,20 @@
  */
 package com.github.zafarkhaja.semver;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.lt;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Enclosed.class)
 public class VersionTest {
 
-    public static class CoreFunctionalityTest {
+    @Nested
+    class CoreFunctionalityTest {
 
         @Test
         public void mayHavePreReleaseFollowingPatchAppendedWithHyphen() {
@@ -334,7 +333,8 @@ public class VersionTest {
         }
     }
 
-    public static class EqualsMethodTest {
+    @Nested
+    class EqualsMethodTest {
 
         @Test
         public void shouldBeReflexive() {
@@ -390,7 +390,8 @@ public class VersionTest {
         }
     }
 
-    public static class HashCodeMethodTest {
+    @Nested
+    class HashCodeMethodTest {
 
         @Test
         public void shouldReturnSameHashCodeIfVersionsAreEqual() {
@@ -401,7 +402,8 @@ public class VersionTest {
         }
     }
 
-    public static class ToStringMethodTest {
+    @Nested
+    class ToStringMethodTest {
 
         @Test
         public void shouldReturnStringRepresentation() {
@@ -411,7 +413,8 @@ public class VersionTest {
         }
     }
 
-    public static class BuilderTest {
+    @Nested
+    class BuilderTest {
 
         @Test
         public void shouldBuildVersionInSteps() {
@@ -462,7 +465,8 @@ public class VersionTest {
         }
     }
 
-    public static class BuildAwareOrderTest {
+    @Nested
+    class BuildAwareOrderTest {
 
         @Test
         public void shouldCorrectlyCompareAllVersionsWithBuildMetadata() {
