@@ -64,7 +64,7 @@ public class ExpressionParser implements Parser<Expression> {
 
     /**
      * Creates and returns new instance of the {@code ExpressionParser} class.
-     *
+     * <p>
      * This method implements the Static Factory Method pattern.
      *
      * @return a new instance of the {@code ExpressionParser} class
@@ -372,7 +372,7 @@ public class ExpressionParser implements Parser<Expression> {
             return false;
         }
         EnumSet<Token.Type> expected = EnumSet.complementOf(EnumSet.of(NUMERIC, DOT));
-        return tokens.positiveLookaheadUntil(5, expected.toArray(new Token.Type[expected.size()]));
+        return tokens.positiveLookaheadUntil(5, expected.toArray(new Token.Type[0]));
     }
 
     /**
@@ -427,7 +427,7 @@ public class ExpressionParser implements Parser<Expression> {
     /**
      * Determines if the version terminals are
      * followed by the specified token type.
-     *
+     * <p>
      * This method is essentially a {@code lookahead(k)} method
      * which allows to solve the grammar's ambiguities.
      *

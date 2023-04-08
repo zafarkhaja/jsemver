@@ -89,7 +89,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         @Override
         public int compareTo(MetadataVersion other) {
             if (!equals(other)) {
-                /**
+                /*
                  * Pre-release versions have a lower precedence than
                  * the associated normal version. (SemVer p.9)
                  */
@@ -170,7 +170,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
     @Override
     public int compareTo(MetadataVersion other) {
         if (other == MetadataVersion.NULL) {
-            /**
+            /*
              * Pre-release versions have a lower precedence than
              * the associated normal version. (SemVer p.9)
              */
@@ -178,7 +178,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
         }
         int result = compareIdentifierArrays(other.idents);
         if (result == 0) {
-            /**
+            /*
              * A larger set of pre-release fields has a higher
              * precedence than a smaller set, if all of the
              * preceding identifiers are equal. (SemVer p.11)
@@ -215,7 +215,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      * @return the size of the smallest array
      */
     private int getLeastCommonArrayLength(String[] arr1, String[] arr2) {
-        return arr1.length <= arr2.length ? arr1.length : arr2.length;
+        return Math.min(arr1.length, arr2.length);
     }
 
     /**

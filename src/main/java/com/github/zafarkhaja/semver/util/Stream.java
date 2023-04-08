@@ -43,7 +43,7 @@ public class Stream<E> implements Iterable<E> {
      *
      * @param <E> type of elements held by this stream
      */
-    public static interface ElementType<E> {
+    public interface ElementType<E> {
 
         /**
          * Checks if the specified element matches this type.
@@ -69,7 +69,7 @@ public class Stream<E> implements Iterable<E> {
 
     /**
      * Constructs a stream containing the specified elements.
-     *
+     * <p>
      * The stream does not store the real elements but the defensive copy.
      *
      * @param elements the elements to be streamed
@@ -247,7 +247,7 @@ public class Stream<E> implements Iterable<E> {
             /**
              * The index to indicate the current position
              * of this iterator.
-             *
+             * <p>
              * The starting point is set to the current
              * value of this stream's offset, so that it
              * doesn't iterate over consumed elements.
@@ -286,7 +286,7 @@ public class Stream<E> implements Iterable<E> {
     /**
      * Returns an array containing all of the
      * elements that are left in this stream.
-     *
+     * <p>
      * The returned array is a safe copy.
      *
      * @return an array containing all of elements in this stream

@@ -23,7 +23,6 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
-import com.github.zafarkhaja.semver.Version;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,18 +34,8 @@ public class AndTest {
 
     @Test
     public void shouldCheckIfBothExpressionsEvaluateToTrue() {
-        Expression left = new Expression() {
-            @Override
-            public boolean interpret(Version version) {
-                return true;
-            }
-        };
-        Expression right = new Expression() {
-            @Override
-            public boolean interpret(Version version) {
-                return true;
-            }
-        };
+        Expression left = version -> true;
+        Expression right = version -> true;
         And and = new And(left, right);
         assertTrue(and.interpret(null));
     }

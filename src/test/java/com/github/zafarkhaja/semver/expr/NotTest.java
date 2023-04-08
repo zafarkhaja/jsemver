@@ -23,7 +23,6 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
-import com.github.zafarkhaja.semver.Version;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,18 +34,8 @@ public class NotTest {
 
     @Test
     public void shouldRevertBooleanResultOfExpression() {
-        Expression expr1 = new Expression() {
-            @Override
-            public boolean interpret(Version version) {
-                return false;
-            }
-        };
-        Expression expr2 = new Expression() {
-            @Override
-            public boolean interpret(Version version) {
-                return true;
-            }
-        };
+        Expression expr1 = version -> false;
+        Expression expr2 = version -> true;
         Not not;
         not = new Not(expr1);
         assertTrue(not.interpret(null));
