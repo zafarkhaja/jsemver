@@ -277,14 +277,14 @@ public class VersionTest {
         public void shouldBeImmutable() {
             Version version = Version.valueOf("1.2.3-alpha+build");
 
-            Version incementedMajor = version.incrementMajorVersion();
-            assertNotSame(version, incementedMajor);
+            Version incrementedMajor = version.incrementMajorVersion();
+            assertNotSame(version, incrementedMajor);
 
-            Version incementedMinor = version.incrementMinorVersion();
-            assertNotSame(version, incementedMinor);
+            Version incrementedMinor = version.incrementMinorVersion();
+            assertNotSame(version, incrementedMinor);
 
-            Version incementedPatch = version.incrementPatchVersion();
-            assertNotSame(version, incementedPatch);
+            Version incrementedPatch = version.incrementPatchVersion();
+            assertNotSame(version, incrementedPatch);
 
             Version preReleaseSet = version.setPreReleaseVersion("alpha");
             assertNotSame(version, preReleaseSet);

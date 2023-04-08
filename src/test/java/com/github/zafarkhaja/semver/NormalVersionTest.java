@@ -115,14 +115,14 @@ public class NormalVersionTest {
         }
 
         @Test
-        public void shoudBeImmutable() {
+        public void shouldBeImmutable() {
             NormalVersion version = new NormalVersion(1, 2, 3);
-            NormalVersion incementedMajor = version.incrementMajor();
-            assertNotSame(version, incementedMajor);
-            NormalVersion incementedMinor = version.incrementMinor();
-            assertNotSame(version, incementedMinor);
-            NormalVersion incementedPatch = version.incrementPatch();
-            assertNotSame(version, incementedPatch);
+            NormalVersion incrementedMajor = version.incrementMajor();
+            assertNotSame(version, incrementedMajor);
+            NormalVersion incrementedMinor = version.incrementMinor();
+            assertNotSame(version, incrementedMinor);
+            NormalVersion incrementedPatch = version.incrementPatch();
+            assertNotSame(version, incrementedPatch);
         }
     }
 

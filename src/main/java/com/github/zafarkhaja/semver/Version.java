@@ -650,7 +650,7 @@ public class Version implements Comparable<Version> {
      *
      * @param other the other version to compare to
      * @return a negative integer, zero or a positive integer if this version
-     *         is less than, equal to or greater the the specified version
+     *         is less than, equal to or greater than the specified version
      * @see #BUILD_AWARE_ORDER
      * @see #compareWithBuildsTo(Version other)
      */

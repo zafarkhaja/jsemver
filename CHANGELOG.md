@@ -33,7 +33,7 @@ Java SemVer Changelog
 * Implemented a parser instead of RegExps for the version parsing
 * Created the `MetadataVersion.NULL` object, refactored
 * Made some refactoring and minor improvements to the code
-* Updated and reformated the `README.md` file
+* Updated and reformatted the `README.md` file
 * Renamed the `artifactId` and changed the `name` in the `pom.xml` file
 * Updated the JUnit dependency to 4.11
 * Prepared the `pom.xml` file for the repository
@@ -61,7 +61,7 @@ Java SemVer Changelog
 
 ### 0.4.0 (Mar 6, 2013) ###
 * Made the version classes immutable
-* Made minor imrovements to the code
+* Made minor improvements to the code
 
 ### 0.3.0 (Mar 4, 2013) ###
 * Added incrementor methods for the `NormalVersion`
