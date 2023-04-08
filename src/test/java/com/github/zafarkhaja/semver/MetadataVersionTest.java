@@ -59,7 +59,7 @@ class MetadataVersionTest {
         }
 
         @Test
-        void shouldComapareDigitsOnlyIdentifiersNumerically() {
+        void shouldCompareDigitsOnlyIdentifiersNumerically() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
