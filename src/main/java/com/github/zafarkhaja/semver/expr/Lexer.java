@@ -79,7 +79,7 @@ class Lexer {
              * @param regexp the regular expression for the pattern
              * @see #pattern
              */
-            private Type(String regexp) {
+            Type(String regexp) {
                 pattern = Pattern.compile("^(" + regexp + ")");
             }
 
@@ -219,6 +219,6 @@ class Lexer {
             }
         }
         tokens.add(new Token(Token.Type.EOI, null, tokenPos));
-        return new Stream<>(tokens.toArray(new Token[tokens.size()]));
+        return new Stream<>(tokens.toArray(new Token[0]));
     }
 }

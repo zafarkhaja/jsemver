@@ -43,7 +43,7 @@ public class Stream<E> implements Iterable<E> {
      *
      * @param <E> type of elements held by this stream
      */
-    public static interface ElementType<E> {
+    public interface ElementType<E> {
 
         /**
          * Checks if the specified element matches this type.

@@ -215,7 +215,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      * @return the size of the smallest array
      */
     private int getLeastCommonArrayLength(String[] arr1, String[] arr2) {
-        return arr1.length <= arr2.length ? arr1.length : arr2.length;
+        return Math.min(arr1.length, arr2.length);
     }
 
     /**

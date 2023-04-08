@@ -55,7 +55,7 @@ class StreamTest {
     void shouldNotReturnRealElementsArray() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         Character[] charArray = stream.toArray();
-        charArray[0] = Character.valueOf('z');
+        charArray[0] = 'z';
         assertEquals(Character.valueOf('z'), charArray[0]);
         assertEquals(Character.valueOf('a'), stream.toArray()[0]);
     }

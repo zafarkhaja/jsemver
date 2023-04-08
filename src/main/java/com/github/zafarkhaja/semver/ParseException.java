@@ -71,7 +71,7 @@ public class ParseException extends RuntimeException {
         Throwable cause = getCause();
         String msg = getMessage();
         if (msg != null) {
-            msg += ((cause != null) ? " (" + cause.toString() + ")" : "");
+            msg += ((cause != null) ? " (" + cause + ")" : "");
             return msg;
         }
         return ((cause != null) ? cause.toString() : "");

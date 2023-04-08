@@ -41,7 +41,7 @@ class VersionParser implements Parser<Version> {
     /**
      * Valid character types.
      */
-    static enum CharType implements Stream.ElementType<Character> {
+    enum CharType implements Stream.ElementType<Character> {
 
         DIGIT {
             /**
@@ -260,10 +260,8 @@ class VersionParser implements Parser<Version> {
         if (HYPHEN.isMatchedBy(next)) {
             preRelease = parsePreRelease();
             next = consumeNextCharacter(PLUS, EOI);
-            if (PLUS.isMatchedBy(next)) {
-                build = parseBuild();
-            }
-        } else if (PLUS.isMatchedBy(next)) {
+        }
+        if (PLUS.isMatchedBy(next)) {
             build = parseBuild();
         }
         consumeNextCharacter(EOI);
@@ -315,7 +313,7 @@ class VersionParser implements Parser<Version> {
             }
             break;
         } while (true);
-        return new MetadataVersion(idents.toArray(new String[idents.size()]));
+        return new MetadataVersion(idents.toArray(new String[0]));
     }
 
     /**
@@ -365,7 +363,7 @@ class VersionParser implements Parser<Version> {
             }
             break;
         } while (true);
-        return new MetadataVersion(idents.toArray(new String[idents.size()]));
+        return new MetadataVersion(idents.toArray(new String[0]));
     }
 
     /**

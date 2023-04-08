@@ -372,7 +372,7 @@ public class ExpressionParser implements Parser<Expression> {
             return false;
         }
         EnumSet<Token.Type> expected = EnumSet.complementOf(EnumSet.of(NUMERIC, DOT));
-        return tokens.positiveLookaheadUntil(5, expected.toArray(new Token.Type[expected.size()]));
+        return tokens.positiveLookaheadUntil(5, expected.toArray(new Token.Type[0]));
     }
 
     /**
