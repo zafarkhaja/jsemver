@@ -34,11 +34,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LessOrEqualTest {
 
     @Test
-    public void shouldCheckIfVersionIsLessThanOrEqualToParsedVersion() {
-        Version parsed = Version.parse("2.0.0");
-        LessOrEqual le = new LessOrEqual(parsed);
-        assertTrue(le.interpret(Version.parse("1.2.3")));
-        assertTrue(le.interpret(Version.parse("2.0.0")));
-        assertFalse(le.interpret(Version.parse("3.2.1")));
+    public void shouldCheckIfOneVersionIsLessThanOrEqualToAnother() {
+        LessOrEqual le = new LessOrEqual(Version.of(2, 0, 0));
+        assertTrue(le.interpret(Version.of(1, 2, 3)));
+        assertTrue(le.interpret(Version.of(2, 0, 0)));
+        assertFalse(le.interpret(Version.of(3, 2, 1)));
     }
 }

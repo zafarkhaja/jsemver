@@ -34,10 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NotEqualTest {
 
     @Test
-    public void shouldCheckIfVersionIsNotEqualToParsedVersion() {
-        Version parsed = Version.parse("1.2.3");
-        NotEqual ne = new NotEqual(parsed);
-        assertTrue(ne.interpret(Version.parse("3.2.1")));
-        assertFalse(ne.interpret(Version.parse("1.2.3")));
+    public void shouldCheckIfOneVersionIsNotEqualToAnother() {
+        NotEqual ne = new NotEqual(Version.of(1, 2, 3));
+        assertTrue(ne.interpret(Version.of(3, 2, 1)));
+        assertFalse(ne.interpret(Version.of(1, 2, 3)));
     }
 }

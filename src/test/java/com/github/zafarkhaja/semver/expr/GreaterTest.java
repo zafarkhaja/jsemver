@@ -34,10 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GreaterTest {
 
     @Test
-    public void shouldCheckIfVersionIsGreaterThanParsedVersion() {
-        Version parsed = Version.parse("2.0.0");
-        Greater gt = new Greater(parsed);
-        assertTrue(gt.interpret(Version.parse("3.2.1")));
-        assertFalse(gt.interpret(Version.parse("1.2.3")));
+    public void shouldCheckIfOneVersionIsGreaterThanAnother() {
+        Greater gt = new Greater(Version.of(2, 0, 0));
+        assertTrue(gt.interpret(Version.of(3, 2, 1)));
+        assertFalse(gt.interpret(Version.of(1, 2, 3)));
     }
 }
