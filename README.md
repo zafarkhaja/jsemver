@@ -63,14 +63,15 @@ The main class of the Java SemVer library is `Version` which implements the
 Facade design pattern. By design, the `Version` class is made immutable by
 making its constructors package-private, so that it can not be subclassed or
 directly instantiated. Instead of public constructors, the `Version` class
-provides few _static factory methods_.
+provides a couple of _static factory methods_.
 
-One of the methods is the `Version.valueOf` method.
+One of the methods is the `Version.parse(String)` method which accepts a valid
+SemVer version string to be parsed according to the Specification.
 
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v = Version.valueOf("1.0.0-rc.1+build.1");
+Version v = Version.parse("1.0.0-rc.1+build.1");
 
 int major = v.getMajorVersion(); // 1
 int minor = v.getMinorVersion(); // 0
@@ -83,15 +84,18 @@ String build      = v.getBuildMetadata();     // "build.1"
 String str = v.toString(); // "1.0.0-rc.1+build.1"
 ~~~
 
-The other static factory method is `Version.forIntegers` which is also
+The other static factory method is `Version.of()` which creates `Version`
+instances from version parts passed as separate arguments. The method is
 overloaded to allow fewer arguments.
 
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v1 = Version.forIntegers(1);
-Version v2 = Version.forIntegers(1, 2);
-Version v3 = Version.forIntegers(1, 2, 3);
+Version v1 = Version.of(1);
+Version v2 = Version.of(1, 2);
+Version v3 = Version.of(1, 2, 3);
+Version v4 = Version.of(1, 2, 3, "beta.1");
+Version v5 = Version.of(1, 2, 3, "beta.1", "20230409193712");
 ~~~
 
 Another way to create a `Version` is to use a _builder_ class `Version.Builder`.
@@ -125,7 +129,7 @@ as an argument.
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v1 = Version.valueOf("1.2.3");
+Version v1 = Version.parse("1.2.3");
 
 // Incrementing the major version
 Version v2 = v1.incrementMajorVersion();        // "2.0.0"
@@ -150,12 +154,12 @@ metadata.
 import com.github.zafarkhaja.semver.Version;
 
 // Incrementing the pre-release version
-Version v1 = Version.valueOf("1.2.3-rc");        // considered as "rc.0"
+Version v1 = Version.parse("1.2.3-rc");          // considered as "rc.0"
 Version v2 = v1.incrementPreReleaseVersion();    // "1.2.3-rc.1"
 Version v3 = v2.incrementPreReleaseVersion();    // "1.2.3-rc.2"
 
 // Incrementing the build metadata
-Version v1 = Version.valueOf("1.2.3-rc+build");  // considered as "build.0"
+Version v1 = Version.parse("1.2.3-rc+build");    // considered as "build.0"
 Version v2 = v1.incrementBuildMetadata();        // "1.2.3-rc+build.1"
 Version v3 = v2.incrementBuildMetadata();        // "1.2.3-rc+build.2"
 ~~~
@@ -166,7 +170,7 @@ always dropped.
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v1 = Version.valueOf("1.2.3-beta+build");
+Version v1 = Version.parse("1.2.3-beta+build");
 
 // Incrementing the normal version
 Version v2 = v1.incrementMajorVersion();        // "2.0.0"
@@ -193,8 +197,8 @@ some more methods for convenient comparing.
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v1 = Version.valueOf("1.0.0-rc.1+build.1");
-Version v2 = Version.valueOf("1.3.7+build.2.b8f12d7");
+Version v1 = Version.parse("1.0.0-rc.1+build.1");
+Version v2 = Version.parse("1.3.7+build.2.b8f12d7");
 
 int result = v1.compareTo(v2);  // < 0
 boolean result = v1.equals(v2); // false
@@ -210,8 +214,8 @@ When determining version precedence the build metadata is ignored (SemVer p.10).
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v1 = Version.valueOf("1.0.0+build.1");
-Version v2 = Version.valueOf("1.0.0+build.2");
+Version v1 = Version.parse("1.0.0+build.1");
+Version v2 = Version.parse("1.0.0+build.2");
 
 int result = v1.compareTo(v2);  // = 0
 boolean result = v1.equals(v2); // true
@@ -224,8 +228,8 @@ and a convenience method `Version.compareWithBuildsTo`.
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v1 = Version.valueOf("1.0.0+build.1");
-Version v2 = Version.valueOf("1.0.0+build.2");
+Version v1 = Version.parse("1.0.0+build.1");
+Version v2 = Version.parse("1.0.0+build.2");
 
 int result = Version.BUILD_AWARE_ORDER.compare(v1, v2);  // < 0
 
@@ -249,7 +253,7 @@ helper methods.
 import com.github.zafarkhaja.semver.Version;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
 
-Version v = Version.valueOf("1.0.0-beta");
+Version v = Version.parse("1.0.0-beta");
 boolean result = v.satisfies(gte("1.0.0").and(lt("2.0.0")));  // false
 ~~~
 
@@ -260,7 +264,7 @@ The BNF grammar for the external DSL can be found in the corresponding
 ~~~ java
 import com.github.zafarkhaja.semver.Version;
 
-Version v = Version.valueOf("1.0.0-beta");
+Version v = Version.parse("1.0.0-beta");
 boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
 ~~~
 

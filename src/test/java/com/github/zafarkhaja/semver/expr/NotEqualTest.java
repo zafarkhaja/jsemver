@@ -35,9 +35,9 @@ public class NotEqualTest {
 
     @Test
     public void shouldCheckIfVersionIsNotEqualToParsedVersion() {
-        Version parsed = Version.valueOf("1.2.3");
+        Version parsed = Version.parse("1.2.3");
         NotEqual ne = new NotEqual(parsed);
-        assertTrue(ne.interpret(Version.valueOf("3.2.1")));
-        assertFalse(ne.interpret(Version.valueOf("1.2.3")));
+        assertTrue(ne.interpret(Version.parse("3.2.1")));
+        assertFalse(ne.interpret(Version.parse("1.2.3")));
     }
 }

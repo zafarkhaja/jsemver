@@ -252,59 +252,194 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * Creates a new instance of {@code Version} as a
-     * result of parsing the specified version string.
+     * Creates a new instance of {@code Version} by parsing the string argument.
      *
-     * @param version the version string to parse
+     * @param version the string representing a valid SemVer version to be parsed
      * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
+     * @throws IllegalArgumentException if the string argument is {@code NULL} or empty
+     * @throws ParseException if invalid SemVer version string is specified
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
      */
-    public static Version valueOf(String version) {
+    public static Version parse(String version) {
         return VersionParser.parseValidSemVer(version);
     }
 
     /**
-     * Creates a new instance of {@code Version}
-     * for the specified version numbers.
+     * Creates a new instance of {@code Version} from major version.
      *
      * @param major the major version number
      * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if a negative integer is passed
-     * @since 0.7.0
+     * @throws IllegalArgumentException if the argument is a negative number
+     * @since 0.10.0
      */
-    public static Version forIntegers(int major) {
-        return new Version(new NormalVersion(major, 0, 0));
+    public static Version of(int major) {
+        return Version.of(major, 0, 0, null, null);
     }
 
     /**
-     * Creates a new instance of {@code Version}
-     * for the specified version numbers.
+     * Creates a new instance of {@code Version} from major and preRelease versions.
+     *
+     * @param major the major version number
+     * @param preRelease the pre-release version
+     * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the major version is a negative number
+     * @throws ParseException if the preRelease version cannot be parsed
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
+     */
+    public static Version of(int major, String preRelease) {
+        return Version.of(major, 0, 0, preRelease, null);
+    }
+
+    /**
+     * Creates a new instance of {@code Version} from major and preRelease versions,
+     * as well as build metadata.
+     *
+     * @param major the major version number
+     * @param preRelease the pre-release version
+     * @param build the build metadata
+     * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if the major version is a negative number
+     * @throws ParseException if the preRelease version and/or build metadata cannot be parsed
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
+     */
+    public static Version of(int major, String preRelease, String build) {
+        return Version.of(major, 0, 0, preRelease, build);
+    }
+
+    /**
+     * Creates a new instance of {@code Version} from major and minor versions.
      *
      * @param major the major version number
      * @param minor the minor version number
      * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if a negative integer is passed
-     * @since 0.7.0
+     * @throws IllegalArgumentException if any of the arguments is a negative number
+     * @since 0.10.0
      */
-    public static Version forIntegers(int major, int minor) {
-        return new Version(new NormalVersion(major, minor, 0));
+    public static Version of(int major, int minor) {
+        return Version.of(major, minor, 0, null, null);
     }
 
     /**
-     * Creates a new instance of {@code Version}
-     * for the specified version numbers.
+     * Creates a new instance of {@code Version} from major, minor and preRelease versions.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param preRelease the pre-release version
+     * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if any of the numeric arguments is a negative number
+     * @throws ParseException if the preRelease version cannot be parsed
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
+     */
+    public static Version of(int major, int minor, String preRelease) {
+        return Version.of(major, minor, 0, preRelease, null);
+    }
+
+    /**
+     * Creates a new instance of {@code Version} from major, minor and preRelease versions,
+     * as well as build metadata.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param preRelease the pre-release version
+     * @param build the build metadata
+     * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if any of the numeric arguments is a negative number
+     * @throws ParseException if the preRelease version and/or build metadata cannot be parsed
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
+     */
+    public static Version of(int major, int minor, String preRelease, String build) {
+        return Version.of(major, minor, 0, preRelease, build);
+    }
+
+    /**
+     * Creates a new instance of {@code Version} from major, minor and patch versions.
      *
      * @param major the major version number
      * @param minor the minor version number
      * @param patch the patch version number
      * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if a negative integer is passed
-     * @since 0.7.0
+     * @throws IllegalArgumentException if any of the arguments is a negative number
+     * @since 0.10.0
      */
+    public static Version of(int major, int minor, int patch) {
+        return Version.of(major, minor, patch, null, null);
+    }
+
+    /**
+     * Creates a new instance of {@code Version} from major, minor, patch and preRelease versions.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     * @param preRelease the pre-release version
+     * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if any of the numeric arguments is a negative number
+     * @throws ParseException if the preRelease version cannot be parsed
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
+     */
+    public static Version of(int major, int minor, int patch, String preRelease) {
+        return Version.of(major, minor, patch, preRelease, null);
+    }
+
+    /**
+     * Creates a new instance of {@code Version} from major, minor, patch and preRelease versions,
+     * as well as build metadata.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     * @param preRelease the pre-release version
+     * @param build the build metadata
+     * @return a new instance of the {@code Version} class
+     * @throws IllegalArgumentException if any of the numeric arguments is a negative number
+     * @throws ParseException if the preRelease version and/or build metadata cannot be parsed
+     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @since 0.10.0
+     */
+    public static Version of(int major, int minor, int patch, String preRelease, String build) {
+        return new Version(
+            new NormalVersion(major, minor, patch),
+            preRelease == null ? MetadataVersion.NULL : VersionParser.parsePreRelease(preRelease),
+            build == null ? MetadataVersion.NULL : VersionParser.parseBuild(build)
+        );
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link Version#parse(String)} instead.
+     */
+    @Deprecated
+    public static Version valueOf(String version) {
+        return Version.parse(version);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link Version#of(int)} instead.
+     */
+    @Deprecated
+    public static Version forIntegers(int major) {
+        return Version.of(major);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link Version#of(int, int)} instead.
+     */
+    @Deprecated
+    public static Version forIntegers(int major, int minor) {
+        return Version.of(major, minor);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link Version#of(int, int, int)} instead.
+     */
+    @Deprecated
     public static Version forIntegers(int major, int minor, int patch) {
-        return new Version(new NormalVersion(major, minor, patch));
+        return Version.of(major, minor, patch);
     }
 
     /**
