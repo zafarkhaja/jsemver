@@ -99,17 +99,17 @@ class VersionTest {
 
         @Test
         void preReleaseShouldHaveLowerPrecedenceThanAssociatedNormal() {
-            Version v1 = Version.parse("1.3.7");
-            Version v2 = Version.parse("1.3.7-alpha");
+            Version v1 = Version.of(1, 3, 7);
+            Version v2 = Version.of(1, 3, 7, "alpha");
             assertTrue(0 < v1.compareTo(v2));
             assertTrue(0 > v2.compareTo(v1));
         }
 
         @Test
         void shouldIgnoreBuildMetadataWhenDeterminingVersionPrecedence() {
-            Version v1 = Version.parse("1.3.7-beta");
-            Version v2 = Version.parse("1.3.7-beta+build.1");
-            Version v3 = Version.parse("1.3.7-beta+build.2");
+            Version v1 = Version.of(1, 3, 7, "beta");
+            Version v2 = Version.of(1, 3, 7, "beta", "build.1");
+            Version v3 = Version.of(1, 3, 7, "beta", "build.2");
             assertTrue(0 == v1.compareTo(v2));
             assertTrue(0 == v1.compareTo(v3));
             assertTrue(0 == v2.compareTo(v3));
@@ -117,8 +117,8 @@ class VersionTest {
 
         @Test
         void shouldHaveGreaterThanMethodReturningBoolean() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("1.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(1, 3, 7);
             assertTrue(v1.greaterThan(v2));
             assertFalse(v2.greaterThan(v1));
             assertFalse(v1.greaterThan(v1));
@@ -126,8 +126,8 @@ class VersionTest {
 
         @Test
         void shouldHaveGreaterThanOrEqualToMethodReturningBoolean() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("1.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(1, 3, 7);
             assertTrue(v1.greaterThanOrEqualTo(v2));
             assertFalse(v2.greaterThanOrEqualTo(v1));
             assertTrue(v1.greaterThanOrEqualTo(v1));
@@ -135,8 +135,8 @@ class VersionTest {
 
         @Test
         void shouldHaveLessThanMethodReturningBoolean() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("1.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(1, 3, 7);
             assertFalse(v1.lessThan(v2));
             assertTrue(v2.lessThan(v1));
             assertFalse(v1.lessThan(v1));
@@ -144,8 +144,8 @@ class VersionTest {
 
         @Test
         void shouldHaveLessThanOrEqualToMethodReturningBoolean() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("1.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(1, 3, 7);
             assertFalse(v1.lessThanOrEqualTo(v2));
             assertTrue(v2.lessThanOrEqualTo(v1));
             assertTrue(v1.lessThanOrEqualTo(v1));
@@ -153,9 +153,9 @@ class VersionTest {
 
         @Test
         void shouldOverrideEqualsMethod() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("2.3.7");
-            Version v3 = Version.parse("1.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(2, 3, 7);
+            Version v3 = Version.of(1, 3, 7);
             assertTrue(v1.equals(v1));
             assertTrue(v1.equals(v2));
             assertFalse(v1.equals(v3));
@@ -185,49 +185,49 @@ class VersionTest {
 
         @Test
         void shouldProvideIncrementMajorVersionMethod() {
-            Version v = Version.parse("1.2.3");
+            Version v = Version.of(1, 2, 3);
             Version incrementedMajor = v.incrementMajorVersion();
             assertEquals("2.0.0", incrementedMajor.toString());
         }
 
         @Test
         void shouldIncrementMajorVersionWithPreReleaseIfProvided() {
-            Version v = Version.parse("1.2.3");
+            Version v = Version.of(1, 2, 3);
             Version incrementedMajor = v.incrementMajorVersion("beta");
             assertEquals("2.0.0-beta", incrementedMajor.toString());
         }
 
         @Test
         void shouldProvideIncrementMinorVersionMethod() {
-            Version v = Version.parse("1.2.3");
+            Version v = Version.of(1, 2, 3);
             Version incrementedMinor = v.incrementMinorVersion();
             assertEquals("1.3.0", incrementedMinor.toString());
         }
 
         @Test
         void shouldIncrementMinorVersionWithPreReleaseIfProvided() {
-            Version v = Version.parse("1.2.3");
+            Version v = Version.of(1, 2, 3);
             Version incrementedMinor = v.incrementMinorVersion("alpha");
             assertEquals("1.3.0-alpha", incrementedMinor.toString());
         }
 
         @Test
         void shouldProvideIncrementPatchVersionMethod() {
-            Version v = Version.parse("1.2.3");
+            Version v = Version.of(1, 2, 3);
             Version incrementedPatch = v.incrementPatchVersion();
             assertEquals("1.2.4", incrementedPatch.toString());
         }
 
         @Test
         void shouldIncrementPatchVersionWithPreReleaseIfProvided() {
-            Version v = Version.parse("1.2.3");
+            Version v = Version.of(1, 2, 3);
             Version incrementedPatch = v.incrementPatchVersion("rc");
             assertEquals("1.2.4-rc", incrementedPatch.toString());
         }
 
         @Test
         void shouldDropBuildMetadataWhenIncrementing() {
-            Version v = Version.parse("1.2.3-alpha+build");
+            Version v = Version.of(1, 2, 3, "alpha", "build");
 
             Version major1 = v.incrementMajorVersion();
             assertEquals("2.0.0", major1.toString());
@@ -247,35 +247,35 @@ class VersionTest {
 
         @Test
         void shouldProvideSetPreReleaseVersionMethod() {
-            Version v1 = Version.parse("1.0.0");
+            Version v1 = Version.of(1, 0, 0);
             Version v2 = v1.setPreReleaseVersion("alpha");
             assertEquals("1.0.0-alpha", v2.toString());
         }
 
         @Test
         void shouldDropBuildMetadataWhenSettingPreReleaseVersion() {
-            Version v1 = Version.parse("1.0.0-alpha+build");
+            Version v1 = Version.of(1, 0, 0, "alpha", "build");
             Version v2 = v1.setPreReleaseVersion("beta");
             assertEquals("1.0.0-beta", v2.toString());
         }
 
         @Test
         void shouldProvideSetBuildMetadataMethod() {
-            Version v1 = Version.parse("1.0.0");
+            Version v1 = Version.of(1, 0, 0);
             Version v2 = v1.setBuildMetadata("build");
             assertEquals("1.0.0+build", v2.toString());
         }
 
         @Test
         void shouldProvideIncrementPreReleaseVersionMethod() {
-            Version v1 = Version.parse("1.0.0-beta.1");
+            Version v1 = Version.of(1, 0, 0, "beta.1");
             Version v2 = v1.incrementPreReleaseVersion();
             assertEquals("1.0.0-beta.2", v2.toString());
         }
 
         @Test
         void shouldThrowExceptionWhenIncrementingPreReleaseIfItsNull() {
-            Version v1 = Version.parse("1.0.0");
+            Version v1 = Version.of(1, 0, 0);
             assertThrows(
                 NullPointerException.class,
                 v1::incrementPreReleaseVersion,
@@ -285,21 +285,21 @@ class VersionTest {
 
         @Test
         void shouldDropBuildMetadataWhenIncrementingPreReleaseVersion() {
-            Version v1 = Version.parse("1.0.0-beta.1+build");
+            Version v1 = Version.of(1, 0, 0, "beta.1", "build");
             Version v2 = v1.incrementPreReleaseVersion();
             assertEquals("1.0.0-beta.2", v2.toString());
         }
 
         @Test
         void shouldProvideIncrementBuildMetadataMethod() {
-            Version v1 = Version.parse("1.0.0+build.1");
+            Version v1 = Version.of(1, 0, 0, null, "build.1");
             Version v2 = v1.incrementBuildMetadata();
             assertEquals("1.0.0+build.2", v2.toString());
         }
 
         @Test
         void shouldThrowExceptionWhenIncrementingBuildIfItsNull() {
-            Version v1 = Version.parse("1.0.0");
+            Version v1 = Version.of(1, 0, 0);
             assertThrows(
                 NullPointerException.class,
                 v1::incrementBuildMetadata,
@@ -309,7 +309,7 @@ class VersionTest {
 
         @Test
         void shouldBeImmutable() {
-            Version version = Version.parse("1.2.3-alpha+build");
+            Version version = Version.of(1, 2, 3, "alpha", "build");
 
             Version incrementedMajor = version.incrementMajorVersion();
             assertNotSame(version, incrementedMajor);
@@ -335,15 +335,15 @@ class VersionTest {
 
         @Test
         void shouldBeAbleToCompareWithoutIgnoringBuildMetadata() {
-            Version v1 = Version.parse("1.3.7-beta+build.1");
-            Version v2 = Version.parse("1.3.7-beta+build.2");
+            Version v1 = Version.of(1, 3, 7, "beta", "build.1");
+            Version v2 = Version.of(1, 3, 7, "beta", "build.2");
             assertTrue(0 == v1.compareTo(v2));
             assertTrue(0 > v1.compareWithBuildsTo(v2));
         }
 
         @Test
         void shouldCheckIfVersionSatisfiesExpression() {
-            Version v = Version.parse("2.0.0-beta");
+            Version v = Version.of(2, 0, 0, "beta");
             assertTrue(v.satisfies(gte("1.0.0").and(lt("2.0.0"))));
             assertFalse(v.satisfies(gte("2.0.0").and(lt("3.0.0"))));
         }
@@ -354,23 +354,23 @@ class VersionTest {
 
         @Test
         void shouldBeReflexive() {
-            Version v1 = Version.parse("2.3.7");
+            Version v1 = Version.of(2, 3, 7);
             assertTrue(v1.equals(v1));
         }
 
         @Test
         void shouldBeSymmetric() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("2.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(2, 3, 7);
             assertTrue(v1.equals(v2));
             assertTrue(v2.equals(v1));
         }
 
         @Test
         void shouldBeTransitive() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("2.3.7");
-            Version v3 = Version.parse("2.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(2, 3, 7);
+            Version v3 = Version.of(2, 3, 7);
             assertTrue(v1.equals(v2));
             assertTrue(v2.equals(v3));
             assertTrue(v1.equals(v3));
@@ -378,8 +378,8 @@ class VersionTest {
 
         @Test
         void shouldBeConsistent() {
-            Version v1 = Version.parse("2.3.7");
-            Version v2 = Version.parse("2.3.7");
+            Version v1 = Version.of(2, 3, 7);
+            Version v2 = Version.of(2, 3, 7);
             assertTrue(v1.equals(v2));
             assertTrue(v1.equals(v2));
             assertTrue(v1.equals(v2));
@@ -387,21 +387,21 @@ class VersionTest {
 
         @Test
         void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
-            Version v1 = Version.parse("2.3.7");
+            Version v1 = Version.of(2, 3, 7);
             assertFalse(v1.equals(new String("2.3.7")));
         }
 
         @Test
         void shouldReturnFalseIfOtherVersionIsNull() {
-            Version v1 = Version.parse("2.3.7");
+            Version v1 = Version.of(2, 3, 7);
             Version v2 = null;
             assertFalse(v1.equals(v2));
         }
 
         @Test
         void shouldIgnoreBuildMetadataWhenCheckingForEquality() {
-            Version v1 = Version.parse("2.3.7-beta+build");
-            Version v2 = Version.parse("2.3.7-beta");
+            Version v1 = Version.of(2, 3, 7, "beta", "build");
+            Version v2 = Version.of(2, 3, 7, "beta");
             assertTrue(v1.equals(v2));
         }
     }
@@ -411,8 +411,8 @@ class VersionTest {
 
         @Test
         void shouldReturnSameHashCodeIfVersionsAreEqual() {
-            Version v1 = Version.parse("2.3.7-beta+build");
-            Version v2 = Version.parse("2.3.7-beta");
+            Version v1 = Version.of(2, 3, 7, "beta", "build");
+            Version v2 = Version.of(2, 3, 7, "beta");
             assertTrue(v1.equals(v2));
             assertEquals(v1.hashCode(), v2.hashCode());
         }
@@ -438,27 +438,27 @@ class VersionTest {
             builder.setNormalVersion("1.0.0");
             builder.setPreReleaseVersion("alpha");
             builder.setBuildMetadata("build");
-            assertEquals(Version.parse("1.0.0-alpha+build"), builder.build());
+            assertEquals(Version.of(1, 0, 0, "alpha", "build"), builder.build());
         }
 
         @Test
         void shouldBuildVersionFromNormalVersion() {
             Version.Builder builder = new Version.Builder("1.0.0");
-            assertEquals(Version.parse("1.0.0"), builder.build());
+            assertEquals(Version.of(1, 0, 0), builder.build());
         }
 
         @Test
         void shouldBuildVersionWithPreReleaseVersion() {
             Version.Builder builder = new Version.Builder("1.0.0");
             builder.setPreReleaseVersion("alpha");
-            assertEquals(Version.parse("1.0.0-alpha"), builder.build());
+            assertEquals(Version.of(1, 0, 0, "alpha"), builder.build());
         }
 
         @Test
         void shouldBuildVersionWithBuildMetadata() {
             Version.Builder builder = new Version.Builder("1.0.0");
             builder.setBuildMetadata("build");
-            assertEquals(Version.parse("1.0.0+build"), builder.build());
+            assertEquals(Version.of(1, 0, 0, null, "build"), builder.build());
         }
 
         @Test
@@ -466,7 +466,7 @@ class VersionTest {
             Version.Builder builder = new Version.Builder("1.0.0");
             builder.setPreReleaseVersion("alpha");
             builder.setBuildMetadata("build");
-            assertEquals(Version.parse("1.0.0-alpha+build"), builder.build());
+            assertEquals(Version.of(1, 0, 0, "alpha", "build"), builder.build());
         }
 
         @Test
@@ -477,7 +477,7 @@ class VersionTest {
                 .setPreReleaseVersion("alpha")
                 .setBuildMetadata("build")
                 .build();
-            assertEquals(Version.parse("1.0.0-alpha+build"), version);
+            assertEquals(Version.of(1, 0, 0, "alpha", "build"), version);
         }
     }
 

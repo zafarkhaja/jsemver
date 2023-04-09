@@ -35,10 +35,9 @@ class GreaterOrEqualTest {
 
     @Test
     void shouldCheckIfVersionIsGreaterThanOrEqualToParsedVersion() {
-        Version parsed = Version.parse("2.0.0");
-        GreaterOrEqual ge = new GreaterOrEqual(parsed);
-        assertTrue(ge.interpret(Version.parse("3.2.1")));
-        assertTrue(ge.interpret(Version.parse("2.0.0")));
-        assertFalse(ge.interpret(Version.parse("1.2.3")));
+        GreaterOrEqual ge = new GreaterOrEqual(Version.of(2, 0, 0));
+        assertTrue(ge.interpret(Version.of(3, 2, 1)));
+        assertTrue(ge.interpret(Version.of(2, 0, 0)));
+        assertFalse(ge.interpret(Version.of(1, 2, 3)));
     }
 }
