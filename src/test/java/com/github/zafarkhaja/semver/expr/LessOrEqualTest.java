@@ -35,10 +35,10 @@ class LessOrEqualTest {
 
     @Test
     void shouldCheckIfVersionIsLessThanOrEqualToParsedVersion() {
-        Version parsed = Version.valueOf("2.0.0");
+        Version parsed = Version.parse("2.0.0");
         LessOrEqual le = new LessOrEqual(parsed);
-        assertTrue(le.interpret(Version.valueOf("1.2.3")));
-        assertTrue(le.interpret(Version.valueOf("2.0.0")));
-        assertFalse(le.interpret(Version.valueOf("3.2.1")));
+        assertTrue(le.interpret(Version.parse("1.2.3")));
+        assertTrue(le.interpret(Version.parse("2.0.0")));
+        assertFalse(le.interpret(Version.parse("3.2.1")));
     }
 }

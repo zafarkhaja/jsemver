@@ -74,7 +74,7 @@ public class CompositeExpression implements Expression {
          * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public static CompositeExpression eq(String version) {
-            return eq(Version.valueOf(version));
+            return eq(Version.parse(version));
         }
 
         /**
@@ -99,7 +99,7 @@ public class CompositeExpression implements Expression {
          * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public static CompositeExpression neq(String version) {
-            return neq(Version.valueOf(version));
+            return neq(Version.parse(version));
         }
 
         /**
@@ -124,7 +124,7 @@ public class CompositeExpression implements Expression {
          * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public static CompositeExpression gt(String version) {
-            return gt(Version.valueOf(version));
+            return gt(Version.parse(version));
         }
 
         /**
@@ -149,7 +149,7 @@ public class CompositeExpression implements Expression {
          * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public static CompositeExpression gte(String version) {
-            return gte(Version.valueOf(version));
+            return gte(Version.parse(version));
         }
 
         /**
@@ -174,7 +174,7 @@ public class CompositeExpression implements Expression {
          * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public static CompositeExpression lt(String version) {
-            return lt(Version.valueOf(version));
+            return lt(Version.parse(version));
         }
 
         /**
@@ -199,7 +199,7 @@ public class CompositeExpression implements Expression {
          * @throws UnexpectedCharacterException is a special case of {@code ParseException}
          */
         public static CompositeExpression lte(String version) {
-            return lte(Version.valueOf(version));
+            return lte(Version.parse(version));
         }
     }
 
@@ -253,7 +253,7 @@ public class CompositeExpression implements Expression {
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public boolean interpret(String version) {
-        return interpret(Version.valueOf(version));
+        return interpret(Version.parse(version));
     }
 
     /**

@@ -234,16 +234,16 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(TILDE);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+            return gte(Version.of(major)).and(lt(Version.of(major + 1)));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+            return gte(Version.of(major, minor)).and(lt(Version.of(major, minor + 1)));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        return gte(versionFor(major, minor, patch)).and(lt(versionFor(major, minor + 1)));
+        return gte(Version.of(major, minor, patch)).and(lt(Version.of(major, minor + 1)));
     }
 
     /**
@@ -261,18 +261,18 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(CARET);
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+            return gte(Version.of(major)).and(lt(Version.of(major + 1)));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            Version lower = versionFor(major, minor);
+            Version lower = Version.of(major, minor);
             Version upper = major > 0 ? lower.incrementMajorVersion() : lower.incrementMinorVersion();
             return gte(lower).and(lt(upper));
         }
         consumeNextToken(DOT);
         int patch = intOf(consumeNextToken(NUMERIC).lexeme);
-        Version version = versionFor(major, minor, patch);
+        Version version = Version.of(major, minor, patch);
         CompositeExpression gte = gte(version);
         if (major > 0) {
             return gte.and(lt(version.incrementMajorVersion()));
@@ -314,20 +314,20 @@ public class ExpressionParser implements Parser<Expression> {
     private CompositeExpression parseWildcardRange() {
         if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
-            return gte(versionFor(0, 0, 0));
+            return gte(Version.of(0, 0, 0));
         }
 
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         consumeNextToken(DOT);
         if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
-            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+            return gte(Version.of(major)).and(lt(Version.of(major + 1)));
         }
 
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
         consumeNextToken(DOT);
         consumeNextToken(WILDCARD);
-        return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+        return gte(Version.of(major, minor)).and(lt(Version.of(major, minor + 1)));
     }
 
     /**
@@ -389,11 +389,11 @@ public class ExpressionParser implements Parser<Expression> {
     private CompositeExpression parsePartialVersionRange() {
         int major = intOf(consumeNextToken(NUMERIC).lexeme);
         if (!tokens.positiveLookahead(DOT)) {
-            return gte(versionFor(major)).and(lt(versionFor(major + 1)));
+            return gte(Version.of(major)).and(lt(Version.of(major + 1)));
         }
         consumeNextToken(DOT);
         int minor = intOf(consumeNextToken(NUMERIC).lexeme);
-        return gte(versionFor(major, minor)).and(lt(versionFor(major, minor + 1)));
+        return gte(Version.of(major, minor)).and(lt(Version.of(major, minor + 1)));
     }
 
     /**
@@ -421,7 +421,7 @@ public class ExpressionParser implements Parser<Expression> {
             tokens.consume();
             patch = intOf(consumeNextToken(NUMERIC).lexeme);
         }
-        return versionFor(major, minor, patch);
+        return Version.of(major, minor, patch);
     }
 
     /**
@@ -446,41 +446,6 @@ public class ExpressionParser implements Parser<Expression> {
             }
         }
         return type.isMatchedBy(lookahead);
-    }
-
-    /**
-     * Creates a {@code Version} instance for the specified major version.
-     *
-     * @param major the major version number
-     * @return the version for the specified major version
-     */
-    private Version versionFor(int major) {
-        return versionFor(major, 0, 0);
-    }
-
-    /**
-     * Creates a {@code Version} instance for
-     * the specified major and minor versions.
-     *
-     * @param major the major version number
-     * @param minor the minor version number
-     * @return the version for the specified major and minor versions
-     */
-    private Version versionFor(int major, int minor) {
-        return versionFor(major, minor, 0);
-    }
-
-    /**
-     * Creates a {@code Version} instance for the
-     * specified major, minor and patch versions.
-     *
-     * @param major the major version number
-     * @param minor the minor version number
-     * @param patch the patch version number
-     * @return the version for the specified major, minor and patch versions
-     */
-    private Version versionFor(int major, int minor, int patch) {
-        return Version.forIntegers(major, minor, patch);
     }
 
     /**

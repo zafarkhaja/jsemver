@@ -220,7 +220,9 @@ class VersionParser implements Parser<Version> {
      */
     static MetadataVersion parsePreRelease(String preRelease) {
         VersionParser parser = new VersionParser(preRelease);
-        return parser.parsePreRelease();
+        MetadataVersion result = parser.parsePreRelease();
+        parser.ensureValidLookahead(EOI);
+        return result;
     }
 
     /**
@@ -234,7 +236,9 @@ class VersionParser implements Parser<Version> {
      */
     static MetadataVersion parseBuild(String build) {
         VersionParser parser = new VersionParser(build);
-        return parser.parseBuild();
+        MetadataVersion result = parser.parseBuild();
+        parser.ensureValidLookahead(EOI);
+        return result;
     }
 
     /**
