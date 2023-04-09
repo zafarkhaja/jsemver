@@ -214,97 +214,186 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * Constructs a {@code Version} instance with the normal version.
-     *
-     * @param normal the normal version
+     * @see #Version(NormalVersion, MetadataVersion, MetadataVersion) for documentation
      */
     Version(NormalVersion normal) {
         this(normal, MetadataVersion.NULL, MetadataVersion.NULL);
     }
 
     /**
-     * Constructs a {@code Version} instance with the
-     * normal version and the pre-release version.
-     *
-     * @param normal the normal version
-     * @param preRelease the pre-release version
+     * @see #Version(NormalVersion, MetadataVersion, MetadataVersion) for documentation
      */
     Version(NormalVersion normal, MetadataVersion preRelease) {
         this(normal, preRelease, MetadataVersion.NULL);
     }
 
     /**
-     * Constructs a {@code Version} instance with the normal
-     * version, the pre-release version and the build metadata.
+     * Package-private constructor, for internal use only.
      *
      * @param normal the normal version
      * @param preRelease the pre-release version
      * @param build the build metadata
      */
-    Version(
-        NormalVersion normal,
-        MetadataVersion preRelease,
-        MetadataVersion build
-    ) {
+    Version(NormalVersion normal, MetadataVersion preRelease, MetadataVersion build) {
         this.normal     = normal;
         this.preRelease = preRelease;
         this.build      = build;
     }
 
     /**
-     * Creates a new instance of {@code Version} as a
-     * result of parsing the specified version string.
+     * Obtains a {@code Version} instance by parsing the specified string.
      *
-     * @param version the version string to parse
-     * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
-     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
+     * @param  version a string representing a SemVer version, non-null
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code version} is null
+     * @throws ParseException if {@code version} can't be parsed
+     * @since  0.10.0
      */
-    public static Version valueOf(String version) {
-        return VersionParser.parseValidSemVer(version);
+    public static Version parse(String version) {
+        return VersionParser.parseValidSemVer(requireNonNull(version, "version"));
     }
 
     /**
-     * Creates a new instance of {@code Version}
-     * for the specified version numbers.
+     * Obtains a {@code Version} instance of the specified major version.
      *
-     * @param major the major version number
-     * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if a negative integer is passed
-     * @since 0.7.0
+     * @param  major a major version number, non-negative
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} is negative
+     * @since  0.10.0
      */
-    public static Version forIntegers(int major) {
-        return new Version(new NormalVersion(major, 0, 0));
+    public static Version of(int major) {
+        return Version.of(major, 0, 0, null, null);
     }
 
     /**
-     * Creates a new instance of {@code Version}
-     * for the specified version numbers.
+     * Obtains a {@code Version} instance of the specified major and pre-release
+     * versions.
      *
-     * @param major the major version number
-     * @param minor the minor version number
-     * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if a negative integer is passed
-     * @since 0.7.0
+     * @param  major a major version number, non-negative
+     * @param  preRelease a pre-release version label, nullable
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} is negative
+     * @throws ParseException if {@code preRelease} can't be parsed
+     * @since  0.10.0
      */
-    public static Version forIntegers(int major, int minor) {
-        return new Version(new NormalVersion(major, minor, 0));
+    public static Version of(int major, String preRelease) {
+        return Version.of(major, 0, 0, preRelease, null);
     }
 
     /**
-     * Creates a new instance of {@code Version}
-     * for the specified version numbers.
+     * Obtains a {@code Version} instance of the specified major and pre-release
+     * versions, as well as build metadata.
      *
-     * @param major the major version number
-     * @param minor the minor version number
-     * @param patch the patch version number
-     * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if a negative integer is passed
-     * @since 0.7.0
+     * @param  major a major version number, non-negative
+     * @param  preRelease a pre-release version label, nullable
+     * @param  build a build metadata label, nullable
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} is negative
+     * @throws ParseException if {@code preRelease} or {@code build} can't be parsed
+     * @since  0.10.0
      */
-    public static Version forIntegers(int major, int minor, int patch) {
-        return new Version(new NormalVersion(major, minor, patch));
+    public static Version of(int major, String preRelease, String build) {
+        return Version.of(major, 0, 0, preRelease, build);
+    }
+
+    /**
+     * Obtains a {@code Version} instance of the specified major and minor versions.
+     *
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} or {@code minor} is negative
+     * @since  0.10.0
+     */
+    public static Version of(int major, int minor) {
+        return Version.of(major, minor, 0, null, null);
+    }
+
+    /**
+     * Obtains a {@code Version} instance of the specified major, minor and
+     * pre-release versions.
+     *
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @param  preRelease a pre-release version label, nullable
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} or {@code minor} is negative
+     * @throws ParseException if {@code preRelease} can't be parsed
+     * @since  0.10.0
+     */
+    public static Version of(int major, int minor, String preRelease) {
+        return Version.of(major, minor, 0, preRelease, null);
+    }
+
+    /**
+     * Obtains a {@code Version} instance of the specified major, minor and
+     * pre-release versions, as well as build metadata.
+     *
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @param  preRelease a pre-release version label, nullable
+     * @param  build a build metadata label, nullable
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} or {@code minor} is negative
+     * @throws ParseException if {@code preRelease} or {@code build} can't be parsed
+     * @since  0.10.0
+     */
+    public static Version of(int major, int minor, String preRelease, String build) {
+        return Version.of(major, minor, 0, preRelease, build);
+    }
+
+    /**
+     * Obtains a {@code Version} instance of the specified major, minor and
+     * patch versions.
+     *
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @param  patch a patch version number, non-negative
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if any of the arguments is negative
+     * @since  0.10.0
+     */
+    public static Version of(int major, int minor, int patch) {
+        return Version.of(major, minor, patch, null, null);
+    }
+
+    /**
+     * Obtains a {@code Version} instance of the specified major, minor, patch
+     * and pre-release versions.
+     *
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @param  patch a patch version number, non-negative
+     * @param  preRelease a pre-release version label, nullable
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if any of the numeric arguments is negative
+     * @throws ParseException if {@code preRelease} can't be parsed
+     * @since  0.10.0
+     */
+    public static Version of(int major, int minor, int patch, String preRelease) {
+        return Version.of(major, minor, patch, preRelease, null);
+    }
+
+    /**
+     * Obtains a {@code Version} instance of the specified major, minor, patch
+     * and pre-release versions, as well as build metadata.
+     *
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @param  patch a patch version number, non-negative
+     * @param  preRelease a pre-release version label, nullable
+     * @param  build a build metadata label, nullable
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if any of the numeric arguments is negative
+     * @throws ParseException if {@code preRelease} or {@code build} can't be parsed
+     * @since  0.10.0
+     */
+    public static Version of(int major, int minor, int patch, String preRelease, String build) {
+        return new Version(
+            new NormalVersion(major, minor, patch),
+            preRelease == null ? MetadataVersion.NULL : VersionParser.parsePreRelease(preRelease),
+            build == null ? MetadataVersion.NULL : VersionParser.parseBuild(build)
+        );
     }
 
     /**
@@ -643,5 +732,44 @@ public class Version implements Comparable<Version> {
      */
     public int compareWithBuildsTo(Version other) {
         return BUILD_AWARE_ORDER.compare(this, other);
+    }
+
+    private static <T> T requireNonNull(T arg, String name) {
+        if (arg == null) {
+            throw new IllegalArgumentException(name + " must not be null");
+        }
+        return arg;
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #parse(String)}
+     */
+    @Deprecated
+    public static Version valueOf(String version) {
+        return Version.parse(version);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #of(int)}
+     */
+    @Deprecated
+    public static Version forIntegers(int major) {
+        return Version.of(major);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #of(int, int)}
+     */
+    @Deprecated
+    public static Version forIntegers(int major, int minor) {
+        return Version.of(major, minor);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #of(int, int, int)}
+     */
+    @Deprecated
+    public static Version forIntegers(int major, int minor, int patch) {
+        return Version.of(major, minor, patch);
     }
 }

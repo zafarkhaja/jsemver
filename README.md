@@ -69,55 +69,26 @@ import com.github.zafarkhaja.semver.Version;
 ~~~
 
 ### Creating Versions ###
-The main class of the Java SemVer library is `Version` which implements the
-Facade design pattern. By design, the `Version` class is made immutable by
-making its constructors package-private, so that it can not be subclassed or
-directly instantiated. Instead of public constructors, the `Version` class
-provides few _static factory methods_.
+There are 3 ways to obtain a `Version` instance:
 
-One of the methods is the `Version.valueOf` method.
-
+1. by using the `Version.parse()` method
 ~~~ java
-Version v = Version.valueOf("1.0.0-rc.1+build.1");
-
-int major = v.getMajorVersion(); // 1
-int minor = v.getMinorVersion(); // 0
-int patch = v.getPatchVersion(); // 0
-
-String normal     = v.getNormalVersion();     // "1.0.0"
-String preRelease = v.getPreReleaseVersion(); // "rc.1"
-String build      = v.getBuildMetadata();     // "build.1"
-
-String str = v.toString(); // "1.0.0-rc.1+build.1"
+Version v = Version.parse("1.2.3-pre-release+build.metadata");
 ~~~
 
-The other static factory method is `Version.forIntegers` which is also
-overloaded to allow fewer arguments.
-
+2. by using the `Version.of()` method
 ~~~ java
-Version v1 = Version.forIntegers(1);
-Version v2 = Version.forIntegers(1, 2);
-Version v3 = Version.forIntegers(1, 2, 3);
+Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
 ~~~
 
-Another way to create a `Version` is to use a _builder_ class `Version.Builder`.
-
+3. by using the `Version.Builder` class
 ~~~ java
-Version.Builder builder = new Version.Builder("1.0.0");
-builder.setPreReleaseVersion("rc.1");
-builder.setBuildMetadata("build.1");
-
-Version v = builder.build();
-
-int major = v.getMajorVersion(); // 1
-int minor = v.getMinorVersion(); // 0
-int patch = v.getPatchVersion(); // 0
-
-String normal     = v.getNormalVersion();     // "1.0.0"
-String preRelease = v.getPreReleaseVersion(); // "rc.1"
-String build      = v.getBuildMetadata();     // "build.1"
-
-String str = v.toString(); // "1.0.0-rc.1+build.1"
+Version v = new Version.Builder()
+  .setNormalVersion(1, 2, 3)
+  .setPreReleaseVersion("pre-release")
+  .setBuildMetadata("build.metadata")
+  .build()
+;
 ~~~
 
 ### Incrementing Versions ###
@@ -127,7 +98,7 @@ version incrementors has an overloaded method that takes a pre-release version
 as an argument.
 
 ~~~ java
-Version v1 = Version.valueOf("1.2.3");
+Version v1 = Version.parse("1.2.3");
 
 // Incrementing the major version
 Version v2 = v1.incrementMajorVersion();        // "2.0.0"
@@ -150,12 +121,12 @@ metadata.
 
 ~~~ java
 // Incrementing the pre-release version
-Version v1 = Version.valueOf("1.2.3-rc");        // considered as "rc.0"
+Version v1 = Version.parse("1.2.3-rc");          // considered as "rc.0"
 Version v2 = v1.incrementPreReleaseVersion();    // "1.2.3-rc.1"
 Version v3 = v2.incrementPreReleaseVersion();    // "1.2.3-rc.2"
 
 // Incrementing the build metadata
-Version v1 = Version.valueOf("1.2.3-rc+build");  // considered as "build.0"
+Version v1 = Version.parse("1.2.3-rc+build");    // considered as "build.0"
 Version v2 = v1.incrementBuildMetadata();        // "1.2.3-rc+build.1"
 Version v3 = v2.incrementBuildMetadata();        // "1.2.3-rc+build.2"
 ~~~
@@ -164,7 +135,7 @@ When incrementing the normal or pre-release versions the build metadata is
 always dropped.
 
 ~~~ java
-Version v1 = Version.valueOf("1.2.3-beta+build");
+Version v1 = Version.parse("1.2.3-beta+build");
 
 // Incrementing the normal version
 Version v2 = v1.incrementMajorVersion();        // "2.0.0"
@@ -189,8 +160,8 @@ Comparing versions with Java SemVer is easy. The `Version` class implements the
 some more methods for convenient comparing.
 
 ~~~ java
-Version v1 = Version.valueOf("1.0.0-rc.1+build.1");
-Version v2 = Version.valueOf("1.3.7+build.2.b8f12d7");
+Version v1 = Version.parse("1.0.0-rc.1+build.1");
+Version v2 = Version.parse("1.3.7+build.2.b8f12d7");
 
 int result = v1.compareTo(v2);  // < 0
 boolean result = v1.equals(v2); // false
@@ -204,8 +175,8 @@ boolean result = v1.lessThanOrEqualTo(v2);     // true
 When determining version precedence the build metadata is ignored (SemVer p.10).
 
 ~~~ java
-Version v1 = Version.valueOf("1.0.0+build.1");
-Version v2 = Version.valueOf("1.0.0+build.2");
+Version v1 = Version.parse("1.0.0+build.1");
+Version v2 = Version.parse("1.0.0+build.2");
 
 int result = v1.compareTo(v2);  // = 0
 boolean result = v1.equals(v2); // true
@@ -216,8 +187,8 @@ in mind. For such cases Java SemVer provides a _comparator_ `Version.BUILD_AWARE
 and a convenience method `Version.compareWithBuildsTo`.
 
 ~~~ java
-Version v1 = Version.valueOf("1.0.0+build.1");
-Version v2 = Version.valueOf("1.0.0+build.2");
+Version v1 = Version.parse("1.0.0+build.1");
+Version v2 = Version.parse("1.0.0+build.2");
 
 int result = Version.BUILD_AWARE_ORDER.compare(v1, v2);  // < 0
 
@@ -240,7 +211,7 @@ helper methods.
 ~~~ java
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
 
-Version v = Version.valueOf("1.0.0-beta");
+Version v = Version.parse("1.0.0-beta");
 boolean result = v.satisfies(gte("1.0.0").and(lt("2.0.0")));  // false
 ~~~
 
@@ -249,7 +220,7 @@ The BNF grammar for the external DSL can be found in the corresponding
 [issue](https://github.com/zafarkhaja/jsemver/issues/1).
 
 ~~~ java
-Version v = Version.valueOf("1.0.0-beta");
+Version v = Version.parse("1.0.0-beta");
 boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
 ~~~
 
