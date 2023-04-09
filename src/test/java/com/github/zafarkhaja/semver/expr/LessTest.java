@@ -35,9 +35,8 @@ class LessTest {
 
     @Test
     void shouldCheckIfVersionIsLessThanParsedVersion() {
-        Version parsed = Version.parse("2.0.0");
-        Less lt = new Less(parsed);
-        assertTrue(lt.interpret(Version.parse("1.2.3")));
-        assertFalse(lt.interpret(Version.parse("3.2.1")));
+        Less lt = new Less(Version.of(2, 0, 0));
+        assertTrue(lt.interpret(Version.of(1, 2, 3)));
+        assertFalse(lt.interpret(Version.of(3, 2, 1)));
     }
 }

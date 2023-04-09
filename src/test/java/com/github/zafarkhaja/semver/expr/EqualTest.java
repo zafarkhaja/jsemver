@@ -35,9 +35,8 @@ class EqualTest {
 
     @Test
     void shouldCheckIfVersionIsEqualToParsedVersion() {
-        Version parsed = Version.parse("1.2.3");
-        Equal eq = new Equal(parsed);
-        assertTrue(eq.interpret(Version.parse("1.2.3")));
-        assertFalse(eq.interpret(Version.parse("3.2.1")));
+        Equal eq = new Equal(Version.of(1, 2, 3));
+        assertTrue(eq.interpret(Version.of(1, 2, 3)));
+        assertFalse(eq.interpret(Version.of(3, 2, 1)));
     }
 }
