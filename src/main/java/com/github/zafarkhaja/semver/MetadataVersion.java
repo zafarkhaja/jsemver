@@ -120,9 +120,9 @@ class MetadataVersion implements Comparable<MetadataVersion> {
     MetadataVersion increment() {
         String[] ids  = idents;
         String lastId = ids[ids.length - 1];
-        if (isInt(lastId)) {
-            int intId = Integer.parseInt(lastId);
-            ids[ids.length - 1] = String.valueOf(++intId);
+        if (isNumeric(lastId)) {
+            long numericId = Long.parseLong(lastId);
+            ids[ids.length - 1] = String.valueOf(tryIncrement(numericId));
         } else {
             ids = Arrays.copyOf(ids, ids.length + 1);
             ids[ids.length - 1] = String.valueOf(1);
@@ -197,7 +197,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      */
     private int compareIdentifierArrays(String[] otherIdents) {
         int result = 0;
-        int length = getLeastCommonArrayLength(idents, otherIdents);
+        int length = getSmallestArrayLength(idents, otherIdents);
         for (int i = 0; i < length; i++) {
             result = compareIdentifiers(idents[i], otherIdents[i]);
             if (result != 0) {
@@ -214,7 +214,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      * @param arr2 the second array
      * @return the size of the smallest array
      */
-    private int getLeastCommonArrayLength(String[] arr1, String[] arr2) {
+    private int getSmallestArrayLength(String[] arr1, String[] arr2) {
         return Math.min(arr1.length, arr2.length);
     }
 
@@ -227,26 +227,29 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      *         the {@code Comparable.compareTo} method
      */
     private int compareIdentifiers(String ident1, String ident2) {
-        if (isInt(ident1) && isInt(ident2)) {
-            return Integer.parseInt(ident1) - Integer.parseInt(ident2);
+        if (isNumeric(ident1) && isNumeric(ident2)) {
+            return Long.valueOf(ident1).compareTo(Long.valueOf(ident2));
         } else {
             return ident1.compareTo(ident2);
         }
     }
 
     /**
-     * Checks if the specified string is an integer.
+     * Checks if the specified string is a numeric identifier.
      *
      * @param str the string to check
-     * @return {@code true} if the specified string is an integer
+     * @return {@code true} if the specified string is a numeric identifier
      *         or {@code false} otherwise
      */
-    private boolean isInt(String str) {
-        try {
-            Integer.parseInt(str);
-        } catch (NumberFormatException e) {
+    private boolean isNumeric(String str) {
+        // filters out <digits>
+        if (str.startsWith("0")) {
             return false;
         }
-        return true;
+        return str.chars().allMatch(Character::isDigit);
+    }
+
+    private long tryIncrement(long l) {
+        return Math.incrementExact(l);
     }
 }

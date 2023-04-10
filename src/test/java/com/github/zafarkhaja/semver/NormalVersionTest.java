@@ -64,7 +64,7 @@ class NormalVersionTest {
 
         @Test
         void mustIncreaseEachElementNumericallyByIncrementsOfOne() {
-            int major = 1, minor = 2, patch = 3;
+            long major = 1, minor = 2, patch = 3;
             NormalVersion v = new NormalVersion(major, minor, patch);
             NormalVersion incrementedPatch = v.incrementPatch();
             assertEquals(patch + 1, incrementedPatch.getPatch());
@@ -72,6 +72,14 @@ class NormalVersionTest {
             assertEquals(minor + 1, incrementedMinor.getMinor());
             NormalVersion incrementedMajor = v.incrementMajor();
             assertEquals(major + 1, incrementedMajor.getMajor());
+        }
+
+        @Test
+        void shouldRaiseErrorIfIncrementCausesOverflow() {
+            NormalVersion v = new NormalVersion(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
+            assertThrows(ArithmeticException.class, v::incrementMajor);
+            assertThrows(ArithmeticException.class, v::incrementMinor);
+            assertThrows(ArithmeticException.class, v::incrementPatch);
         }
 
         @Test

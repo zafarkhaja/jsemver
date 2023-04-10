@@ -79,7 +79,7 @@ class VersionTest {
         }
 
         @Test
-        void shouldNotAcceptNegativeIntegersInStaticFactoryMethod() {
+        void shouldNotAcceptNegativeNumbersInStaticFactoryMethod() {
             assertThrowsIllegalArgumentException(() -> Version.of(-1, 0, 0));
             assertThrowsIllegalArgumentException(() -> Version.of(0, -1, 0));
             assertThrowsIllegalArgumentException(() -> Version.of(0, 0, -1));
