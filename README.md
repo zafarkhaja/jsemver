@@ -73,9 +73,9 @@ import com.github.zafarkhaja.semver.Version;
 
 Version v = Version.parse("1.0.0-rc.1+build.1");
 
-int major = v.getMajorVersion(); // 1
-int minor = v.getMinorVersion(); // 0
-int patch = v.getPatchVersion(); // 0
+long major = v.getMajorVersion(); // 1
+long minor = v.getMinorVersion(); // 0
+long patch = v.getPatchVersion(); // 0
 
 String normal     = v.getNormalVersion();     // "1.0.0"
 String preRelease = v.getPreReleaseVersion(); // "rc.1"
@@ -109,9 +109,9 @@ builder.setBuildMetadata("build.1");
 
 Version v = builder.build();
 
-int major = v.getMajorVersion(); // 1
-int minor = v.getMinorVersion(); // 0
-int patch = v.getPatchVersion(); // 0
+long major = v.getMajorVersion(); // 1
+long minor = v.getMinorVersion(); // 0
+long patch = v.getPatchVersion(); // 0
 
 String normal     = v.getNormalVersion();     // "1.0.0"
 String preRelease = v.getPreReleaseVersion(); // "rc.1"
@@ -281,9 +281,9 @@ other interesting capabilities of the SemVer Expressions external DSL.
 
 ## Exception Handling ##
 There are two types of errors that may arise while using Java SemVer
-* `IllegalArgumentException` is thrown when the passed value is `NULL` or empty
-  if a method accepts `string` argument or a negative integer if a method accepts
-  `int` arguments.
+* `IllegalArgumentException` is thrown if argument is a `NULL` reference, empty
+  `String` or a negative number.
+* `ArithmeticException` is thrown if increment operation causes numeric identifier overflow
 * `ParseException` is thrown by methods that perform parsing of SemVer version
   strings or SemVer Expressions. There are few subtypes of the `ParseException`
   error

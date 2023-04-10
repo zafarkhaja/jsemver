@@ -24,6 +24,7 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,6 +86,15 @@ public class ExpressionParserTest {
     }
 
     @Test
+    public void shouldSupportLongNumericIdentifiersInComparisonRanges() {
+        long l = Integer.MAX_VALUE + 1L;
+        String version = "=" + l + "." + l + "." + l;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        Expression eq = parser.parse(version);
+        assertTrue(eq.interpret(Version.of(l, l, l)));
+    }
+
+    @Test
     public void shouldParseTildeRange() {
         ExpressionParser parser = new ExpressionParser(new Lexer());
         Expression expr1 = parser.parse("~1");
@@ -96,6 +106,24 @@ public class ExpressionParserTest {
         Expression expr3 = parser.parse("~1.2.3");
         assertTrue(expr3.interpret(Version.of(1, 2, 3)));
         assertFalse(expr3.interpret(Version.of(1, 3, 0)));
+    }
+
+    @Test
+    public void shouldSupportLongNumericIdentifiersInTildeRanges() {
+        long l = Integer.MAX_VALUE + 1L;
+        String tildeRange = "~" + l + "." + l + "." + l;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        Expression expr = parser.parse(tildeRange);
+        assertTrue(expr.interpret(Version.of(l, l, l)));
+    }
+
+    @Test
+    public void shouldRaiseErrorIfIncrementCausesOverflowInTildeRanges() {
+        long lmv = Long.MAX_VALUE;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        for (String r : Arrays.asList(("~" + lmv), ("~1." + lmv), ("~1." + lmv + ".0"))) {
+            assertThrows(ArithmeticException.class, () -> parser.parse(r));
+        }
     }
 
     @Test
@@ -113,12 +141,48 @@ public class ExpressionParserTest {
     }
 
     @Test
+    public void shouldSupportLongNumericIdentifiersInCaretRanges() {
+        long l = Integer.MAX_VALUE + 1L;
+        String caretRange = "^" + l + "." + l + "." + l;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        Expression expr = parser.parse(caretRange);
+        assertTrue(expr.interpret(Version.of(l, l, l)));
+    }
+
+    @Test
+    public void shouldRaiseErrorIfIncrementCausesOverflowInCaretRanges() {
+        long lmv = Long.MAX_VALUE;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        for (String r : Arrays.asList(("^" + lmv), ("^0." + lmv), ("^0.0." + lmv))) {
+            assertThrows(ArithmeticException.class, () -> parser.parse(r));
+        }
+    }
+
+    @Test
     public void shouldParsePartialVersionRange() {
         ExpressionParser parser = new ExpressionParser(new Lexer());
         Expression expr1 = parser.parse("1");
         assertTrue(expr1.interpret(Version.of(1, 2, 3)));
         Expression expr2 = parser.parse("2.0");
         assertTrue(expr2.interpret(Version.of(2, 0, 9)));
+    }
+
+    @Test
+    public void shouldSupportLongNumericIdentifiersInPartialVersionRanges() {
+        long l = Integer.MAX_VALUE + 1L;
+        String partialVersion = l + "." + l;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        Expression expr = parser.parse(partialVersion);
+        assertTrue(expr.interpret(Version.of(l, l, l)));
+    }
+
+    @Test
+    public void shouldRaiseErrorIfIncrementCausesOverflowInPartialVersionRanges() {
+        String lmv = String.valueOf(Long.MAX_VALUE);
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        for (String r : Arrays.asList((lmv), ("1." + lmv))) {
+            assertThrows(ArithmeticException.class, () -> parser.parse(r));
+        }
     }
 
     @Test
@@ -132,6 +196,24 @@ public class ExpressionParserTest {
         assertFalse(expr2.interpret(Version.of(1, 3, 2)));
         Expression expr3 = parser.parse("X");
         assertTrue(expr3.interpret(Version.of(1, 2, 3)));
+    }
+
+    @Test
+    public void shouldSupportLongNumericIdentifiersInWildcardRanges() {
+        long l = Integer.MAX_VALUE + 1L;
+        String wildcardRange = l + "." + l + "." + "x";
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        Expression expr = parser.parse(wildcardRange);
+        assertTrue(expr.interpret(Version.of(l, l, l)));
+    }
+
+    @Test
+    public void shouldRaiseErrorIfIncrementCausesOverflowInWildcardRanges() {
+        long lmv = Long.MAX_VALUE;
+        ExpressionParser parser = new ExpressionParser(new Lexer());
+        for (String r : Arrays.asList((lmv + ".x"), ("1." + lmv + ".x"))) {
+            assertThrows(ArithmeticException.class, () -> parser.parse(r));
+        }
     }
 
     @Test

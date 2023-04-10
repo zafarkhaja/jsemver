@@ -281,11 +281,11 @@ class VersionParser implements Parser<Version> {
      * @return a valid normal version object
      */
     private NormalVersion parseVersionCore() {
-        int major = Integer.parseInt(numericIdentifier());
+        long major = numericIdentifier();
         consumeNextCharacter(DOT);
-        int minor = Integer.parseInt(numericIdentifier());
+        long minor = numericIdentifier();
         consumeNextCharacter(DOT);
-        int patch = Integer.parseInt(numericIdentifier());
+        long patch = numericIdentifier();
         return new NormalVersion(major, minor, patch);
     }
 
@@ -335,7 +335,7 @@ class VersionParser implements Parser<Version> {
         if (chars.positiveLookaheadBefore(boundary, LETTER, HYPHEN)) {
             return alphanumericIdentifier();
         } else {
-            return numericIdentifier();
+            return String.valueOf(numericIdentifier());
         }
     }
 
@@ -402,9 +402,13 @@ class VersionParser implements Parser<Version> {
      *
      * @return a string representing the numeric identifier
      */
-    private String numericIdentifier() {
+    private long numericIdentifier() {
         checkForLeadingZeroes();
-        return digits();
+        try {
+            return Long.parseLong(digits());
+        } catch (NumberFormatException e) {
+            throw new ParseException("Numeric identifier overflow");
+        }
     }
 
     /**
