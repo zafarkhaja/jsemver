@@ -237,6 +237,8 @@ other interesting capabilities of the SemVer Expressions external DSL.
 
 ## Exception Handling ##
 These are the exceptions you can expect when working with the `Version` class:
+* `ArithmeticException` is thrown if increment operation causes numeric identifier
+  overflow
 * `IllegalArgumentException`, depending on the method and the parameter type, is
   thrown if you pass a `null` reference, an empty `String`, or a negative number
 * `ParseException` and its subtypes are thrown if the specified string argument

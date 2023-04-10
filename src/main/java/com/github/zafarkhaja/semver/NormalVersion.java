@@ -36,17 +36,17 @@ class NormalVersion implements Comparable<NormalVersion> {
     /**
      * The major version number.
      */
-    private final int major;
+    private final long major;
 
     /**
      * The minor version number.
      */
-    private final int minor;
+    private final long minor;
 
     /**
      * The patch version number.
      */
-    private final int patch;
+    private final long patch;
 
     /**
      * Constructs a {@code NormalVersion} with the
@@ -55,9 +55,9 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @param major the major version number
      * @param minor the minor version number
      * @param patch the patch version number
-     * @throws IllegalArgumentException if one of the version numbers is a negative integer
+     * @throws IllegalArgumentException if any of the arguments is a negative number
      */
-    NormalVersion(int major, int minor, int patch) {
+    NormalVersion(long major, long minor, long patch) {
         if (major < 0 || minor < 0 || patch < 0) {
             throw new IllegalArgumentException(
                 "Major, minor and patch versions MUST be non-negative integers."
@@ -73,7 +73,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      *
      * @return the major version number
      */
-    int getMajor() {
+    long getMajor() {
         return major;
     }
 
@@ -82,7 +82,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      *
      * @return the minor version number
      */
-    int getMinor() {
+    long getMinor() {
         return minor;
     }
 
@@ -91,7 +91,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      *
      * @return the patch version number
      */
-    int getPatch() {
+    long getPatch() {
         return patch;
     }
 
@@ -101,7 +101,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return a new instance of the {@code NormalVersion} class
      */
     NormalVersion incrementMajor() {
-        return new NormalVersion(major + 1, 0, 0);
+        return new NormalVersion(tryIncrement(major), 0, 0);
     }
 
     /**
@@ -110,7 +110,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return a new instance of the {@code NormalVersion} class
      */
     NormalVersion incrementMinor() {
-        return new NormalVersion(major, minor + 1, 0);
+        return new NormalVersion(major, tryIncrement(minor), 0);
     }
 
     /**
@@ -119,7 +119,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      * @return a new instance of the {@code NormalVersion} class
      */
     NormalVersion incrementPatch() {
-        return new NormalVersion(major, minor, patch + 1);
+        return new NormalVersion(major, minor, tryIncrement(patch));
     }
 
     /**
@@ -127,14 +127,17 @@ class NormalVersion implements Comparable<NormalVersion> {
      */
     @Override
     public int compareTo(NormalVersion other) {
-        int result = major - other.major;
+        long result = major - other.major;
         if (result == 0) {
             result = minor - other.minor;
             if (result == 0) {
                 result = patch - other.patch;
+                if (result == 0) {
+                    return 0;
+                }
             }
         }
-        return result;
+        return result < 0 ? -1 : 1;
     }
 
     /**
@@ -157,9 +160,9 @@ class NormalVersion implements Comparable<NormalVersion> {
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + major;
-        hash = 31 * hash + minor;
-        hash = 31 * hash + patch;
+        hash = 31 * hash + Long.hashCode(major);
+        hash = 31 * hash + Long.hashCode(minor);
+        hash = 31 * hash + Long.hashCode(patch);
         return hash;
     }
 
@@ -175,5 +178,9 @@ class NormalVersion implements Comparable<NormalVersion> {
     @Override
     public String toString() {
         return String.format("%d.%d.%d", major, minor, patch);
+    }
+
+    private long tryIncrement(long l) {
+        return Math.incrementExact(l);
     }
 }

@@ -118,4 +118,20 @@ class VersionParserTest {
             );
         }
     }
+
+    @Test
+    void shouldSupportLongNumericIdentifiers() {
+        long l = Long.MAX_VALUE;
+        String version = l + "." + l + "." + l + "-" + l + "+" + l;
+        Version expected = Version.of(l, l, l, String.valueOf(l), String.valueOf(l));
+        Version actual = VersionParser.parseValidSemVer(version);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldCheckForNumericIdentifierOverflows() {
+        // Long.MAX_VALUE == 9223372036854775807L;
+        Exception e = assertThrows(ParseException.class, () -> Version.parse("1.0.0-9223372036854775808"));
+        assertEquals("Numeric identifier overflow", e.getMessage());
+    }
 }

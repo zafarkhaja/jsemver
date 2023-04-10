@@ -103,7 +103,7 @@ class MetadataVersionTest {
         }
 
         @Test
-        void shouldProvideIncrementMethod() {
+        void shouldIncrementLastIdentifierIfNumeric() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "1"}
             );
@@ -112,12 +112,29 @@ class MetadataVersionTest {
         }
 
         @Test
-        void shouldAppendOneAsLastIdentifierIfLastOneIsAlphaNumericWhenIncrementing() {
+        void shouldAppendNumericIdentifierToBeIncrementedIfLastOneAlphanumeric() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha"}
             );
             MetadataVersion v2 = v1.increment();
             assertEquals("alpha.1", v2.toString());
+        }
+
+        @Test
+        void shouldAppendNumericIdentifierToBeIncrementedIfLastOneDigits() {
+            MetadataVersion v1 = new MetadataVersion(
+                new String[] {"alpha", "01"}
+            );
+            MetadataVersion v2 = v1.increment();
+            assertEquals("alpha.01.1", v2.toString());
+        }
+
+        @Test
+        void shouldRaiseErrorIfIncrementCausesOverflow() {
+            MetadataVersion v = new MetadataVersion(
+                new String[] {String.valueOf(Long.MAX_VALUE)}
+            );
+            assertThrows(ArithmeticException.class, v::increment);
         }
 
         @Test

@@ -261,7 +261,7 @@ public class Version implements Comparable<Version> {
      * @throws IllegalArgumentException if {@code major} is negative
      * @since  0.10.0
      */
-    public static Version of(int major) {
+    public static Version of(long major) {
         return Version.of(major, 0, 0, null, null);
     }
 
@@ -276,7 +276,7 @@ public class Version implements Comparable<Version> {
      * @throws ParseException if {@code preRelease} can't be parsed
      * @since  0.10.0
      */
-    public static Version of(int major, String preRelease) {
+    public static Version of(long major, String preRelease) {
         return Version.of(major, 0, 0, preRelease, null);
     }
 
@@ -292,7 +292,7 @@ public class Version implements Comparable<Version> {
      * @throws ParseException if {@code preRelease} or {@code build} can't be parsed
      * @since  0.10.0
      */
-    public static Version of(int major, String preRelease, String build) {
+    public static Version of(long major, String preRelease, String build) {
         return Version.of(major, 0, 0, preRelease, build);
     }
 
@@ -305,7 +305,7 @@ public class Version implements Comparable<Version> {
      * @throws IllegalArgumentException if {@code major} or {@code minor} is negative
      * @since  0.10.0
      */
-    public static Version of(int major, int minor) {
+    public static Version of(long major, long minor) {
         return Version.of(major, minor, 0, null, null);
     }
 
@@ -321,7 +321,7 @@ public class Version implements Comparable<Version> {
      * @throws ParseException if {@code preRelease} can't be parsed
      * @since  0.10.0
      */
-    public static Version of(int major, int minor, String preRelease) {
+    public static Version of(long major, long minor, String preRelease) {
         return Version.of(major, minor, 0, preRelease, null);
     }
 
@@ -338,7 +338,7 @@ public class Version implements Comparable<Version> {
      * @throws ParseException if {@code preRelease} or {@code build} can't be parsed
      * @since  0.10.0
      */
-    public static Version of(int major, int minor, String preRelease, String build) {
+    public static Version of(long major, long minor, String preRelease, String build) {
         return Version.of(major, minor, 0, preRelease, build);
     }
 
@@ -353,7 +353,7 @@ public class Version implements Comparable<Version> {
      * @throws IllegalArgumentException if any of the arguments is negative
      * @since  0.10.0
      */
-    public static Version of(int major, int minor, int patch) {
+    public static Version of(long major, long minor, long patch) {
         return Version.of(major, minor, patch, null, null);
     }
 
@@ -370,7 +370,7 @@ public class Version implements Comparable<Version> {
      * @throws ParseException if {@code preRelease} can't be parsed
      * @since  0.10.0
      */
-    public static Version of(int major, int minor, int patch, String preRelease) {
+    public static Version of(long major, long minor, long patch, String preRelease) {
         return Version.of(major, minor, patch, preRelease, null);
     }
 
@@ -388,7 +388,7 @@ public class Version implements Comparable<Version> {
      * @throws ParseException if {@code preRelease} or {@code build} can't be parsed
      * @since  0.10.0
      */
-    public static Version of(int major, int minor, int patch, String preRelease, String build) {
+    public static Version of(long major, long minor, long patch, String preRelease, String build) {
         return new Version(
             new NormalVersion(major, minor, patch),
             preRelease == null ? MetadataVersion.NULL : VersionParser.parsePreRelease(preRelease),
@@ -432,6 +432,7 @@ public class Version implements Comparable<Version> {
      * Increments the major version.
      *
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the major version number overflows
      */
     public Version incrementMajorVersion() {
         return new Version(normal.incrementMajor());
@@ -442,6 +443,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the major version number overflows
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when invalid version string is provided
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
@@ -457,6 +459,7 @@ public class Version implements Comparable<Version> {
      * Increments the minor version.
      *
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the minor version number overflows
      */
     public Version incrementMinorVersion() {
         return new Version(normal.incrementMinor());
@@ -467,6 +470,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the minor version number overflows
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when invalid version string is provided
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
@@ -482,6 +486,7 @@ public class Version implements Comparable<Version> {
      * Increments the patch version.
      *
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the patch version number overflows
      */
     public Version incrementPatchVersion() {
         return new Version(normal.incrementPatch());
@@ -492,6 +497,7 @@ public class Version implements Comparable<Version> {
      *
      * @param preRelease the pre-release version to append
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the patch version number overflows
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when invalid version string is provided
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
@@ -507,6 +513,7 @@ public class Version implements Comparable<Version> {
      * Increments the pre-release version.
      *
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the numeric identifier overflows
      */
     public Version incrementPreReleaseVersion() {
         return new Version(normal, preRelease.increment());
@@ -516,6 +523,7 @@ public class Version implements Comparable<Version> {
      * Increments the build metadata.
      *
      * @return a new instance of the {@code Version} class
+     * @throws ArithmeticException if the numeric identifier overflows
      */
     public Version incrementBuildMetadata() {
         return new Version(normal, preRelease, build.increment());
@@ -552,7 +560,7 @@ public class Version implements Comparable<Version> {
      *
      * @return the major version number
      */
-    public int getMajorVersion() {
+    public long getMajorVersion() {
         return normal.getMajor();
     }
 
@@ -561,7 +569,7 @@ public class Version implements Comparable<Version> {
      *
      * @return the minor version number
      */
-    public int getMinorVersion() {
+    public long getMinorVersion() {
         return normal.getMinor();
     }
 
@@ -570,7 +578,7 @@ public class Version implements Comparable<Version> {
      *
      * @return the patch version number
      */
-    public int getPatchVersion() {
+    public long getPatchVersion() {
         return normal.getPatch();
     }
 
@@ -750,7 +758,7 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * @deprecated forRemoval since 0.10.0, use {@link #of(int)}
+     * @deprecated forRemoval since 0.10.0, use {@link #of(long)}
      */
     @Deprecated
     public static Version forIntegers(int major) {
@@ -758,7 +766,7 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * @deprecated forRemoval since 0.10.0, use {@link #of(int, int)}
+     * @deprecated forRemoval since 0.10.0, use {@link #of(long, long)}
      */
     @Deprecated
     public static Version forIntegers(int major, int minor) {
@@ -766,7 +774,7 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * @deprecated forRemoval since 0.10.0, use {@link #of(int, int, int)}
+     * @deprecated forRemoval since 0.10.0, use {@link #of(long, long, long)}
      */
     @Deprecated
     public static Version forIntegers(int major, int minor, int patch) {
