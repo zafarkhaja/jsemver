@@ -23,6 +23,7 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.util.Locale;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -201,6 +202,13 @@ public class NormalVersionTest {
 
         @Test
         public void shouldReturnStringRepresentation() {
+            NormalVersion v = new NormalVersion(1, 2, 3);
+            assertEquals("1.2.3", v.toString());
+        }
+
+        @Test
+        public void shouldAlwaysUseEnglishLocale() {
+            Locale.setDefault(new Locale("hi", "IN"));
             NormalVersion v = new NormalVersion(1, 2, 3);
             assertEquals("1.2.3", v.toString());
         }

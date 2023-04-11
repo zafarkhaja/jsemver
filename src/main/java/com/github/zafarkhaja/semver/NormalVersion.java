@@ -23,6 +23,8 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.util.Locale;
+
 /**
  * The {@code NormalVersion} class represents the version core.
  * <p>
@@ -177,7 +179,7 @@ class NormalVersion implements Comparable<NormalVersion> {
      */
     @Override
     public String toString() {
-        return String.format("%d.%d.%d", major, minor, patch);
+        return String.format(Locale.ENGLISH, "%d.%d.%d", major, minor, patch);
     }
 
     private long tryIncrement(long l) {
