@@ -23,6 +23,10 @@
  */
 package com.github.zafarkhaja.semver;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
@@ -488,6 +492,30 @@ public class VersionTest {
                 Version v2 = Version.parse(versions[i]);
                 assertTrue(0 > Version.BUILD_AWARE_ORDER.compare(v1, v2));
             }
+        }
+    }
+
+    @Nested
+    class SerializationTest {
+
+        @Test
+        public void shouldBeSerializable() throws Exception {
+            Version v1 = Version.of(1, 2, 3, "alpha.1", "build.1");
+            Version v2 = deserialize(serialize(v1));
+            assertEquals(v1, v2);
+        }
+
+        private byte[] serialize(Version v) throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(v);
+            return baos.toByteArray();
+        }
+
+        private Version deserialize(byte[] bytes) throws Exception {
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return (Version) ois.readObject();
         }
     }
 }

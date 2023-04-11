@@ -27,6 +27,9 @@ import com.github.zafarkhaja.semver.expr.Expression;
 import com.github.zafarkhaja.semver.expr.ExpressionParser;
 import com.github.zafarkhaja.semver.expr.LexerException;
 import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -38,7 +41,8 @@ import java.util.Comparator;
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.1.0
  */
-public class Version implements Comparable<Version> {
+@SuppressWarnings("serial")
+public class Version implements Comparable<Version>, Serializable {
 
     /**
      * The normal version.
@@ -819,5 +823,37 @@ public class Version implements Comparable<Version> {
      */
     public int compareWithBuildsTo(Version other) {
         return BUILD_AWARE_ORDER.compare(this, other);
+    }
+
+    private static class SerializationProxy implements Serializable {
+
+        private static final long serialVersionUID = 0L;
+
+        /**
+         * @serial string representation of valid SemVer version, the most
+         * stable logical form of the {@code Version} class, which doesn't
+         * depend on its internal implementation. Only Specification can
+         * affect it by redefining its semantics and hence changing the way
+         * it's parsed. The only downside of this form is that it requires
+         * parsing on deserialization, which shouldn't be that big of a
+         * problem considering the size of a typical version string.
+         */
+        private final String version;
+
+        SerializationProxy(Version version) {
+            this.version = version.toString();
+        }
+
+        private Object readResolve() {
+            return Version.parse(version);
+        }
+    }
+
+    private Object writeReplace() {
+        return new SerializationProxy(this);
+    }
+
+    private void readObject(ObjectInputStream ois) throws InvalidObjectException {
+        throw new InvalidObjectException("Proxy required");
     }
 }
