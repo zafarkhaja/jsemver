@@ -55,19 +55,23 @@ public class UnexpectedTokenException extends ParseException {
      * @param cause the wrapped exception
      */
     UnexpectedTokenException(UnexpectedElementException cause) {
-        unexpected = (Token) cause.getUnexpectedElement();
-        expected   = (Token.Type[]) cause.getExpectedElementTypes();
+        this(
+            (Token) cause.getUnexpectedElement(),
+            (Token.Type[]) cause.getExpectedElementTypes()
+        );
     }
 
     /**
      * Constructs a {@code UnexpectedTokenException} instance
      * with the unexpected token and the expected types.
      *
-     * @param token the unexpected token
+     * @param unexpected the unexpected token
      * @param expected an array of the expected token types
      */
-    UnexpectedTokenException(Token token, Token.Type... expected) {
-        unexpected = token;
+    UnexpectedTokenException(Token unexpected, Token.Type... expected) {
+        super(createMessage(unexpected, expected));
+
+        this.unexpected = unexpected;
         this.expected = expected;
     }
 
@@ -98,16 +102,14 @@ public class UnexpectedTokenException extends ParseException {
      */
     @Override
     public String toString() {
-        String message = String.format(
-            "Unexpected token '%s'",
-            unexpected
-        );
+        return getMessage();
+    }
+
+    private static String createMessage(Token unexpected, Token.Type... expected) {
+        String msg = String.format("Unexpected token %s", unexpected);
         if (expected.length > 0) {
-            message += String.format(
-                ", expecting '%s'",
-                Arrays.toString(expected)
-            );
+            msg += String.format(", expecting %s", Arrays.toString(expected));
         }
-        return message;
+        return msg;
     }
 }

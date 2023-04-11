@@ -83,6 +83,7 @@ public class StreamTest {
         try {
             stream.consume(element -> false);
         } catch (UnexpectedElementException e) {
+            assertNotNull(e.getMessage());
             return;
         }
         fail("Should raise error when unexpected element type is consumed");

@@ -48,6 +48,7 @@ public class ParserErrorHandlingTest {
         try {
             VersionParser.parseValidSemVer(invalidVersion);
         } catch (UnexpectedCharacterException e) {
+            assertNotNull(e.getMessage());
             assertEquals(unexpected, e.getUnexpectedCharacter());
             assertEquals(position, e.getPosition());
             assertArrayEquals(expected, e.getExpectedCharTypes());
