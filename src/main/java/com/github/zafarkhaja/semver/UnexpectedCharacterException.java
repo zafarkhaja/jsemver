@@ -61,9 +61,11 @@ public class UnexpectedCharacterException extends ParseException {
      * @param cause the wrapped exception
      */
     UnexpectedCharacterException(UnexpectedElementException cause) {
-        position   = cause.getPosition();
-        unexpected = (Character) cause.getUnexpectedElement();
-        expected   = (CharType[]) cause.getExpectedElementTypes();
+        this(
+            (Character) cause.getUnexpectedElement(),
+            cause.getPosition(),
+            (CharType[]) cause.getExpectedElementTypes()
+        );
     }
 
     /**
@@ -74,11 +76,9 @@ public class UnexpectedCharacterException extends ParseException {
      * @param position the position of the unexpected character
      * @param expected an array of the expected character types
      */
-    UnexpectedCharacterException(
-        Character unexpected,
-        int position,
-        CharType... expected
-    ) {
+    UnexpectedCharacterException(Character unexpected, int position, CharType... expected) {
+        super(createMessage(unexpected, position, expected));
+
         this.unexpected = unexpected;
         this.position   = position;
         this.expected   = expected;
@@ -120,18 +120,19 @@ public class UnexpectedCharacterException extends ParseException {
      */
     @Override
     public String toString() {
-        String message = String.format(
-            "Unexpected character '%s(%s)' at position '%d'",
+        return getMessage();
+    }
+
+    private static String createMessage(Character unexpected, int position, CharType... expected) {
+        String msg = String.format(
+            "Unexpected character %s(%s) at position %d",
             CharType.forCharacter(unexpected),
             unexpected,
             position
         );
         if (expected.length > 0) {
-            message += String.format(
-                ", expecting '%s'",
-                Arrays.toString(expected)
-            );
+            msg += String.format(", expecting %s", Arrays.toString(expected));
         }
-        return message;
+        return msg;
     }
 }

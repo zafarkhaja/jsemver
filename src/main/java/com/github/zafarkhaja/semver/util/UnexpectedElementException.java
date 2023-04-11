@@ -56,16 +56,14 @@ public class UnexpectedElementException extends RuntimeException {
      * Constructs a {@code UnexpectedElementException} instance
      * with the unexpected element and the expected types.
      *
-     * @param element the unexpected element in the stream
+     * @param unexpected the unexpected element in the stream
      * @param position the position of the unexpected element
      * @param expected an array of the expected element types
      */
-    UnexpectedElementException(
-        Object element,
-        int position,
-        ElementType<?>... expected
-    ) {
-        unexpected    = element;
+    UnexpectedElementException(Object unexpected, int position, ElementType<?>... expected) {
+        super(createMessage(unexpected, position, expected));
+
+        this.unexpected = unexpected;
         this.position = position;
         this.expected = expected;
     }
@@ -106,17 +104,14 @@ public class UnexpectedElementException extends RuntimeException {
      */
     @Override
     public String toString() {
-        String message = String.format(
-            "Unexpected element '%s' at position '%d'",
-            unexpected,
-            position
-        );
+        return getMessage();
+    }
+
+    private static String createMessage(Object unexpected, int position, ElementType<?>... expected) {
+        String msg = String.format("Unexpected element '%s' at position %d", unexpected, position);
         if (expected.length > 0) {
-            message += String.format(
-                ", expecting '%s'",
-                Arrays.toString(expected)
-            );
+            msg += String.format(", expecting %s", Arrays.toString(expected));
         }
-        return message;
+        return msg;
     }
 }

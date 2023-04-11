@@ -81,10 +81,11 @@ class LexerTest {
     @Test
     void shouldRaiseErrorOnIllegalCharacter() {
         Lexer lexer = new Lexer();
-        assertThrows(
+        LexerException e = assertThrows(
             LexerException.class,
             () -> lexer.tokenize("@1.0.0"),
             "Should raise error on illegal character"
         );
+        assertNotNull(e.getMessage());
     }
 }

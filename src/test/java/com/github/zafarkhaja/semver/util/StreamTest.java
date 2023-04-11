@@ -80,11 +80,12 @@ class StreamTest {
     @Test
     void shouldRaiseErrorWhenUnexpectedElementConsumed() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
-        assertThrows(
+        UnexpectedElementException e = assertThrows(
             UnexpectedElementException.class,
             () -> stream.consume(element -> false),
             "Should raise error when unexpected element type is consumed"
         );
+        assertNotNull(e.getMessage());
     }
 
     @Test
