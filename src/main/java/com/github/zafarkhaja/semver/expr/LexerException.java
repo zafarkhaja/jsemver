@@ -48,6 +48,8 @@ public class LexerException extends ParseException {
      * @param expr the string starting from an illegal character
      */
     LexerException(String expr) {
+        super("Illegal character near '" + expr + "'");
+
         this.expr = expr;
     }
 
@@ -58,6 +60,6 @@ public class LexerException extends ParseException {
      */
     @Override
     public String toString() {
-        return "Illegal character near '" + expr + "'";
+        return getMessage();
     }
 }

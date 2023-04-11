@@ -48,6 +48,7 @@ class ParserErrorHandlingTest {
             UnexpectedTokenException.class,
             () -> ExpressionParser.newInstance().parse(invalidExpr)
         );
+        assertNotNull(e.getMessage());
         assertEquals(unexpected, e.getUnexpectedToken());
         assertArrayEquals(expected, e.getExpectedTokenTypes());
     }
