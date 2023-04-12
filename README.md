@@ -71,9 +71,11 @@ import com.github.zafarkhaja.semver.Version;
 ### Creating Versions ###
 There are 3 ways to obtain a `Version` instance:
 
-1. by using the `Version.parse()` method
+1. by using the `Version.parse()` or `Version.tryParse()` methods
 ~~~ java
 Version v = Version.parse("1.2.3-pre-release+build.metadata");
+
+Optional<Version> o = Version.tryParse("1.2.3-pre-release+build.metadata");
 ~~~
 
 2. by using the `Version.of()` method

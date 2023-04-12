@@ -259,7 +259,37 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Tries to obtain a {@code Version} instance by parsing the specified string.
+     *
+     * @param  version a string representing a SemVer version, nullable
+     * @return an {@code Optional} with a {@code Version} instance, if the
+     *         specified string can be parsed; empty {@code Optional} otherwise
+     * @since  0.10.0
+     */
+    public static Optional<Version> tryParse(String version) {
+        try {
+            return Optional.of(Version.parse(version));
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Checks validity of the specified SemVer version string.
+     * <p>
+     * Note that internally this method makes use of {@link #parse(String)} and
+     * suppresses any exceptions, so using it to avoid dealing with exceptions
+     * like so:
+     *
+     * <pre>{@code
+     *   String version = "1.2.3";
+     *   if (Version.isValid(version)) {
+     *     Version v = Version.parse(version);
+     *   }
+     * }</pre>
+     *
+     * would mean parsing the same version string twice. In this case, as an
+     * alternative, consider using {@link #tryParse(String)}.
      *
      * @param  version a string representing a SemVer version, nullable
      * @return {@code true}, if the specified string is a valid SemVer version;
@@ -267,12 +297,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @since  0.10.0
      */
     public static boolean isValid(String version) {
-        try {
-            Version.parse(version);
-            return true;
-        } catch (RuntimeException e) {
-            return false;
-        }
+        return tryParse(version).isPresent();
     }
 
     /**
