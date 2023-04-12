@@ -139,11 +139,15 @@ public class MetadataVersionTest {
 
         @Test
         public void shouldBeImmutable() {
-            MetadataVersion v1 = new MetadataVersion(
-                new String[] {"alpha", "1"}
-            );
-            MetadataVersion v2 = v1.increment();
-            assertNotSame(v1, v2);
+            String[] identifiers = new String[] {"alpha", "1"};
+            MetadataVersion v1 = new MetadataVersion(identifiers);
+            MetadataVersion v2 = new MetadataVersion(new String[] {"alpha", "2"});
+
+            identifiers[1] = "2";
+            assertNotEquals(v1, v2);
+
+            MetadataVersion v3 = v2.increment();
+            assertNotEquals(v2, v3);
         }
     }
 

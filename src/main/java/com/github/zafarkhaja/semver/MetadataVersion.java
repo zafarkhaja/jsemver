@@ -48,7 +48,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
          * Constructs a {@code NullMetadataVersion} instance.
          */
         public NullMetadataVersion() {
-            super(null);
+            super(new String[0]);
         }
 
         /**
@@ -109,7 +109,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      * @param identifiers the version's identifiers
      */
     MetadataVersion(String[] identifiers) {
-        idents = identifiers;
+        idents = Arrays.copyOf(identifiers, identifiers.length);
     }
 
     /**
@@ -118,7 +118,7 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      * @return a new instance of the {@code MetadataVersion} class
      */
     MetadataVersion increment() {
-        String[] ids  = idents;
+        String[] ids  = Arrays.copyOf(idents, idents.length);
         String lastId = ids[ids.length - 1];
         if (isNumeric(lastId)) {
             long numericId = Long.parseLong(lastId);
