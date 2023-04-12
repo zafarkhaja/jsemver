@@ -77,6 +77,12 @@ class VersionTest {
         }
 
         @Test
+        void shouldTryToParseVersionStringsIfValid() {
+            assertTrue(Version.tryParse("1.2.3-rc+abcdefg").isPresent());
+            assertFalse(Version.tryParse("1.2.3+rc+abcdefg").isPresent());
+        }
+
+        @Test
         void shouldCheckValidityOfVersionStrings() {
             assertTrue(Version.isValid("1.2.3-pre-release+build.metadata"));
             assertFalse(Version.isValid("1.2.3-pre+release+build.metadata"));
