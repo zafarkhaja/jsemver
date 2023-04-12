@@ -313,28 +313,15 @@ class VersionTest {
 
         @Test
         void shouldBeImmutable() {
-            Version version = Version.of(1, 2, 3, "alpha", "build");
+            Version v = Version.of(1, 2, 3, "alpha.1", "build.1");
 
-            Version incrementedMajor = version.incrementMajorVersion();
-            assertNotSame(version, incrementedMajor);
-
-            Version incrementedMinor = version.incrementMinorVersion();
-            assertNotSame(version, incrementedMinor);
-
-            Version incrementedPatch = version.incrementPatchVersion();
-            assertNotSame(version, incrementedPatch);
-
-            Version preReleaseSet = version.setPreReleaseVersion("alpha");
-            assertNotSame(version, preReleaseSet);
-
-            Version buildSet = version.setBuildMetadata("build");
-            assertNotSame(version, buildSet);
-
-            Version incrementedPreRelease = version.incrementPreReleaseVersion();
-            assertNotSame(version, incrementedPreRelease);
-
-            Version incrementedBuild = version.incrementBuildMetadata();
-            assertNotSame(version, incrementedBuild);
+            assertNotEquals(v, v.incrementMajorVersion());
+            assertNotEquals(v, v.incrementMinorVersion());
+            assertNotEquals(v, v.incrementPatchVersion());
+            assertNotEquals(v, v.incrementPreReleaseVersion());
+            assertNotEquals(v, v.setPreReleaseVersion("alpha.2"));
+            assertNotEquals(v.toString(), v.incrementBuildMetadata().toString());
+            assertNotEquals(v.toString(), v.setBuildMetadata("build.2").toString());
         }
 
         @Test
