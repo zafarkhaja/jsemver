@@ -328,6 +328,12 @@ public class VersionTest {
             assertTrue(Version.isValid("1.2.3-rc.1+abcdefg"));
             assertFalse(Version.isValid("1.2.3+rc.1+abcdefg"));
         }
+
+        @Test
+        public void shouldParseVersionsOptionallyIfValid() {
+            assertTrue(Version.tryParse("1.2.3-rc.1+abcdefg").isPresent());
+            assertFalse(Version.tryParse("1.2.3+rc.1+abcdefg").isPresent());
+        }
     }
 
     @Nested

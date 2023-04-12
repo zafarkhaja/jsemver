@@ -84,6 +84,9 @@ String build      = v.getBuildMetadata();     // "build.1"
 String str = v.toString(); // "1.0.0-rc.1+build.1"
 ~~~
 
+`Version.tryParse(String)` is a more lenient counterpart of `Version.parse(String)`,
+unlike the latter it doesn't throw exceptions and returns `Optional`.
+
 The other static factory method is `Version.of()` which creates `Version`
 instances from version parts passed as separate arguments. The method is
 overloaded to allow fewer arguments.

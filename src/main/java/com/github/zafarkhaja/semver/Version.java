@@ -31,6 +31,7 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * The {@code Version} class is the main class of the Java SemVer library.
@@ -256,6 +257,30 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks validity of the specified SemVer version string.
+     * <p>
+     * Note that internally this method makes use of {@link Version#parse(String)} and
+     * suppresses any exceptions, so using it to avoid dealing with exceptions like so:
+     *
+     * <pre>{@code
+     *     String version = "1.2.3";
+     *     if (Version.isValid(version)) {
+     *         Version v = Version.parse(version);
+     *     }
+     * }</pre>
+     *
+     * would mean parsing the same version string twice. To avoid this situation,
+     * as an alternative, consider using {@link Version#tryParse(String)}.
+     *
+     * @param version the SemVer version string to check
+     * @return {@code true} if the SemVer version string is valid or {@code false} otherwise
+     * @since 0.10.0
+     */
+    public static boolean isValid(String version) {
+        return tryParse(version).isPresent();
+    }
+
+    /**
      * Creates a new instance of {@code Version} by parsing the string argument.
      *
      * @param version the string representing a valid SemVer version to be parsed
@@ -267,6 +292,22 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public static Version parse(String version) {
         return VersionParser.parseValidSemVer(version);
+    }
+
+    /**
+     * Tries to parse the specified string and return a new instance of {@code Version}.
+     *
+     * @param version the SemVer version string to parse
+     * @return an {@code Optional} with a new instance of {@code Version} if the
+     *         specified string can be parsed; empty {@code Optional} otherwise
+     * @since 0.10.0
+     */
+    public static Optional<Version> tryParse(String version) {
+        try {
+            return Optional.of(Version.parse(version));
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -444,22 +485,6 @@ public class Version implements Comparable<Version>, Serializable {
     @Deprecated
     public static Version forIntegers(int major, int minor, int patch) {
         return Version.of(major, minor, patch);
-    }
-
-    /**
-     * Checks validity of the specified SemVer version string.
-     *
-     * @param version the SemVer version string to check
-     * @return {@code true} if the SemVer version string is valid or {@code false} otherwise
-     * @since 0.10.0
-     */
-    public static boolean isValid(String version) {
-        try {
-            Version.parse(version);
-            return true;
-        } catch (RuntimeException e) {
-            return false;
-        }
     }
 
     /**
