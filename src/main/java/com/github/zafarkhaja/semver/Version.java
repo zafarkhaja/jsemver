@@ -31,6 +31,7 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * The {@code Version} class is the main class of the Java SemVer library.
@@ -255,6 +256,23 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public static Version parse(String version) {
         return VersionParser.parseValidSemVer(requireNonNull(version, "version"));
+    }
+
+    /**
+     * Checks validity of the specified SemVer version string.
+     *
+     * @param  version a string representing a SemVer version, nullable
+     * @return {@code true}, if the specified string is a valid SemVer version;
+     *         {@code false} otherwise
+     * @since  0.10.0
+     */
+    public static boolean isValid(String version) {
+        try {
+            Version.parse(version);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     /**
