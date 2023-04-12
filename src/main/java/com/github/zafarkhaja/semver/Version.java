@@ -447,6 +447,22 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks validity of the specified SemVer version string.
+     *
+     * @param version the SemVer version string to check
+     * @return {@code true} if the SemVer version string is valid or {@code false} otherwise
+     * @since 0.10.0
+     */
+    public static boolean isValid(String version) {
+        try {
+            Version.parse(version);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    /**
      * Checks if this version satisfies the specified SemVer Expression string.
      * <p>
      * This method is a part of the SemVer Expressions API.

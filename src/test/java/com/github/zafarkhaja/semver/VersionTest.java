@@ -322,6 +322,12 @@ public class VersionTest {
             assertTrue(v1.isMinorVersionCompatible(v2));
             assertFalse(v1.isMinorVersionCompatible(v3));
         }
+
+        @Test
+        public void shouldCheckVersionValidity() {
+            assertTrue(Version.isValid("1.2.3-rc.1+abcdefg"));
+            assertFalse(Version.isValid("1.2.3+rc.1+abcdefg"));
+        }
     }
 
     @Nested
