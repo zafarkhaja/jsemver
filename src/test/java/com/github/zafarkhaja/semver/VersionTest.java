@@ -77,6 +77,12 @@ class VersionTest {
         }
 
         @Test
+        void shouldCheckValidityOfVersionStrings() {
+            assertTrue(Version.isValid("1.2.3-pre-release+build.metadata"));
+            assertFalse(Version.isValid("1.2.3-pre+release+build.metadata"));
+        }
+
+        @Test
         void shouldHaveStaticFactoryMethod() {
             Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
             assertEquals("1.2.3-pre-release+build.metadata", v.toString());
