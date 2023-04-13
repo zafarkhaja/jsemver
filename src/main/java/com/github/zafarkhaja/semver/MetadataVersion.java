@@ -118,15 +118,17 @@ class MetadataVersion implements Comparable<MetadataVersion> {
      * @return a new instance of the {@code MetadataVersion} class
      */
     MetadataVersion increment() {
-        String[] ids  = Arrays.copyOf(idents, idents.length);
-        String lastId = ids[ids.length - 1];
+        String[] ids;
+
+        String lastId = idents[idents.length - 1];
         if (isNumeric(lastId)) {
-            long numericId = Long.parseLong(lastId);
-            ids[ids.length - 1] = String.valueOf(tryIncrement(numericId));
+            ids = Arrays.copyOf(idents, idents.length);
+            ids[ids.length - 1] = String.valueOf(tryIncrement(Long.parseLong(lastId)));
         } else {
-            ids = Arrays.copyOf(ids, ids.length + 1);
+            ids = Arrays.copyOf(idents, idents.length + 1);
             ids[ids.length - 1] = String.valueOf(1);
         }
+
         return new MetadataVersion(ids);
     }
 
