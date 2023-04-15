@@ -114,92 +114,6 @@ class VersionTest {
         }
 
         @Test
-        void preReleaseShouldHaveLowerPrecedenceThanAssociatedNormal() {
-            Version v1 = Version.of(1, 3, 7);
-            Version v2 = Version.of(1, 3, 7, "alpha");
-            assertTrue(0 < v1.compareTo(v2));
-            assertTrue(0 > v2.compareTo(v1));
-        }
-
-        @Test
-        void shouldIgnoreBuildMetadataWhenDeterminingVersionPrecedence() {
-            Version v1 = Version.of(1, 3, 7, "beta");
-            Version v2 = Version.of(1, 3, 7, "beta", "build.1");
-            Version v3 = Version.of(1, 3, 7, "beta", "build.2");
-            assertTrue(0 == v1.compareTo(v2));
-            assertTrue(0 == v1.compareTo(v3));
-            assertTrue(0 == v2.compareTo(v3));
-        }
-
-        @Test
-        void shouldHaveGreaterThanMethodReturningBoolean() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(1, 3, 7);
-            assertTrue(v1.greaterThan(v2));
-            assertFalse(v2.greaterThan(v1));
-            assertFalse(v1.greaterThan(v1));
-        }
-
-        @Test
-        void shouldHaveGreaterThanOrEqualToMethodReturningBoolean() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(1, 3, 7);
-            assertTrue(v1.greaterThanOrEqualTo(v2));
-            assertFalse(v2.greaterThanOrEqualTo(v1));
-            assertTrue(v1.greaterThanOrEqualTo(v1));
-        }
-
-        @Test
-        void shouldHaveLessThanMethodReturningBoolean() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(1, 3, 7);
-            assertFalse(v1.lessThan(v2));
-            assertTrue(v2.lessThan(v1));
-            assertFalse(v1.lessThan(v1));
-        }
-
-        @Test
-        void shouldHaveLessThanOrEqualToMethodReturningBoolean() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(1, 3, 7);
-            assertFalse(v1.lessThanOrEqualTo(v2));
-            assertTrue(v2.lessThanOrEqualTo(v1));
-            assertTrue(v1.lessThanOrEqualTo(v1));
-        }
-
-        @Test
-        void shouldOverrideEqualsMethod() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(2, 3, 7);
-            Version v3 = Version.of(1, 3, 7);
-            assertTrue(v1.equals(v1));
-            assertTrue(v1.equals(v2));
-            assertFalse(v1.equals(v3));
-        }
-
-        @Test
-        void shouldCorrectlyCompareAllVersionsFromSpecification() {
-            String[] versions = {
-                "1.0.0-alpha",
-                "1.0.0-alpha.1",
-                "1.0.0-alpha.beta",
-                "1.0.0-beta",
-                "1.0.0-beta.2",
-                "1.0.0-beta.11",
-                "1.0.0-rc.1",
-                "1.0.0",
-                "2.0.0",
-                "2.1.0",
-                "2.1.1"
-            };
-            for (int i = 1; i < versions.length; i++) {
-                Version v1 = Version.parse(versions[i-1]);
-                Version v2 = Version.parse(versions[i]);
-                assertTrue(v1.lessThan(v2));
-            }
-        }
-
-        @Test
         void shouldProvideIncrementMajorVersionMethod() {
             Version v = Version.of(1, 2, 3);
             Version incrementedMajor = v.incrementMajorVersion();
@@ -337,18 +251,227 @@ class VersionTest {
         }
 
         @Test
-        void shouldBeAbleToCompareWithoutIgnoringBuildMetadata() {
-            Version v1 = Version.of(1, 3, 7, "beta", "build.1");
-            Version v2 = Version.of(1, 3, 7, "beta", "build.2");
-            assertTrue(0 == v1.compareTo(v2));
-            assertTrue(0 > v1.compareWithBuildsTo(v2));
-        }
-
-        @Test
         void shouldCheckIfVersionSatisfiesExpression() {
             Version v = Version.of(2, 0, 0, "beta");
             assertTrue(v.satisfies(gte("1.0.0").and(lt("2.0.0"))));
             assertFalse(v.satisfies(gte("2.0.0").and(lt("3.0.0"))));
+        }
+
+        @Test
+        void shouldDetermineIfItsPrecedenceIsHigherThanThatOfOthers() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = Version.of(1, 2, 3);
+            assertTrue(v1.isHigherThan(v2));
+            assertFalse(v2.isHigherThan(v1));
+            assertFalse(v1.isHigherThan(v1));
+        }
+
+        @Test
+        void shouldDetermineIfItsPrecedenceIsHigherThanOrEqualToThatOfOthers() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = Version.of(1, 2, 3);
+            assertTrue(v1.isHigherThanOrEquivalentTo(v2));
+            assertFalse(v2.isHigherThanOrEquivalentTo(v1));
+            assertTrue(v1.isHigherThanOrEquivalentTo(v1));
+        }
+
+        @Test
+        void shouldDetermineIfItsPrecedenceIsLowerThanThatOfOthers() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = Version.of(1, 2, 3);
+            assertFalse(v1.isLowerThan(v2));
+            assertTrue(v2.isLowerThan(v1));
+            assertFalse(v1.isLowerThan(v1));
+        }
+
+        @Test
+        void shouldDetermineIfItsPrecedenceIsLowerThanOrEqualToThatOfOthers() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = Version.of(1, 2, 3);
+            assertFalse(v1.isLowerThanOrEquivalentTo(v2));
+            assertTrue(v2.isLowerThanOrEquivalentTo(v1));
+            assertTrue(v1.isLowerThanOrEquivalentTo(v1));
+        }
+
+        @Test
+        void shouldDetermineIfItsPrecedenceIsEqualToThatOfOthers() {
+            Version v1 = Version.of(1, 2, 3, "pre-release");
+            Version v2 = Version.of(1, 2, 3, "pre-release");
+            Version v3 = Version.of(1, 2, 3);
+            assertTrue(v1.isEquivalentTo(v2));
+            assertFalse(v1.isEquivalentTo(v3));
+        }
+
+        @Test
+        void shouldIgnoreBuildMetadataWhenCheckingForEquivalence() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, 2, 3, "pre-release");
+            assertTrue(v1.isEquivalentTo(v2));
+        }
+
+        @Test
+        void shouldBeAbleToCompareWithoutBuildMetadata() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata.1");
+            Version v2 = Version.of(1, 2, 3, "pre-release", "build.metadata.2");
+            assertTrue(0 > v1.compareTo(v2));
+            assertTrue(0 == v1.compareToIgnoreBuildMetadata(v2));
+        }
+
+        @Test
+        void shouldRaiseErrorIfComparedWithNull() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.compareToIgnoreBuildMetadata(null));
+        }
+
+        @Test
+        void shouldOverrideEqualsMethod() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v3 = Version.of(1, 2, 3, "pre-release");
+            assertEquals(v1, v2);
+            assertNotEquals(v1, v3);
+        }
+    }
+
+    @Nested
+    class CompareToMethod {
+
+        @Test
+        void shouldCompareMajorVersionNumerically() {
+            Version v = Version.of(22);
+            assertTrue(0 < v.compareTo(Version.of(3)));
+            assertTrue(0 == v.compareTo(Version.of(22)));
+            assertTrue(0 > v.compareTo(Version.of(111)));
+        }
+
+        @Test
+        void shouldCompareMinorVersionNumerically() {
+            Version v = Version.of(0, 22);
+            assertTrue(0 < v.compareTo(Version.of(0, 3)));
+            assertTrue(0 == v.compareTo(Version.of(0, 22)));
+            assertTrue(0 > v.compareTo(Version.of(0, 111)));
+        }
+
+        @Test
+        void shouldComparePatchVersionNumerically() {
+            Version v = Version.of(0, 0, 22);
+            assertTrue(0 < v.compareTo(Version.of(0, 0, 3)));
+            assertTrue(0 == v.compareTo(Version.of(0, 0, 22)));
+            assertTrue(0 > v.compareTo(Version.of(0, 0, 111)));
+        }
+
+        @Test
+        void shouldCompareAlphanumericIdentifiersLexicallyInAsciiOrder() {
+            Version v = Version.of(1, "beta");
+            assertTrue(0 < v.compareTo(Version.of(1, "alpha")));
+            assertTrue(0 == v.compareTo(Version.of(1, "beta")));
+            assertTrue(0 > v.compareTo(Version.of(1, "gamma")));
+        }
+
+        @Test
+        void shouldGiveHigherPrecedenceToNonNumericIdentifierThanNumeric() {
+            Version v1 = Version.of(1, "abc");
+            Version v2 = Version.of(1, "111");
+            assertTrue(0 < v1.compareTo(v2));
+        }
+
+        @Test
+        void shouldCompareNumericIdentifiersNumerically() {
+            Version v = Version.of(1, "22");
+            assertTrue(0 > v.compareTo(Version.of(1, "111")));
+            assertTrue(0 == v.compareTo(Version.of(1, "22")));
+            assertTrue(0 < v.compareTo(Version.of(1, "3")));
+        }
+
+        @Test
+        void shouldGiveHigherPrecedenceToVersionWithLargerSetOfIdentifiers() {
+            Version v1 = Version.of(1, "a.b.c");
+            Version v2 = Version.of(1, "a.b.c.d");
+            assertTrue(0 > v1.compareTo(v2));
+        }
+
+        @Test
+        void shouldGiveHigherPrecedenceToStableVersionThanPreReleaseVersion() {
+            Version v1 = Version.of(1, "pre-release");
+            Version v2 = Version.of(1);
+            assertTrue(0 > v1.compareTo(v2));
+        }
+
+        @Test
+        void shouldGiveHigherPrecedenceToVersionWithBuildMetadata() {
+            Version v1 = Version.of(1, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, "pre-release");
+            assertTrue(0 < v1.compareTo(v2));
+        }
+
+        @Test
+        void shouldBeConsistentWithEquals() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            assertEquals(v1, v2);
+            assertEquals(0, v1.compareTo(v2));
+        }
+
+        @Test
+        void shouldCorrectlyCompareVersionsWithBuildMetadata() {
+            String[] versions = {
+                "1.0.0-alpha",
+                "1.0.0-alpha.1",
+                "1.0.0-alpha.beta",
+                "1.0.0-beta",
+                "1.0.0-beta.2",
+                "1.0.0-beta.11",
+                "1.0.0-rc.1",
+                "1.0.0-rc.1+build.1",
+                "1.0.0",
+                "1.0.0+0.3.7",
+                "1.3.7+build",
+                "1.3.7+build.2.b8f12d7",
+                "1.3.7+build.11.e0f985a"
+            };
+            for (int i = 1; i < versions.length; i++) {
+                Version v1 = Version.parse(versions[i-1]);
+                Version v2 = Version.parse(versions[i]);
+                assertTrue(0 > v1.compareTo(v2));
+            }
+        }
+    }
+
+    @Nested
+    class IncrementOrderComparator {
+
+        @Test
+        void shouldSortInIncrementOrder() {
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = Version.of(3, 2, 1);
+            assertTrue(0 > v1.compareTo(v2));
+            assertTrue(0 > Version.INCREMENT_ORDER.compare(v1, v2));
+        }
+
+        @Test
+        void shouldIgnoreBuildMetadata() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata.1");
+            Version v2 = Version.of(1, 2, 3, "pre-release", "build.metadata.2");
+            assertTrue(0 == Version.INCREMENT_ORDER.compare(v1, v2));
+        }
+    }
+
+    @Nested
+    class PrecedenceOrderComparator {
+
+        @Test
+        void shouldSortInPrecedenceOrder() {
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = Version.of(3, 2, 1);
+            assertTrue(0 > Version.INCREMENT_ORDER.compare(v1, v2));
+            assertTrue(0 < Version.PRECEDENCE_ORDER.compare(v1, v2));
+        }
+
+        @Test
+        void shouldIgnoreBuildMetadata() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata.1");
+            Version v2 = Version.of(1, 2, 3, "pre-release", "build.metadata.2");
+            assertTrue(0 == Version.PRECEDENCE_ORDER.compare(v1, v2));
         }
     }
 
@@ -357,55 +480,54 @@ class VersionTest {
 
         @Test
         void shouldBeReflexive() {
-            Version v1 = Version.of(2, 3, 7);
-            assertTrue(v1.equals(v1));
+            Version v = Version.of(1, 2, 3);
+            assertEquals(v, v);
         }
 
         @Test
         void shouldBeSymmetric() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(2, 3, 7);
-            assertTrue(v1.equals(v2));
-            assertTrue(v2.equals(v1));
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = Version.of(1, 2, 3);
+            assertEquals(v1, v2);
+            assertEquals(v2, v1);
         }
 
         @Test
         void shouldBeTransitive() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(2, 3, 7);
-            Version v3 = Version.of(2, 3, 7);
-            assertTrue(v1.equals(v2));
-            assertTrue(v2.equals(v3));
-            assertTrue(v1.equals(v3));
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = Version.of(1, 2, 3);
+            Version v3 = Version.of(1, 2, 3);
+            assertEquals(v1, v2);
+            assertEquals(v2, v3);
+            assertEquals(v1, v3);
         }
 
         @Test
         void shouldBeConsistent() {
-            Version v1 = Version.of(2, 3, 7);
-            Version v2 = Version.of(2, 3, 7);
-            assertTrue(v1.equals(v2));
-            assertTrue(v1.equals(v2));
-            assertTrue(v1.equals(v2));
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = Version.of(1, 2, 3);
+            assertEquals(v1, v2);
+            assertEquals(v1, v2);
         }
 
         @Test
         void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
-            Version v1 = Version.of(2, 3, 7);
-            assertFalse(v1.equals(new String("2.3.7")));
+            Version v1 = Version.of(1, 2, 3);
+            assertNotEquals(v1, "1.2.3");
         }
 
         @Test
         void shouldReturnFalseIfOtherVersionIsNull() {
-            Version v1 = Version.of(2, 3, 7);
+            Version v1 = Version.of(1, 2, 3);
             Version v2 = null;
-            assertFalse(v1.equals(v2));
+            assertNotEquals(v1, v2);
         }
 
         @Test
-        void shouldIgnoreBuildMetadataWhenCheckingForEquality() {
-            Version v1 = Version.of(2, 3, 7, "beta", "build");
-            Version v2 = Version.of(2, 3, 7, "beta");
-            assertTrue(v1.equals(v2));
+        void shouldNotIgnoreBuildMetadataWhenCheckingForExactEquality() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, 2, 3, "pre-release");
+            assertNotEquals(v1, v2);
         }
     }
 
@@ -414,10 +536,18 @@ class VersionTest {
 
         @Test
         void shouldReturnSameHashCodeIfVersionsAreEqual() {
-            Version v1 = Version.of(2, 3, 7, "beta", "build");
-            Version v2 = Version.of(2, 3, 7, "beta");
-            assertTrue(v1.equals(v2));
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            assertEquals(v1, v2);
             assertEquals(v1.hashCode(), v2.hashCode());
+        }
+
+        @Test
+        void shouldReturnDifferentHashCodesIfVersionsAreNotEqual() {
+            Version v1 = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version v2 = Version.of(1, 2, 3, "pre-release");
+            assertNotEquals(v1, v2);
+            assertNotEquals(v1.hashCode(), v2.hashCode());
         }
     }
 
@@ -481,32 +611,6 @@ class VersionTest {
                 .setBuildMetadata("build")
                 .build();
             assertEquals(Version.of(1, 0, 0, "alpha", "build"), version);
-        }
-    }
-
-    @Nested
-    class BuildAwareOrder {
-
-        @Test
-        void shouldCorrectlyCompareAllVersionsWithBuildMetadata() {
-            String[] versions = {
-                "1.0.0-alpha",
-                "1.0.0-alpha.1",
-                "1.0.0-beta.2",
-                "1.0.0-beta.11",
-                "1.0.0-rc.1",
-                "1.0.0-rc.1+build.1",
-                "1.0.0",
-                "1.0.0+0.3.7",
-                "1.3.7+build",
-                "1.3.7+build.2.b8f12d7",
-                "1.3.7+build.11.e0f985a"
-            };
-            for (int i = 1; i < versions.length; i++) {
-                Version v1 = Version.parse(versions[i-1]);
-                Version v2 = Version.parse(versions[i]);
-                assertTrue(0 > Version.BUILD_AWARE_ORDER.compare(v1, v2));
-            }
         }
     }
 

@@ -59,6 +59,6 @@ class LessOrEqual implements Expression {
      */
     @Override
     public boolean interpret(Version version) {
-        return version.lessThanOrEqualTo(parsedVersion);
+        return version.isLowerThanOrEquivalentTo(parsedVersion);
     }
 }
