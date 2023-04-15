@@ -46,6 +46,30 @@ import java.util.Optional;
 public class Version implements Comparable<Version>, Serializable {
 
     /**
+     * A comparator that sorts versions in increment order, from lowest to highest.
+     * <p>
+     * The comparator is intended for use in comparison-based data structures.
+     *
+     * @see   #compareToIgnoreBuildMetadata(Version)
+     * @since 0.10.0
+     */
+    public static final Comparator<Version> INCREMENT_ORDER = Version::compareToIgnoreBuildMetadata;
+
+    /**
+     * A comparator that sorts versions in (highest) precedence order.
+     * <p>
+     * The ordering imposed by this comparator is reverse of the "natural"
+     * increment ordering, that is, versions are arranged in descending order
+     * from highest-precedence to lowest-precedence.
+     * <p>
+     * The comparator is intended for use in comparison-based data structures.
+     *
+     * @see   #INCREMENT_ORDER
+     * @since 0.10.0
+     */
+    public static final Comparator<Version> PRECEDENCE_ORDER = INCREMENT_ORDER.reversed();
+
+    /**
      * The normal version.
      */
     private final NormalVersion normal;
@@ -171,50 +195,6 @@ public class Version implements Comparable<Version>, Serializable {
          */
         private boolean isFilled(String str) {
             return str != null && !str.isEmpty();
-        }
-    }
-
-    /**
-     * A comparator that respects the build metadata when comparing versions.
-     */
-    public static final Comparator<Version> BUILD_AWARE_ORDER = new BuildAwareOrder();
-
-    /**
-     * A build-aware comparator.
-     */
-    private static class BuildAwareOrder implements Comparator<Version> {
-
-        /**
-         * Compares two {@code Version} instances taking
-         * into account their build metadata.
-         * <p>
-         * When compared build metadata is divided into identifiers. The
-         * numeric identifiers are compared numerically, and the alphanumeric
-         * identifiers are compared in the ASCII sort order.
-         * <p>
-         * If one of the compared versions has no defined build
-         * metadata, this version is considered to have a lower
-         * precedence than that of the other.
-         *
-         * @return {@inheritDoc}
-         */
-        @Override
-        public int compare(Version v1, Version v2) {
-            int result = v1.compareTo(v2);
-            if (result == 0) {
-                result = v1.build.compareTo(v2.build);
-                if (v1.build == MetadataVersion.NULL ||
-                    v2.build == MetadataVersion.NULL
-                ) {
-                    /*
-                     * Build metadata should have a higher precedence
-                     * than the associated normal version which is the
-                     * opposite compared to pre-release versions.
-                     */
-                    result = -1 * result;
-                }
-            }
-            return result;
         }
     }
 
@@ -657,62 +637,155 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * Checks if this version is greater than the other version.
+     * Determines if this {@code Version} has a higher precedence compared with
+     * the specified {@code Version}.
      *
-     * @param other the other version to compare to
-     * @return {@code true} if this version is greater than the other version
-     *         or {@code false} otherwise
-     * @see #compareTo(Version other)
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if this {@code Version} is higher than the other
+     *         {@code Version}; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @see    #compareToIgnoreBuildMetadata(Version)
+     * @since  0.10.0
      */
-    public boolean greaterThan(Version other) {
-        return compareTo(other) > 0;
+    public boolean isHigherThan(Version other) {
+        return compareToIgnoreBuildMetadata(other) > 0;
     }
 
     /**
-     * Checks if this version is greater than or equal to the other version.
+     * Determines if this {@code Version} has a higher or equal precedence
+     * compared with the specified {@code Version}.
      *
-     * @param other the other version to compare to
-     * @return {@code true} if this version is greater than or equal
-     *         to the other version or {@code false} otherwise
-     * @see #compareTo(Version other)
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if this {@code Version} is higher than or equivalent
+     *         to the other {@code Version}; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @see    #compareToIgnoreBuildMetadata(Version)
+     * @since  0.10.0
      */
-    public boolean greaterThanOrEqualTo(Version other) {
-        return compareTo(other) >= 0;
+    public boolean isHigherThanOrEquivalentTo(Version other) {
+        return compareToIgnoreBuildMetadata(other) >= 0;
     }
 
     /**
-     * Checks if this version is less than the other version.
+     * Determines if this {@code Version} has a lower precedence compared with
+     * the specified {@code Version}.
      *
-     * @param other the other version to compare to
-     * @return {@code true} if this version is less than the other version
-     *         or {@code false} otherwise
-     * @see #compareTo(Version other)
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if this {@code Version} is lower than the other
+     *         {@code Version}; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @see    #compareToIgnoreBuildMetadata(Version)
+     * @since  0.10.0
      */
-    public boolean lessThan(Version other) {
-        return compareTo(other) < 0;
+    public boolean isLowerThan(Version other) {
+        return compareToIgnoreBuildMetadata(other) < 0;
     }
 
     /**
-     * Checks if this version is less than or equal to the other version.
+     * Determines if this {@code Version} has a lower or equal precedence
+     * compared with the specified {@code Version}.
      *
-     * @param other the other version to compare to
-     * @return {@code true} if this version is less than or equal
-     *         to the other version or {@code false} otherwise
-     * @see #compareTo(Version other)
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if this {@code Version} is lower than or equivalent
+     *         to the other {@code Version}; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @see    #compareToIgnoreBuildMetadata(Version)
+     * @since  0.10.0
      */
-    public boolean lessThanOrEqualTo(Version other) {
-        return compareTo(other) <= 0;
+    public boolean isLowerThanOrEquivalentTo(Version other) {
+        return compareToIgnoreBuildMetadata(other) <= 0;
     }
 
     /**
-     * Checks if this version equals the other version.
+     * Determines if this {@code Version} has the same precedence as the
+     * specified {@code Version}.
      * <p>
-     * The comparison is done by the {@code Version.compareTo} method.
+     * As per SemVer p.10, build metadata is ignored when determining version
+     * precedence. To test for exact equality, including build metadata, use
+     * {@link #equals(Object)}.
      *
-     * @param other the other version to compare to
-     * @return {@code true} if this version equals the other version
-     *         or {@code false} otherwise
-     * @see #compareTo(Version other)
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if this {@code Version} is equivalent to the other
+     *         {@code Version}; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @see    #compareToIgnoreBuildMetadata(Version)
+     * @since  0.10.0
+     */
+    public boolean isEquivalentTo(Version other) {
+        return compareToIgnoreBuildMetadata(other) == 0;
+    }
+
+    /**
+     * Compares versions, along with their build metadata.
+     * <p>
+     * Note that this method violates the SemVer p.10 ("build metadata must be
+     * ignored") rule, hence can't be used for determining version precedence.
+     * It was made so intentionally for it to be consistent with {@code equals}
+     * as defined by {@link Comparable}, and to be used in comparison-based data
+     * structures.
+     * <p>
+     * As the Specification defines no comparison rules for build metadata, this
+     * behavior is strictly implementation-defined. Build metadata are compared
+     * similarly to pre-release versions. A version with build metadata is
+     * ordered after an equivalent one without it.
+     * <p>
+     * To compare Versions without their build metadata in order to determine
+     * precedence use {@link #compareToIgnoreBuildMetadata(Version)}.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return a negative integer, zero or a positive integer if this
+     *         {@code Version} is less than, equal to or greater than the
+     *         specified {@code Version}
+     * @throws IllegalArgumentException if {@code other} is null
+     */
+    @Override
+    public int compareTo(Version other) {
+        int result = compareToIgnoreBuildMetadata(other);
+        if (result != 0) {
+            return result;
+        }
+
+        result = build.compareTo(other.build);
+        if (build == MetadataVersion.NULL || other.build == MetadataVersion.NULL) {
+            result = -1 * result;
+        }
+        return result;
+    }
+
+    /**
+     * Compares versions, ignoring their build metadata.
+     * <p>
+     * This method adheres to the comparison rules defined by the Specification,
+     * and as such can be used for determining version precedence, either as a
+     * natural-order comparator ({@code Version::compareToIgnoreBuildMetadata}),
+     * or as a regular method.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return a negative integer, zero or a positive integer if this
+     *         {@code Version} is lower than, equivalent to or higher than the
+     *         specified {@code Version}
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public int compareToIgnoreBuildMetadata(Version other) {
+        requireNonNull(other, "other");
+        int result = normal.compareTo(other.normal);
+        if (result == 0) {
+            result = preRelease.compareTo(other.preRelease);
+        }
+        return result;
+    }
+
+    /**
+     * Checks if this {@code Version} exactly equals the specified {@code Version}.
+     * <p>
+     * Although primarily intended for use in hash-based data structures, it
+     * can be used for testing for exact equality, including build metadata, if
+     * needed. To test for equivalence use {@link #isEquivalentTo(Version)}.
+     *
+     * @param  other the {@code Version} to compare with, nullable
+     * @return {@code true}, if this {@code Version} exactly equals the other
+     *         {@code Version}; {@code false} otherwise
      */
     @Override
     public boolean equals(Object other) {
@@ -733,6 +806,7 @@ public class Version implements Comparable<Version>, Serializable {
         int hash = 5;
         hash = 97 * hash + normal.hashCode();
         hash = 97 * hash + preRelease.hashCode();
+        hash = 97 * hash + build.hashCode();
         return hash;
     }
 
@@ -749,44 +823,6 @@ public class Version implements Comparable<Version>, Serializable {
             sb.append(BUILD_PREFIX).append(getBuildMetadata());
         }
         return sb.toString();
-    }
-
-    /**
-     * Compares this version to the other version.
-     * <p>
-     * This method does not take into account the versions' build
-     * metadata. If you want to compare the versions' build metadata
-     * use the {@code Version.compareWithBuildsTo} method or the
-     * {@code Version.BUILD_AWARE_ORDER} comparator.
-     *
-     * @param other the other version to compare to
-     * @return a negative integer, zero or a positive integer if this version
-     *         is less than, equal to or greater than the specified version
-     * @see #BUILD_AWARE_ORDER
-     * @see #compareWithBuildsTo(Version other)
-     */
-    @Override
-    public int compareTo(Version other) {
-        int result = normal.compareTo(other.normal);
-        if (result == 0) {
-            result = preRelease.compareTo(other.preRelease);
-        }
-        return result;
-    }
-
-    /**
-     * Compare this version to the other version
-     * taking into account the build metadata.
-     * <p>
-     * The method makes use of the {@code Version.BUILD_AWARE_ORDER} comparator.
-     *
-     * @param other the other version to compare to
-     * @return integer result of comparison compatible with
-     *         that of the {@code Comparable.compareTo} method
-     * @see #BUILD_AWARE_ORDER
-     */
-    public int compareWithBuildsTo(Version other) {
-        return BUILD_AWARE_ORDER.compare(this, other);
     }
 
     private static <T> T requireNonNull(T arg, String name) {
@@ -829,6 +865,12 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * @deprecated forRemoval since 0.10.0, use {@link #compareTo(Version)}
+     */
+    @Deprecated
+    public static final Comparator<Version> BUILD_AWARE_ORDER = Version::compareTo;
+
+    /**
      * @deprecated forRemoval since 0.10.0, use {@link #parse(String)}
      */
     @Deprecated
@@ -858,5 +900,45 @@ public class Version implements Comparable<Version>, Serializable {
     @Deprecated
     public static Version forIntegers(int major, int minor, int patch) {
         return Version.of(major, minor, patch);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #isHigherThan(Version)}
+     */
+    @Deprecated
+    public boolean greaterThan(Version other) {
+        return isHigherThan(other);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #isHigherThanOrEquivalentTo(Version)}
+     */
+    @Deprecated
+    public boolean greaterThanOrEqualTo(Version other) {
+        return isHigherThanOrEquivalentTo(other);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #isLowerThan(Version)}
+     */
+    @Deprecated
+    public boolean lessThan(Version other) {
+        return isLowerThan(other);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #isLowerThanOrEquivalentTo(Version)}
+     */
+    @Deprecated
+    public boolean lessThanOrEqualTo(Version other) {
+        return isLowerThanOrEquivalentTo(other);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #compareTo(Version)}
+     */
+    @Deprecated
+    public int compareWithBuildsTo(Version other) {
+        return compareTo(other);
     }
 }

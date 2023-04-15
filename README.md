@@ -157,46 +157,48 @@ be of good use in better understanding some of the decisions made regarding the
 incrementor methods.
 
 ### Comparing Versions ###
-Comparing versions with Java SemVer is easy. The `Version` class implements the
-`Comparable` interface, it also overrides the `Object.equals` method and provides
-some more methods for convenient comparing.
+The recommended way to determine version precedence is to use "comparator" methods
 
 ~~~ java
-Version v1 = Version.parse("1.0.0-rc.1+build.1");
-Version v2 = Version.parse("1.3.7+build.2.b8f12d7");
+Version v1 = Version.of(1, 2, 3, "rc.1", "build.1");
+Version v2 = Version.of(1, 2, 3, "rc.1", "build.2");
 
-int result = v1.compareTo(v2);  // < 0
-boolean result = v1.equals(v2); // false
-
-boolean result = v1.greaterThan(v2);           // false
-boolean result = v1.greaterThanOrEqualTo(v2);  // false
-boolean result = v1.lessThan(v2);              // true
-boolean result = v1.lessThanOrEqualTo(v2);     // true
+v1.isHigherThan(v2);                // false
+v1.isHigherThanOrEquivalentTo(v2);  // true
+v1.isLowerThan(v2);                 // false
+v1.isLowerThanOrEquivalentTo(v2);   // true
+v1.isEquivalentTo(v2);              // true
 ~~~
 
-When determining version precedence the build metadata is ignored (SemVer p.10).
+The other options, mainly intended for use in comparison-based data structures,
+are the `Version.INCREMENT_ORDER` comparator for "natural" ordering, and the
+`Version.PRECEDENCE_ORDER` comparator for highest precedence ordering, which is
+reverse of the former one.
 
 ~~~ java
-Version v1 = Version.parse("1.0.0+build.1");
-Version v2 = Version.parse("1.0.0+build.2");
+Version v1 = Version.of(1, 2, 3, "rc.1");
+Version v2 = Version.of(1, 2, 3, "rc.2");
 
-int result = v1.compareTo(v2);  // = 0
-boolean result = v1.equals(v2); // true
+Version.INCREMENT_ORDER.compare(v1, v2);   // < 0 -> [v1, v2]
+Version.PRECEDENCE_ORDER.compare(v1, v2);  // > 0 -> [v2, v1]
 ~~~
 
-Sometimes, however, you might want to compare versions with the build metadata
-in mind. For such cases Java SemVer provides a _comparator_ `Version.BUILD_AWARE_ORDER`
-and a convenience method `Version.compareWithBuildsTo`.
+**NOTE**: The `equals()` and `compareTo()` methods don't adhere to the
+Specification regarding build metadata, and therefore shouldn't be used for
+determining version precedence. Also, they are not really intended to be used
+directly, but rather by hash- and comparison-based data structures, respectively.
+That said, there are still cases where they can prove useful, like testing
+versions for exact equality or ordering them based on their build metadata.
 
 ~~~ java
-Version v1 = Version.parse("1.0.0+build.1");
-Version v2 = Version.parse("1.0.0+build.2");
+Version v1 = Version.of(1, 2, 3, null, "build.1");
+Version v2 = Version.of(1, 2, 3, null, "build.2");
 
-int result = Version.BUILD_AWARE_ORDER.compare(v1, v2);  // < 0
+v1.isEquivalentTo(v2);  // true
+v1.equals(v2);          // false
 
-int result     = v1.compareTo(v2);            // = 0
-boolean result = v1.equals(v2);               // true
-int result     = v1.compareWithBuildsTo(v2);  // < 0
+v1.isLowerThan(v2);     // false
+v1.compareTo(v2);       // < 0
 ~~~
 
 

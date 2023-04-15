@@ -59,6 +59,6 @@ class GreaterOrEqual implements Expression {
      */
     @Override
     public boolean interpret(Version version) {
-        return version.greaterThanOrEqualTo(parsedVersion);
+        return version.isHigherThanOrEquivalentTo(parsedVersion);
     }
 }
