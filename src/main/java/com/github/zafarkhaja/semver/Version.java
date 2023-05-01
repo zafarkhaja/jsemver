@@ -637,6 +637,20 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks if this {@code Version} represents a stable public API.
+     * <p>
+     * Versions lower than 1.0.0 are for initial development, therefore the
+     * public API should not be considered stable. (SemVer p.4)
+     *
+     * @return {@code true}, if this {@code Version} represents a stable public
+     *         API; {@code false} otherwise
+     * @since  0.10.0
+     */
+    public boolean isPublicApiStable() {
+        return isHigherThanOrEquivalentTo(Version.of(1));
+    }
+
+    /**
      * Determines if this {@code Version} has a higher precedence compared with
      * the specified {@code Version}.
      *

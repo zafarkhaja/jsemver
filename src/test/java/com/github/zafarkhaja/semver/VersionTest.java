@@ -258,6 +258,18 @@ class VersionTest {
         }
 
         @Test
+        void shouldConsiderPublicApiAsUnstableIfMajorVersionIsZero() {
+            Version v = Version.of(0, 10, 0);
+            assertFalse(v.isPublicApiStable());
+        }
+
+        @Test
+        void shouldConsiderPublicApiAsStableIfMajorVersionIsOneOrHigher() {
+            Version v = Version.of(1);
+            assertTrue(v.isPublicApiStable());
+        }
+
+        @Test
         void shouldDetermineIfItsPrecedenceIsHigherThanThatOfOthers() {
             Version v1 = Version.of(3, 2, 1);
             Version v2 = Version.of(1, 2, 3);
