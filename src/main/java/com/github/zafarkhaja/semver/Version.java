@@ -637,6 +637,19 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks if this {@code Version} represents a stable version.
+     * <p>
+     * Pre-release versions are considered unstable. (SemVer p.9)
+     *
+     * @return {@code true}, if this {@code Version} represents a stable
+     *         version; {@code false} otherwise
+     * @since  0.10.0
+     */
+    public boolean isStable() {
+        return preRelease == MetadataVersion.NULL;
+    }
+
+    /**
      * Checks if this {@code Version} represents a stable public API.
      * <p>
      * Versions lower than 1.0.0 are for initial development, therefore the
