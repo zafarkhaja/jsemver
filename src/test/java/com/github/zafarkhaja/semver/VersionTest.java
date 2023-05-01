@@ -258,6 +258,18 @@ class VersionTest {
         }
 
         @Test
+        void shouldConsiderPreReleaseVersionsAsUnstable() {
+            Version v = Version.of(1, 2, 3, "rc");
+            assertFalse(v.isStable());
+        }
+
+        @Test
+        void shouldConsiderNonPreReleaseVersionsAsStable() {
+            Version v = Version.of(1, 2, 3);
+            assertTrue(v.isStable());
+        }
+
+        @Test
         void shouldConsiderPublicApiAsUnstableIfMajorVersionIsZero() {
             Version v = Version.of(0, 10, 0);
             assertFalse(v.isPublicApiStable());
