@@ -34,8 +34,8 @@ class VersionParserTest {
 
     @Test
     void shouldParseNormalVersion() {
-        NormalVersion version = VersionParser.parseVersionCore("1.0.0");
-        assertEquals(new NormalVersion(1, 0, 0), version);
+        Version version = VersionParser.parseVersionCore("1.0.0");
+        assertEquals(Version.of(1, 0, 0), version);
     }
 
     @Test
@@ -100,7 +100,9 @@ class VersionParserTest {
         Version version = parser.parse(null);
         assertEquals(
             new Version(
-                new NormalVersion(1, 0, 0),
+                1,
+                0,
+                0,
                 new MetadataVersion(new String[] {"rc", "2"}),
                 new MetadataVersion(new String[] {"build", "05"})
             ),

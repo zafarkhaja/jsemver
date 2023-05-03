@@ -199,14 +199,15 @@ class VersionParser implements Parser<Version> {
      * Parses the version core.
      *
      * @param versionCore the version core string to parse
-     * @return a valid normal version object
+     * @return a valid version object
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is a grammar error
      * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
-    static NormalVersion parseVersionCore(String versionCore) {
+    static Version parseVersionCore(String versionCore) {
         VersionParser parser = new VersionParser(versionCore);
-        return parser.parseVersionCore();
+        long[] versionParts = parser.parseVersionCore();
+        return Version.of(versionParts[0], versionParts[1], versionParts[2]);
     }
 
     /**
@@ -256,7 +257,7 @@ class VersionParser implements Parser<Version> {
      * @return a valid version object
      */
     private Version parseValidSemVer() {
-        NormalVersion normal = parseVersionCore();
+        long[] versionParts = parseVersionCore();
         MetadataVersion preRelease = MetadataVersion.NULL;
         MetadataVersion build = MetadataVersion.NULL;
 
@@ -269,7 +270,7 @@ class VersionParser implements Parser<Version> {
             build = parseBuild();
         }
         consumeNextCharacter(EOI);
-        return new Version(normal, preRelease, build);
+        return new Version(versionParts[0], versionParts[1], versionParts[2], preRelease, build);
     }
 
     /**
@@ -281,15 +282,15 @@ class VersionParser implements Parser<Version> {
      * }
      * </pre>
      *
-     * @return a valid normal version object
+     * @return an array of the version core parts
      */
-    private NormalVersion parseVersionCore() {
+    private long[] parseVersionCore() {
         long major = numericIdentifier();
         consumeNextCharacter(DOT);
         long minor = numericIdentifier();
         consumeNextCharacter(DOT);
         long patch = numericIdentifier();
-        return new NormalVersion(major, minor, patch);
+        return new long[] {major, minor, patch};
     }
 
     /**
