@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Locale;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -121,6 +122,15 @@ class VersionTest {
         }
 
         @Test
+        void shouldResetMinorAndPatchWhenMajorIsIncremented() {
+            Version v = Version.of(1, 2, 3);
+            Version incremented = v.incrementMajorVersion();
+            assertEquals(2, incremented.getMajorVersion());
+            assertEquals(0, incremented.getMinorVersion());
+            assertEquals(0, incremented.getPatchVersion());
+        }
+
+        @Test
         void shouldIncrementMajorVersionWithPreReleaseIfProvided() {
             Version v = Version.of(1, 2, 3);
             Version incrementedMajor = v.incrementMajorVersion("beta");
@@ -132,6 +142,15 @@ class VersionTest {
             Version v = Version.of(1, 2, 3);
             Version incrementedMinor = v.incrementMinorVersion();
             assertEquals("1.3.0", incrementedMinor.toString());
+        }
+
+        @Test
+        void shouldResetPatchWhenMinorIsIncremented() {
+            Version v = Version.of(1, 2, 3);
+            Version incremented = v.incrementMinorVersion();
+            assertEquals(1, incremented.getMajorVersion());
+            assertEquals(3, incremented.getMinorVersion());
+            assertEquals(0, incremented.getPatchVersion());
         }
 
         @Test
@@ -153,6 +172,14 @@ class VersionTest {
             Version v = Version.of(1, 2, 3);
             Version incrementedPatch = v.incrementPatchVersion("rc");
             assertEquals("1.2.4-rc", incrementedPatch.toString());
+        }
+
+        @Test
+        void shouldRaiseErrorIfIncrementCausesOverflow() {
+            Version v = Version.of(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
+            assertThrows(ArithmeticException.class, v::incrementMajorVersion);
+            assertThrows(ArithmeticException.class, v::incrementMinorVersion);
+            assertThrows(ArithmeticException.class, v::incrementPatchVersion);
         }
 
         @Test
@@ -583,6 +610,14 @@ class VersionTest {
             String value = "1.2.3-beta+build";
             Version v = Version.parse(value);
             assertEquals(value, v.toString());
+        }
+
+        @Test
+        void shouldUseRootLocale() {
+            Locale.setDefault(new Locale("hi", "IN"));
+            Version v = Version.of(1, 2, 3);
+            assertEquals("1.2.3", v.toString());
+            Locale.setDefault(Locale.ROOT);
         }
     }
 

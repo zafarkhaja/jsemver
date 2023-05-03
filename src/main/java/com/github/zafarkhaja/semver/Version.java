@@ -31,6 +31,7 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -69,10 +70,11 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public static final Comparator<Version> PRECEDENCE_ORDER = INCREMENT_ORDER.reversed();
 
-    /**
-     * The normal version.
-     */
-    private final NormalVersion normal;
+    private final long major;
+
+    private final long minor;
+
+    private final long patch;
 
     /**
      * The pre-release version.
@@ -199,28 +201,33 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * @see #Version(NormalVersion, MetadataVersion, MetadataVersion) for documentation
+     * @see #Version(long, long, long, MetadataVersion, MetadataVersion) for documentation
      */
-    Version(NormalVersion normal) {
-        this(normal, MetadataVersion.NULL, MetadataVersion.NULL);
+    Version(long major, long minor, long patch) {
+        this(major, minor, patch, MetadataVersion.NULL, MetadataVersion.NULL);
     }
 
     /**
-     * @see #Version(NormalVersion, MetadataVersion, MetadataVersion) for documentation
+     * @see #Version(long, long, long, MetadataVersion, MetadataVersion) for documentation
      */
-    Version(NormalVersion normal, MetadataVersion preRelease) {
-        this(normal, preRelease, MetadataVersion.NULL);
+    Version(long major, long minor, long patch, MetadataVersion preRelease) {
+        this(major, minor, patch, preRelease, MetadataVersion.NULL);
     }
 
     /**
      * Package-private constructor, for internal use only.
      *
-     * @param normal the normal version
-     * @param preRelease the pre-release version
-     * @param build the build metadata
+     * @param  major a major version number, non-negative
+     * @param  minor a minor version number, non-negative
+     * @param  patch a patch version number, non-negative
+     * @param  preRelease the pre-release version
+     * @param  build the build metadata
+     * @throws IllegalArgumentException if any of the numeric arguments is negative
      */
-    Version(NormalVersion normal, MetadataVersion preRelease, MetadataVersion build) {
-        this.normal     = normal;
+    Version(long major, long minor, long patch, MetadataVersion preRelease, MetadataVersion build) {
+        this.major      = requireNonNegative(major, "major");
+        this.minor      = requireNonNegative(minor, "minor");
+        this.patch      = requireNonNegative(patch, "patch");
         this.preRelease = preRelease;
         this.build      = build;
     }
@@ -417,7 +424,9 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public static Version of(long major, long minor, long patch, String preRelease, String build) {
         return new Version(
-            new NormalVersion(major, minor, patch),
+            major,
+            minor,
+            patch,
             preRelease == null ? MetadataVersion.NULL : VersionParser.parsePreRelease(preRelease),
             build == null ? MetadataVersion.NULL : VersionParser.parseBuild(build)
         );
@@ -462,7 +471,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws ArithmeticException if the major version number overflows
      */
     public Version incrementMajorVersion() {
-        return new Version(normal.incrementMajor());
+        return new Version(safeIncrement(major), 0, 0);
     }
 
     /**
@@ -477,7 +486,9 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public Version incrementMajorVersion(String preRelease) {
         return new Version(
-            normal.incrementMajor(),
+            safeIncrement(major),
+            0,
+            0,
             VersionParser.parsePreRelease(preRelease)
         );
     }
@@ -489,7 +500,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws ArithmeticException if the minor version number overflows
      */
     public Version incrementMinorVersion() {
-        return new Version(normal.incrementMinor());
+        return new Version(major, safeIncrement(minor), 0);
     }
 
     /**
@@ -504,7 +515,9 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public Version incrementMinorVersion(String preRelease) {
         return new Version(
-            normal.incrementMinor(),
+            major,
+            safeIncrement(minor),
+            0,
             VersionParser.parsePreRelease(preRelease)
         );
     }
@@ -516,7 +529,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws ArithmeticException if the patch version number overflows
      */
     public Version incrementPatchVersion() {
-        return new Version(normal.incrementPatch());
+        return new Version(major, minor, safeIncrement(patch));
     }
 
     /**
@@ -531,7 +544,9 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public Version incrementPatchVersion(String preRelease) {
         return new Version(
-            normal.incrementPatch(),
+            major,
+            minor,
+            safeIncrement(patch),
             VersionParser.parsePreRelease(preRelease)
         );
     }
@@ -543,7 +558,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws ArithmeticException if the numeric identifier overflows
      */
     public Version incrementPreReleaseVersion() {
-        return new Version(normal, preRelease.increment());
+        return new Version(major, minor, patch, preRelease.increment());
     }
 
     /**
@@ -553,7 +568,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws ArithmeticException if the numeric identifier overflows
      */
     public Version incrementBuildMetadata() {
-        return new Version(normal, preRelease, build.increment());
+        return new Version(major, minor, patch, preRelease, build.increment());
     }
 
     /**
@@ -566,7 +581,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version setPreReleaseVersion(String preRelease) {
-        return new Version(normal, VersionParser.parsePreRelease(preRelease));
+        return new Version(major, minor, patch, VersionParser.parsePreRelease(preRelease));
     }
 
     /**
@@ -579,7 +594,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version setBuildMetadata(String build) {
-        return new Version(normal, preRelease, VersionParser.parseBuild(build));
+        return new Version(major, minor, patch, preRelease, VersionParser.parseBuild(build));
     }
 
     /**
@@ -588,7 +603,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the major version number
      */
     public long getMajorVersion() {
-        return normal.getMajor();
+        return major;
     }
 
     /**
@@ -597,7 +612,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the minor version number
      */
     public long getMinorVersion() {
-        return normal.getMinor();
+        return minor;
     }
 
     /**
@@ -606,7 +621,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the patch version number
      */
     public long getPatchVersion() {
-        return normal.getPatch();
+        return patch;
     }
 
     /**
@@ -615,7 +630,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the string representation of the normal version
      */
     public String getNormalVersion() {
-        return normal.toString();
+        return String.format(Locale.ROOT, "%d.%d.%d", major, minor, patch);
     }
 
     /**
@@ -796,11 +811,17 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public int compareToIgnoreBuildMetadata(Version other) {
         requireNonNull(other, "other");
-        int result = normal.compareTo(other.normal);
+        long result = major - other.major;
         if (result == 0) {
-            result = preRelease.compareTo(other.preRelease);
+            result = minor - other.minor;
+            if (result == 0) {
+                result = patch - other.patch;
+                if (result == 0) {
+                    return preRelease.compareTo(other.preRelease);
+                }
+            }
         }
-        return result;
+        return result < 0 ? -1 : 1;
     }
 
     /**
@@ -831,7 +852,9 @@ public class Version implements Comparable<Version>, Serializable {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + normal.hashCode();
+        hash = 97 * hash + Long.hashCode(major);
+        hash = 97 * hash + Long.hashCode(minor);
+        hash = 97 * hash + Long.hashCode(patch);
         hash = 97 * hash + preRelease.hashCode();
         hash = 97 * hash + build.hashCode();
         return hash;
@@ -852,11 +875,22 @@ public class Version implements Comparable<Version>, Serializable {
         return sb.toString();
     }
 
+    private static long requireNonNegative(long arg, String name) {
+        if (arg < 0) {
+            throw new IllegalArgumentException(name + " must not be negative");
+        }
+        return arg;
+    }
+
     private static <T> T requireNonNull(T arg, String name) {
         if (arg == null) {
             throw new IllegalArgumentException(name + " must not be null");
         }
         return arg;
+    }
+
+    private static long safeIncrement(long l) {
+        return Math.incrementExact(l);
     }
 
     private static class SerializationProxy implements Serializable {
