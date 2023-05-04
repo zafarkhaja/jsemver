@@ -30,6 +30,7 @@ import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
@@ -76,15 +77,11 @@ public class Version implements Comparable<Version>, Serializable {
 
     private final long patch;
 
-    /**
-     * The pre-release version.
-     */
-    private final MetadataVersion preRelease;
+    private final String[] preReleaseIds;
 
-    /**
-     * The build metadata.
-     */
-    private final MetadataVersion build;
+    private final String[] buildIds;
+
+    private static final String IDENTIFIER_SEPARATOR = ".";
 
     /**
      * A separator that separates the pre-release
@@ -201,17 +198,17 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * @see #Version(long, long, long, MetadataVersion, MetadataVersion) for documentation
+     * @see #Version(long, long, long, String[], String[]) for documentation
      */
     Version(long major, long minor, long patch) {
-        this(major, minor, patch, MetadataVersion.NULL, MetadataVersion.NULL);
+        this(major, minor, patch, new String[0], new String[0]);
     }
 
     /**
-     * @see #Version(long, long, long, MetadataVersion, MetadataVersion) for documentation
+     * @see #Version(long, long, long, String[], String[]) for documentation
      */
-    Version(long major, long minor, long patch, MetadataVersion preRelease) {
-        this(major, minor, patch, preRelease, MetadataVersion.NULL);
+    Version(long major, long minor, long patch, String[] preReleaseIds) {
+        this(major, minor, patch, preReleaseIds, new String[0]);
     }
 
     /**
@@ -220,16 +217,17 @@ public class Version implements Comparable<Version>, Serializable {
      * @param  major a major version number, non-negative
      * @param  minor a minor version number, non-negative
      * @param  patch a patch version number, non-negative
-     * @param  preRelease the pre-release version
-     * @param  build the build metadata
-     * @throws IllegalArgumentException if any of the numeric arguments is negative
+     * @param  preReleaseIds the pre-release identifiers, non-null
+     * @param  buildIds the build identifiers, non-null
+     * @throws IllegalArgumentException if any of the numeric arguments is negative,
+     *         or if any of the reference-type arguments is null
      */
-    Version(long major, long minor, long patch, MetadataVersion preRelease, MetadataVersion build) {
-        this.major      = requireNonNegative(major, "major");
-        this.minor      = requireNonNegative(minor, "minor");
-        this.patch      = requireNonNegative(patch, "patch");
-        this.preRelease = preRelease;
-        this.build      = build;
+    Version(long major, long minor, long patch, String[] preReleaseIds, String[] buildIds) {
+        this.major = requireNonNegative(major, "major");
+        this.minor = requireNonNegative(minor, "minor");
+        this.patch = requireNonNegative(patch, "patch");
+        this.preReleaseIds = requireNonNull(preReleaseIds, "preReleaseIds").clone();
+        this.buildIds = requireNonNull(buildIds, "buildIds").clone();
     }
 
     /**
@@ -427,8 +425,8 @@ public class Version implements Comparable<Version>, Serializable {
             major,
             minor,
             patch,
-            preRelease == null ? MetadataVersion.NULL : VersionParser.parsePreRelease(preRelease),
-            build == null ? MetadataVersion.NULL : VersionParser.parseBuild(build)
+            preRelease == null ? new String[0] : VersionParser.parsePreRelease(preRelease),
+            build == null ? new String[0] : VersionParser.parseBuild(build)
         );
     }
 
@@ -556,9 +554,13 @@ public class Version implements Comparable<Version>, Serializable {
      *
      * @return a new instance of the {@code Version} class
      * @throws ArithmeticException if the numeric identifier overflows
+     * @throws IllegalStateException if the pre-release version is empty
      */
     public Version incrementPreReleaseVersion() {
-        return new Version(major, minor, patch, preRelease.increment());
+        if (preReleaseIds.length == 0) {
+            throw new IllegalStateException("Pre-release version empty");
+        }
+        return new Version(major, minor, patch, incrementIdentifiers(preReleaseIds));
     }
 
     /**
@@ -566,9 +568,13 @@ public class Version implements Comparable<Version>, Serializable {
      *
      * @return a new instance of the {@code Version} class
      * @throws ArithmeticException if the numeric identifier overflows
+     * @throws IllegalStateException if the build metadata is empty
      */
     public Version incrementBuildMetadata() {
-        return new Version(major, minor, patch, preRelease, build.increment());
+        if (buildIds.length == 0) {
+            throw new IllegalStateException("Build metadata empty");
+        }
+        return new Version(major, minor, patch, preReleaseIds, incrementIdentifiers(buildIds));
     }
 
     /**
@@ -594,7 +600,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @throws UnexpectedCharacterException is a special case of {@code ParseException}
      */
     public Version setBuildMetadata(String build) {
-        return new Version(major, minor, patch, preRelease, VersionParser.parseBuild(build));
+        return new Version(major, minor, patch, preReleaseIds, VersionParser.parseBuild(build));
     }
 
     /**
@@ -639,7 +645,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the string representation of the pre-release version
      */
     public String getPreReleaseVersion() {
-        return preRelease.toString();
+        return String.join(IDENTIFIER_SEPARATOR, preReleaseIds);
     }
 
     /**
@@ -648,7 +654,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the string representation of the build metadata
      */
     public String getBuildMetadata() {
-        return build.toString();
+        return String.join(IDENTIFIER_SEPARATOR, buildIds);
     }
 
     /**
@@ -661,7 +667,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @since  0.10.0
      */
     public boolean isStable() {
-        return preRelease == MetadataVersion.NULL;
+        return preReleaseIds.length == 0;
     }
 
     /**
@@ -787,8 +793,8 @@ public class Version implements Comparable<Version>, Serializable {
             return result;
         }
 
-        result = build.compareTo(other.build);
-        if (build == MetadataVersion.NULL || other.build == MetadataVersion.NULL) {
+        result = compareIdentifierArrays(this.buildIds, other.buildIds);
+        if (this.buildIds.length == 0 || other.buildIds.length == 0) {
             result = -1 * result;
         }
         return result;
@@ -817,7 +823,7 @@ public class Version implements Comparable<Version>, Serializable {
             if (result == 0) {
                 result = patch - other.patch;
                 if (result == 0) {
-                    return preRelease.compareTo(other.preRelease);
+                    return compareIdentifierArrays(this.preReleaseIds, other.preReleaseIds);
                 }
             }
         }
@@ -855,8 +861,8 @@ public class Version implements Comparable<Version>, Serializable {
         hash = 97 * hash + Long.hashCode(major);
         hash = 97 * hash + Long.hashCode(minor);
         hash = 97 * hash + Long.hashCode(patch);
-        hash = 97 * hash + preRelease.hashCode();
-        hash = 97 * hash + build.hashCode();
+        hash = 97 * hash + Arrays.hashCode(preReleaseIds);
+        hash = 97 * hash + Arrays.hashCode(buildIds);
         return hash;
     }
 
@@ -891,6 +897,66 @@ public class Version implements Comparable<Version>, Serializable {
 
     private static long safeIncrement(long l) {
         return Math.incrementExact(l);
+    }
+
+    private static String[] incrementIdentifiers(String[] ids) {
+        String[] newIds;
+
+        String lastId = ids[ids.length - 1];
+        if (isNumeric(lastId)) {
+            newIds = Arrays.copyOf(ids, ids.length);
+            newIds[newIds.length - 1] = String.valueOf(safeIncrement(Long.parseLong(lastId)));
+        } else {
+            newIds = Arrays.copyOf(ids, ids.length + 1);
+            newIds[newIds.length - 1] = String.valueOf(1);
+        }
+
+        return newIds;
+    }
+
+    private static int compareIdentifierArrays(String[] thisIds, String[] otherIds) {
+        if (thisIds.length == 0 && otherIds.length == 0) {
+            return 0;
+        }
+
+        if (thisIds.length == 0 || otherIds.length == 0) {
+            // Pre-release versions have a lower precedence than
+            // the associated normal version. (SemVer p.9)
+            return thisIds.length == 0 ? 1 : -1;
+        }
+
+        int result = 0;
+        int minLength = Math.min(thisIds.length, otherIds.length);
+        for (int i = 0; i < minLength; i++) {
+            result = compareIdentifiers(thisIds[i], otherIds[i]);
+            if (result != 0) {
+                break;
+            }
+        }
+
+        if (result == 0) {
+            // A larger set of pre-release fields has a higher
+            // precedence than a smaller set, if all of the
+            // preceding identifiers are equal. (SemVer p.11)
+            result = thisIds.length - otherIds.length;
+        }
+        return result;
+    }
+
+    private static int compareIdentifiers(String thisId, String otherId) {
+        if (isNumeric(thisId) && isNumeric(otherId)) {
+            return Long.valueOf(thisId).compareTo(Long.valueOf(otherId));
+        } else {
+            return thisId.compareTo(otherId);
+        }
+    }
+
+    private static boolean isNumeric(String id) {
+        // filters out <digits>
+        if (id.startsWith("0")) {
+            return false;
+        }
+        return id.chars().allMatch(Character::isDigit);
     }
 
     private static class SerializationProxy implements Serializable {

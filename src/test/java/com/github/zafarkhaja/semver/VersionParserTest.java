@@ -49,8 +49,8 @@ class VersionParserTest {
 
     @Test
     void shouldParsePreReleaseVersion() {
-        MetadataVersion preRelease = VersionParser.parsePreRelease("beta-1.1");
-        assertEquals(new MetadataVersion(new String[] {"beta-1", "1"}), preRelease);
+        String[] preRelease = VersionParser.parsePreRelease("beta-1.1");
+        assertArrayEquals(new String[] {"beta-1", "1"}, preRelease);
     }
 
     @Test
@@ -73,8 +73,8 @@ class VersionParserTest {
 
     @Test
     void shouldParseBuildMetadata() {
-        MetadataVersion build = VersionParser.parseBuild("build.1");
-        assertEquals(new MetadataVersion(new String[] {"build", "1"}), build);
+        String[] build = VersionParser.parseBuild("build.1");
+        assertArrayEquals(new String[] {"build", "1"}, build);
     }
 
     @Test
@@ -103,8 +103,8 @@ class VersionParserTest {
                 1,
                 0,
                 0,
-                new MetadataVersion(new String[] {"rc", "2"}),
-                new MetadataVersion(new String[] {"build", "05"})
+                new String[] {"rc", "2"},
+                new String[] {"build", "05"}
             ),
             version
         );

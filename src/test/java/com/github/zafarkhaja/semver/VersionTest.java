@@ -176,10 +176,18 @@ class VersionTest {
 
         @Test
         void shouldRaiseErrorIfIncrementCausesOverflow() {
-            Version v = Version.of(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
+            Version v = Version.of(
+                Long.MAX_VALUE,
+                Long.MAX_VALUE,
+                Long.MAX_VALUE,
+                String.valueOf(Long.MAX_VALUE),
+                String.valueOf(Long.MAX_VALUE)
+            );
             assertThrows(ArithmeticException.class, v::incrementMajorVersion);
             assertThrows(ArithmeticException.class, v::incrementMinorVersion);
             assertThrows(ArithmeticException.class, v::incrementPatchVersion);
+            assertThrows(ArithmeticException.class, v::incrementPreReleaseVersion);
+            assertThrows(ArithmeticException.class, v::incrementBuildMetadata);
         }
 
         @Test
@@ -200,6 +208,52 @@ class VersionTest {
             assertEquals("1.2.4", patch1.toString());
             Version patch2 = v.incrementPatchVersion("beta");
             assertEquals("1.2.4-beta", patch2.toString());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenIncrementingEmptyPreReleaseVersion() {
+            Version v1 = Version.of(1, 0, 0);
+            assertThrows(IllegalStateException.class, v1::incrementPreReleaseVersion);
+        }
+
+        @Test
+        void shouldDropBuildMetadataWhenIncrementingPreReleaseVersion() {
+            Version v1 = Version.of(1, 0, 0, "beta.1", "build");
+            Version v2 = v1.incrementPreReleaseVersion();
+            assertEquals("1.0.0-beta.2", v2.toString());
+        }
+
+        @Test
+        void shouldProvideIncrementBuildMetadataMethod() {
+            Version v1 = Version.of(1, 0, 0, null, "build.1");
+            Version v2 = v1.incrementBuildMetadata();
+            assertEquals("1.0.0+build.2", v2.toString());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenIncrementingEmptyBuildMetadata() {
+            Version v1 = Version.of(1, 0, 0);
+            assertThrows(IllegalStateException.class, v1::incrementBuildMetadata);
+        }
+
+        @Test
+        void shouldAppendNumericIdentifierToBuildMetadataToBeIncrementedIfLastOneIsDigits() {
+            Version v1 = Version.of(0, 0, 1, null, "build.01");
+            Version v2 = v1.incrementBuildMetadata();
+            assertEquals("build.01.1", v2.getBuildMetadata());
+        }
+
+        @Test
+        void shouldBeImmutable() {
+            Version v = Version.of(1, 2, 3, "alpha.1", "build.1");
+
+            assertNotEquals(v, v.incrementMajorVersion());
+            assertNotEquals(v, v.incrementMinorVersion());
+            assertNotEquals(v, v.incrementPatchVersion());
+            assertNotEquals(v, v.incrementPreReleaseVersion());
+            assertNotEquals(v, v.setPreReleaseVersion("alpha.2"));
+            assertNotEquals(v.toString(), v.incrementBuildMetadata().toString());
+            assertNotEquals(v.toString(), v.setBuildMetadata("build.2").toString());
         }
 
         @Test
@@ -224,6 +278,18 @@ class VersionTest {
         }
 
         @Test
+        void shouldReturnEmptyStringOnGetPreReleaseVersionIfEmpty() {
+            Version v = Version.of(0, 0, 1, null);
+            assertTrue(v.getPreReleaseVersion().isEmpty());
+        }
+
+        @Test
+        void shouldReturnEmptyStringOnGetBuildMetadataIfEmpty() {
+            Version v = Version.of(0, 0, 1, null, null);
+            assertTrue(v.getBuildMetadata().isEmpty());
+        }
+
+        @Test
         void shouldProvideIncrementPreReleaseVersionMethod() {
             Version v1 = Version.of(1, 0, 0, "beta.1");
             Version v2 = v1.incrementPreReleaseVersion();
@@ -231,50 +297,10 @@ class VersionTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenIncrementingPreReleaseIfItsNull() {
-            Version v1 = Version.of(1, 0, 0);
-            assertThrows(
-                NullPointerException.class,
-                v1::incrementPreReleaseVersion,
-                "Method was expected to throw NullPointerException"
-            );
-        }
-
-        @Test
-        void shouldDropBuildMetadataWhenIncrementingPreReleaseVersion() {
-            Version v1 = Version.of(1, 0, 0, "beta.1", "build");
+        void shouldAppendNumericIdentifierToPreReleaseVersionToBeIncrementedIfAbsent() {
+            Version v1 = Version.of(0, 0, 1, "alpha");
             Version v2 = v1.incrementPreReleaseVersion();
-            assertEquals("1.0.0-beta.2", v2.toString());
-        }
-
-        @Test
-        void shouldProvideIncrementBuildMetadataMethod() {
-            Version v1 = Version.of(1, 0, 0, null, "build.1");
-            Version v2 = v1.incrementBuildMetadata();
-            assertEquals("1.0.0+build.2", v2.toString());
-        }
-
-        @Test
-        void shouldThrowExceptionWhenIncrementingBuildIfItsNull() {
-            Version v1 = Version.of(1, 0, 0);
-            assertThrows(
-                NullPointerException.class,
-                v1::incrementBuildMetadata,
-                "Method was expected to throw NullPointerException"
-            );
-        }
-
-        @Test
-        void shouldBeImmutable() {
-            Version v = Version.of(1, 2, 3, "alpha.1", "build.1");
-
-            assertNotEquals(v, v.incrementMajorVersion());
-            assertNotEquals(v, v.incrementMinorVersion());
-            assertNotEquals(v, v.incrementPatchVersion());
-            assertNotEquals(v, v.incrementPreReleaseVersion());
-            assertNotEquals(v, v.setPreReleaseVersion("alpha.2"));
-            assertNotEquals(v.toString(), v.incrementBuildMetadata().toString());
-            assertNotEquals(v.toString(), v.setBuildMetadata("build.2").toString());
+            assertEquals("alpha.1", v2.getPreReleaseVersion());
         }
 
         @Test
