@@ -245,5 +245,7 @@ These are the exceptions you can expect when working with the `Version` class:
   overflow
 * `IllegalArgumentException`, depending on the method and the parameter type, is
   thrown if you pass a `null` reference, an empty `String`, or a negative number
+* `IllegalStateException` is thrown in situations when a certain method call is
+  unexpected, like incrementing a pre-release version of a stable version
 * `ParseException` and its subtypes are thrown if the specified string argument
   can't be parsed

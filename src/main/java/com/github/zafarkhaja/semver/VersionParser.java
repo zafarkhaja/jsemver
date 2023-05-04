@@ -214,14 +214,14 @@ class VersionParser implements Parser<Version> {
      * Parses the pre-release version.
      *
      * @param preRelease the pre-release version string to parse
-     * @return a valid pre-release version object
+     * @return an array of pre-release identifiers
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is a grammar error
      * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
-    static MetadataVersion parsePreRelease(String preRelease) {
+    static String[] parsePreRelease(String preRelease) {
         VersionParser parser = new VersionParser(preRelease);
-        MetadataVersion result = parser.parsePreRelease();
+        String[] result = parser.parsePreRelease();
         parser.ensureValidLookahead(EOI);
         return result;
     }
@@ -230,14 +230,14 @@ class VersionParser implements Parser<Version> {
      * Parses the build metadata.
      *
      * @param build the build metadata string to parse
-     * @return a valid build metadata object
+     * @return an array of build identifiers
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      * @throws ParseException when there is a grammar error
      * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
-    static MetadataVersion parseBuild(String build) {
+    static String[] parseBuild(String build) {
         VersionParser parser = new VersionParser(build);
-        MetadataVersion result = parser.parseBuild();
+        String[] result = parser.parseBuild();
         parser.ensureValidLookahead(EOI);
         return result;
     }
@@ -258,8 +258,8 @@ class VersionParser implements Parser<Version> {
      */
     private Version parseValidSemVer() {
         long[] versionParts = parseVersionCore();
-        MetadataVersion preRelease = MetadataVersion.NULL;
-        MetadataVersion build = MetadataVersion.NULL;
+        String[] preRelease = new String[0];
+        String[] build = new String[0];
 
         Character next = consumeNextCharacter(HYPHEN, PLUS, EOI);
         if (HYPHEN.isMatchedBy(next)) {
@@ -305,9 +305,9 @@ class VersionParser implements Parser<Version> {
      * }
      * </pre>
      *
-     * @return a valid pre-release version object
+     * @return an array of pre-release identifiers
      */
-    private MetadataVersion parsePreRelease() {
+    private String[] parsePreRelease() {
         ensureValidLookahead(DIGIT, LETTER, HYPHEN);
         List<String> idents = new ArrayList<>();
         do {
@@ -318,7 +318,7 @@ class VersionParser implements Parser<Version> {
             }
             break;
         } while (true);
-        return new MetadataVersion(idents.toArray(new String[0]));
+        return idents.toArray(new String[0]);
     }
 
     /**
@@ -355,9 +355,9 @@ class VersionParser implements Parser<Version> {
      * }
      * </pre>
      *
-     * @return a valid build metadata object
+     * @return an array of build identifiers
      */
-    private MetadataVersion parseBuild() {
+    private String[] parseBuild() {
         ensureValidLookahead(DIGIT, LETTER, HYPHEN);
         List<String> idents = new ArrayList<>();
         do {
@@ -368,7 +368,7 @@ class VersionParser implements Parser<Version> {
             }
             break;
         } while (true);
-        return new MetadataVersion(idents.toArray(new String[0]));
+        return idents.toArray(new String[0]);
     }
 
     /**
