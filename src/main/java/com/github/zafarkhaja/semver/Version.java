@@ -48,6 +48,275 @@ import java.util.Optional;
 public class Version implements Comparable<Version>, Serializable {
 
     /**
+     * A mutable builder for the immutable {@code Version} class
+     */
+    public static class Builder {
+
+        private long major = 0;
+
+        private long minor = 0;
+
+        private long patch = 0;
+
+        private String[] preReleaseIds = {};
+
+        private String[] buildIds = {};
+
+        /**
+         * Default constructor, initializes fields with default values (0.0.0)
+         */
+        public Builder() {}
+
+        /**
+         * Sets the major version; the minor and patch versions are assigned 0.
+         *
+         * @param  major a major version number, non-negative
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code major} is negative
+         * @since  0.10.0
+         */
+        public Builder setVersionCore(long major) {
+            return setVersionCore(major, 0, 0);
+        }
+
+        /**
+         * Sets the major and minor versions; the patch version is assigned 0.
+         *
+         * @param  major a major version number, non-negative
+         * @param  minor a minor version number, non-negative
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if any of the arguments is negative
+         * @since  0.10.0
+         */
+        public Builder setVersionCore(long major, long minor) {
+            return setVersionCore(major, minor, 0);
+        }
+
+        /**
+         * Sets major, minor and patch versions.
+         *
+         * @param  major a major version number, non-negative
+         * @param  minor a minor version number, non-negative
+         * @param  patch a patch version number, non-negative
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if any of the arguments is negative
+         * @since  0.10.0
+         */
+        public Builder setVersionCore(long major, long minor, long patch) {
+            return
+                setMajorVersion(major).
+                setMinorVersion(minor).
+                setPatchVersion(patch)
+            ;
+        }
+
+        /**
+         * Sets the major version.
+         *
+         * @param  major a major version number, non-negative
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code major} is negative
+         * @since  0.10.0
+         */
+        public Builder setMajorVersion(long major) {
+            this.major = requireNonNegative(major, "major");
+            return this;
+        }
+
+        /**
+         * Sets the minor version.
+         *
+         * @param  minor a minor version number, non-negative
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code minor} is negative
+         * @since  0.10.0
+         */
+        public Builder setMinorVersion(long minor) {
+            this.minor = requireNonNegative(minor, "minor");
+            return this;
+        }
+
+        /**
+         * Sets the patch version.
+         *
+         * @param  patch a patch version number, non-negative
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code patch} is negative
+         * @since  0.10.0
+         */
+        public Builder setPatchVersion(long patch) {
+            this.patch = requireNonNegative(patch, "patch");
+            return this;
+        }
+
+        /**
+         * Sets the pre-release version.
+         * <p>
+         * Multiple identifiers can be specified in a single argument joined
+         * with dots, or in separate arguments, or both.
+         *
+         * @param  ids one or more pre-release identifiers, non-null
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
+         */
+        public Builder setPreReleaseVersion(String... ids) {
+            preReleaseIds = requireNonNullStrings(ids, "ids").clone();
+            return this;
+        }
+
+        /**
+         * Appends (additional) pre-release identifier(s).
+         * <p>
+         * If no pre-release identifiers have been previously set, the method
+         * works as {@link #setPreReleaseVersion(String...)}.
+         * <p>
+         * Multiple identifiers can be specified in a single argument joined
+         * with dots, or in separate arguments, or both.
+         *
+         * @param  ids one or more pre-release identifiers, non-null
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
+         * @see    #setPreReleaseVersion(String...)
+         * @since  0.10.0
+         */
+        public Builder addPreReleaseIdentifiers(String... ids) {
+            if (preReleaseIds.length == 0) {
+                return setPreReleaseVersion(ids);
+            }
+
+            preReleaseIds = concatArrays(preReleaseIds, requireNonNullStrings(ids, "ids"));
+            return this;
+        }
+
+        /**
+         * Unsets the pre-release version.
+         *
+         * @return this {@code Builder} instance
+         * @since  0.10.0
+         */
+        public Builder unsetPreReleaseVersion() {
+            preReleaseIds = new String[0];
+            return this;
+        }
+
+        /**
+         * Sets the build metadata.
+         * <p>
+         * Multiple identifiers can be specified in a single argument joined
+         * with dots, or in separate arguments, or both.
+         *
+         * @param  ids one or more build identifiers, non-null
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
+         */
+        public Builder setBuildMetadata(String... ids) {
+            buildIds = requireNonNullStrings(ids, "ids").clone();
+            return this;
+        }
+
+        /**
+         * Appends (additional) build identifier(s).
+         * <p>
+         * If no build identifiers have been previously set, the method works as
+         * {@link #setBuildMetadata(String...)}.
+         * <p>
+         * Multiple identifiers can be specified in a single argument joined
+         * with dots, or in separate arguments, or both.
+         *
+         * @param  ids one or more build identifiers, non-null
+         * @return this {@code Builder} instance
+         * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
+         * @see    #setBuildMetadata(String...)
+         * @since  0.10.0
+         */
+        public Builder addBuildIdentifiers(String... ids) {
+            if (buildIds.length == 0) {
+                return setBuildMetadata(ids);
+            }
+
+            buildIds = concatArrays(buildIds, requireNonNullStrings(ids, "ids"));
+            return this;
+        }
+
+        /**
+         * Unsets the build metadata.
+         *
+         * @return this {@code Builder} instance
+         * @since  0.10.0
+         */
+        public Builder unsetBuildMetadata() {
+            buildIds = new String[0];
+            return this;
+        }
+
+        /**
+         * Obtains a {@code Version} instance with previously set values.
+         *
+         * @return a {@code Version} instance
+         * @throws ParseException if any of the previously set identifiers can't be parsed
+         * @see    Version#of(long, long, long, String, String)
+         */
+        public Version build() {
+            return Version.of(
+                major,
+                minor,
+                patch,
+                joinIdentifiers(preReleaseIds),
+                joinIdentifiers(buildIds)
+            );
+        }
+
+        private static String[] requireNonEmpty(String[] arg, String name) {
+            if (requireNonNull(arg, name).length == 0) {
+                throw new IllegalArgumentException(name + " must not be empty");
+            }
+            return arg;
+        }
+
+        private static String[] requireNonNullStrings(String[] arg, String name) {
+            for (String s : requireNonEmpty(arg, name)) {
+                if (s == null) {
+                    throw new IllegalArgumentException(name + " must not contain null");
+                }
+            }
+            return arg;
+        }
+
+        private static String[] concatArrays(String[] ids1, String[] ids2) {
+            String[] ids = new String[ids1.length + ids2.length];
+            System.arraycopy(ids1, 0, ids, 0, ids1.length);
+            System.arraycopy(ids2, 0, ids, ids1.length, ids2.length);
+            return ids;
+        }
+
+        private static String joinIdentifiers(String... ids) {
+            return ids.length == 0 ? null : String.join(IDENTIFIER_SEPARATOR, ids);
+        }
+
+        /**
+         * @deprecated forRemoval since 0.10.0
+         */
+        @Deprecated
+        public Builder(String normal) {
+            setNormalVersion(normal);
+        }
+
+        /**
+         * @deprecated forRemoval since 0.10.0
+         */
+        @Deprecated
+        @SuppressWarnings("DeprecatedIsStillUsed")
+        public Builder setNormalVersion(String normal) {
+            String[] parts = requireNonNull(normal, "normal").split("\\" + IDENTIFIER_SEPARATOR);
+            return setVersionCore(
+                Long.parseLong(parts[0]),
+                parts.length > 1 ? Long.parseLong(parts[1]) : 0,
+                parts.length > 2 ? Long.parseLong(parts[2]) : 0
+            );
+        }
+    }
+
+    /**
      * A comparator that sorts versions in increment order, from lowest to highest.
      * <p>
      * The comparator is intended for use in comparison-based data structures.
@@ -83,119 +352,9 @@ public class Version implements Comparable<Version>, Serializable {
 
     private static final String IDENTIFIER_SEPARATOR = ".";
 
-    /**
-     * A separator that separates the pre-release
-     * version from the normal version.
-     */
     private static final String PRE_RELEASE_PREFIX = "-";
 
-    /**
-     * A separator that separates the build metadata from
-     * the normal version or the pre-release version.
-     */
     private static final String BUILD_PREFIX = "+";
-
-    /**
-     * A mutable builder for the immutable {@code Version} class.
-     */
-    public static class Builder {
-
-        /**
-         * The normal version string.
-         */
-        private String normal;
-
-        /**
-         * The pre-release version string.
-         */
-        private String preRelease;
-
-        /**
-         * The build metadata string.
-         */
-        private String build;
-
-        /**
-         * Constructs a {@code Builder} instance.
-         */
-        public Builder() {
-
-        }
-
-        /**
-         * Constructs a {@code Builder} instance with the
-         * string representation of the normal version.
-         *
-         * @param normal the string representation of the normal version
-         */
-        public Builder(String normal) {
-            this.normal = normal;
-        }
-
-        /**
-         * Sets the normal version.
-         *
-         * @param normal the string representation of the normal version
-         * @return this builder instance
-         */
-        public Builder setNormalVersion(String normal) {
-            this.normal = normal;
-            return this;
-        }
-
-        /**
-         * Sets the pre-release version.
-         *
-         * @param preRelease the string representation of the pre-release version
-         * @return this builder instance
-         */
-        public Builder setPreReleaseVersion(String preRelease) {
-            this.preRelease = preRelease;
-            return this;
-        }
-
-        /**
-         * Sets the build metadata.
-         *
-         * @param build the string representation of the build metadata
-         * @return this builder instance
-         */
-        public Builder setBuildMetadata(String build) {
-            this.build = build;
-            return this;
-        }
-
-        /**
-         * Builds a {@code Version} object.
-         *
-         * @return a newly built {@code Version} instance
-         * @throws ParseException when invalid version string is provided
-         * @throws UnexpectedCharacterException is a special case of {@code ParseException}
-         */
-        public Version build() {
-            StringBuilder sb = new StringBuilder();
-            if (isFilled(normal)) {
-                sb.append(normal);
-            }
-            if (isFilled(preRelease)) {
-                sb.append(PRE_RELEASE_PREFIX).append(preRelease);
-            }
-            if (isFilled(build)) {
-                sb.append(BUILD_PREFIX).append(build);
-            }
-            return VersionParser.parseValidSemVer(sb.toString());
-        }
-
-        /**
-         * Checks if a string has a usable value.
-         *
-         * @param str the string to check
-         * @return {@code true} if the string is filled or {@code false} otherwise
-         */
-        private boolean isFilled(String str) {
-            return str != null && !str.isEmpty();
-        }
-    }
 
     /**
      * @see #Version(long, long, long, String[], String[]) for documentation
@@ -879,6 +1038,24 @@ public class Version implements Comparable<Version>, Serializable {
             sb.append(BUILD_PREFIX).append(getBuildMetadata());
         }
         return sb.toString();
+    }
+
+    /**
+     * Converts this {@code Version} to {@code Builder}.
+     * <p>
+     * This method allows to use an instance of {@code Version} as a template
+     * for new instances.
+     *
+     * @return a {@code Builder} instance populated with values from
+     *         this {@code Version}
+     * @since  0.10.0
+     */
+    public Builder toBuilder() {
+        return new Builder()
+            .setVersionCore(major, minor, patch)
+            .setPreReleaseVersion(preReleaseIds)
+            .setBuildMetadata(buildIds)
+        ;
     }
 
     private static long requireNonNegative(long arg, String name) {

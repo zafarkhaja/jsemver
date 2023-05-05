@@ -44,6 +44,259 @@ import static org.junit.jupiter.api.Assertions.*;
 class VersionTest {
 
     @Nested
+    class Builder {
+
+        @Test
+        void shouldSetVersionCore() {
+            Version.Builder b = new Version.Builder();
+            b.setVersionCore(1, 2, 3);
+            assertEquals(Version.of(1, 2, 3), b.build());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeNumbersForVersionCore() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setVersionCore(-1,  2,  3));
+            assertThrowsIllegalArgumentException(() -> b.setVersionCore( 1, -2,  3));
+            assertThrowsIllegalArgumentException(() -> b.setVersionCore( 1,  2, -3));
+        }
+
+        @Test
+        void shouldSetVersionCoreWithDefaultMinorAndPatchValues() {
+            Version.Builder b = new Version.Builder();
+            b.setVersionCore(1);
+            assertEquals(Version.of(1, 0, 0), b.build());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeNumbersForVersionCoreWithDefaultMinorAndPatchValues() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setVersionCore(-1));
+        }
+
+        @Test
+        void shouldSetVersionCoreWithDefaultPatchValue() {
+            Version.Builder b = new Version.Builder();
+            b.setVersionCore(1, 2);
+            assertEquals(Version.of(1, 2, 0), b.build());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeNumbersForVersionCoreWithDefaultPatchValue() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setVersionCore(-1, 2));
+            assertThrowsIllegalArgumentException(() -> b.setVersionCore(1, -2));
+        }
+
+        @Test
+        void shouldSetMajorVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setMajorVersion(1);
+            Version v = b.build();
+            assertEquals(1, v.getMajorVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeNumbersForMajorVersion() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setMajorVersion(-1));
+        }
+
+        @Test
+        void shouldSetMinorVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setMinorVersion(2);
+            Version v = b.build();
+            assertEquals(2, v.getMinorVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeNumbersForMinorVersion() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setMinorVersion(-2));
+        }
+
+        @Test
+        void shouldSetPatchVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setPatchVersion(3);
+            Version v = b.build();
+            assertEquals(3, v.getPatchVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeNumbersForPatchVersion() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setPatchVersion(-3));
+        }
+
+        @Test
+        void shouldSetPreReleaseVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setPreReleaseVersion("pre", "release");
+            Version v = b.build();
+            assertEquals("pre.release", v.getPreReleaseVersion());
+        }
+
+        @Test
+        void shouldMakeDefensiveCopyOfArgumentsWhenSettingPreReleaseVersion() {
+            Version.Builder b = new Version.Builder();
+            String[] ids = {"pre.release"};
+            b.setPreReleaseVersion(ids);
+            ids[0] = null;
+            Version v = b.build();
+            assertEquals("pre.release", v.getPreReleaseVersion());
+        }
+
+        @Test
+        void shouldNotAceeptNullsForPreReleaseVersion() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setPreReleaseVersion((String[]) null));
+            assertThrowsIllegalArgumentException(() -> b.setPreReleaseVersion((String) null));
+        }
+
+        @Test
+        void shouldNotAcceptEmptyArraysForPreReleaseVersion() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setPreReleaseVersion(new String[0]));
+            assertThrowsIllegalArgumentException(() -> b.setPreReleaseVersion());
+        }
+
+        @Test
+        void shouldAddPreReleaseIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            b.setPreReleaseVersion("pre");
+            b.addPreReleaseIdentifiers("release", "1");
+            Version v = b.build();
+            assertEquals("pre.release.1", v.getPreReleaseVersion());
+        }
+
+        @Test
+        void shouldMakeDefensiveCopyOfArgumentsWhenAddingPreReleaseIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            b.setPreReleaseVersion("pre");
+            String[] ids = {"release"};
+            b.addPreReleaseIdentifiers(ids);
+            ids[0] = null;
+            Version v = b.build();
+            assertEquals("pre.release", v.getPreReleaseVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNullsWhenAddingPreReleaseIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.addPreReleaseIdentifiers((String[]) null));
+            assertThrowsIllegalArgumentException(() -> b.addPreReleaseIdentifiers((String) null));
+        }
+
+        @Test
+        void shouldNotAcceptEmptyArraysWhenAddingPreReleaseIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.addPreReleaseIdentifiers(new String[0]));
+            assertThrowsIllegalArgumentException(() -> b.addPreReleaseIdentifiers());
+        }
+
+        @Test
+        void shouldUnsetPreReleaseVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setPreReleaseVersion("pre-release");
+            b.unsetPreReleaseVersion();
+            Version v = b.build();
+            assertEquals("", v.getPreReleaseVersion());
+        }
+
+        @Test
+        void shouldSetBuildMetadata() {
+            Version.Builder b = new Version.Builder();
+            b.setBuildMetadata("build", "metadata");
+            Version v = b.build();
+            assertEquals("build.metadata", v.getBuildMetadata());
+        }
+
+        @Test
+        void shouldMakeDefensiveCopyOfArgumentsWhenSettingBuildMetadata() {
+            Version.Builder b = new Version.Builder();
+            String[] ids = {"build.metadata"};
+            b.setBuildMetadata(ids);
+            ids[0] = null;
+            Version v = b.build();
+            assertEquals("build.metadata", v.getBuildMetadata());
+        }
+
+        @Test
+        void shouldNotAcceptNullsForBuildMetadata() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setBuildMetadata((String[]) null));
+            assertThrowsIllegalArgumentException(() -> b.setBuildMetadata((String) null));
+        }
+
+        @Test
+        void shouldNotAcceptEmptyArraysForBuildMetadata() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setBuildMetadata(new String[0]));
+            assertThrowsIllegalArgumentException(() -> b.setBuildMetadata());
+        }
+
+        @Test
+        void shouldAddBuildIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            b.setBuildMetadata("build");
+            b.addBuildIdentifiers("metadata", "1");
+            Version v = b.build();
+            assertEquals("build.metadata.1", v.getBuildMetadata());
+        }
+
+        @Test
+        void shouldMakeDefensiveCopyOfArgumentsWhenAddingBuildIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            b.setBuildMetadata("build");
+            String[] ids = {"metadata"};
+            b.addBuildIdentifiers(ids);
+            ids[0] = null;
+            Version v = b.build();
+            assertEquals("build.metadata", v.getBuildMetadata());
+        }
+
+        @Test
+        void shouldNotAcceptNullsWhenAddingBuildIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.addBuildIdentifiers((String[]) null));
+            assertThrowsIllegalArgumentException(() -> b.addBuildIdentifiers((String) null));
+        }
+
+        @Test
+        void shouldNotAcceptEmptyArraysWhenAddingBuildIdentifiers() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.addBuildIdentifiers(new String[0]));
+            assertThrowsIllegalArgumentException(() -> b.addBuildIdentifiers());
+        }
+
+        @Test
+        void shouldUnsetBuildVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setBuildMetadata("build.metadata");
+            b.unsetBuildMetadata();
+            Version v = b.build();
+            assertEquals("", v.getBuildMetadata());
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldSetNormalVersion() {
+            Version.Builder b = new Version.Builder();
+            b.setNormalVersion("1.2.3");
+            assertEquals(Version.of(1, 2, 3), b.build());
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldNotAcceptNullsWhenSettingNormalVersion() {
+            Version.Builder b = new Version.Builder();
+            assertThrowsIllegalArgumentException(() -> b.setNormalVersion(null));
+        }
+    }
+
+    @Nested
     class CoreFunctionality {
 
         @Test
@@ -408,6 +661,13 @@ class VersionTest {
             assertEquals(v1, v2);
             assertNotEquals(v1, v3);
         }
+
+        @Test
+        void shouldConvertToBuilderWithPrepopulatedValues() {
+            Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            Version.Builder b = v.toBuilder();
+            assertEquals(b.build(), v);
+        }
     }
 
     @Nested
@@ -644,58 +904,6 @@ class VersionTest {
             Version v = Version.of(1, 2, 3);
             assertEquals("1.2.3", v.toString());
             Locale.setDefault(Locale.ROOT);
-        }
-    }
-
-    @Nested
-    class Builder {
-
-        @Test
-        void shouldBuildVersionInSteps() {
-            Version.Builder builder = new Version.Builder();
-            builder.setNormalVersion("1.0.0");
-            builder.setPreReleaseVersion("alpha");
-            builder.setBuildMetadata("build");
-            assertEquals(Version.of(1, 0, 0, "alpha", "build"), builder.build());
-        }
-
-        @Test
-        void shouldBuildVersionFromNormalVersion() {
-            Version.Builder builder = new Version.Builder("1.0.0");
-            assertEquals(Version.of(1, 0, 0), builder.build());
-        }
-
-        @Test
-        void shouldBuildVersionWithPreReleaseVersion() {
-            Version.Builder builder = new Version.Builder("1.0.0");
-            builder.setPreReleaseVersion("alpha");
-            assertEquals(Version.of(1, 0, 0, "alpha"), builder.build());
-        }
-
-        @Test
-        void shouldBuildVersionWithBuildMetadata() {
-            Version.Builder builder = new Version.Builder("1.0.0");
-            builder.setBuildMetadata("build");
-            assertEquals(Version.of(1, 0, 0, null, "build"), builder.build());
-        }
-
-        @Test
-        void shouldBuildVersionWithPreReleaseVersionAndBuildMetadata() {
-            Version.Builder builder = new Version.Builder("1.0.0");
-            builder.setPreReleaseVersion("alpha");
-            builder.setBuildMetadata("build");
-            assertEquals(Version.of(1, 0, 0, "alpha", "build"), builder.build());
-        }
-
-        @Test
-        void shouldImplementFluentInterface() {
-            Version.Builder builder = new Version.Builder();
-            Version version = builder
-                .setNormalVersion("1.0.0")
-                .setPreReleaseVersion("alpha")
-                .setBuildMetadata("build")
-                .build();
-            assertEquals(Version.of(1, 0, 0, "alpha", "build"), version);
         }
     }
 

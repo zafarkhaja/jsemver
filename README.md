@@ -85,10 +85,20 @@ Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
 
 3. by using the `Version.Builder` class
 ~~~ java
-Version v = new Version.Builder()
-  .setNormalVersion(1, 2, 3)
-  .setPreReleaseVersion("pre-release")
-  .setBuildMetadata("build.metadata")
+Version v1 = new Version.Builder()  // 0.0.0
+  .setVersionCore(0, 1)             // 0.1.0
+  .setMajorVersion(1)               // 1.1.0
+  .setPreReleaseVersion("beta")     // 1.1.0-beta
+  .addPreReleaseIdentifiers("1")    // 1.1.0-beta.1
+  .setBuildMetadata("build", "1")   // 1.1.0-beta.1+build.1
+  .unsetBuildMetadata()             // 1.1.0-beta.1
+  .build()
+;
+
+Version v2 = v1.toBuilder()  // 1.1.0-beta.1
+  .setMinorVersion(2)        // 1.2.0-beta.1
+  .setPatchVersion(3)        // 1.2.3-beta.1
+  .unsetPreReleaseVersion()  // 1.2.3
   .build()
 ;
 ~~~
