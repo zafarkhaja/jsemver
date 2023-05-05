@@ -289,10 +289,6 @@ public class Version implements Comparable<Version>, Serializable {
             return ids;
         }
 
-        private static String joinIdentifiers(String... ids) {
-            return ids.length == 0 ? null : String.join(IDENTIFIER_SEPARATOR, ids);
-        }
-
         /**
          * @deprecated forRemoval since 0.10.0
          */
@@ -590,6 +586,58 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Returns this {@code Version}'s major version.
+     *
+     * @return the major version number
+     * @since  0.10.0
+     */
+    public long majorVersion() {
+        return major;
+    }
+
+    /**
+     * Returns this {@code Version}'s minor version.
+     *
+     * @return the minor version number
+     * @since  0.10.0
+     */
+    public long minorVersion() {
+        return minor;
+    }
+
+    /**
+     * Returns this {@code Version}'s patch version.
+     *
+     * @return the patch version number
+     * @since  0.10.0
+     */
+    public long patchVersion() {
+        return patch;
+    }
+
+    /**
+     * Returns this {@code Version}'s pre-release version in the form of
+     * dot-separated identifiers.
+     *
+     * @return the pre-release version label, if present
+     * @since  0.10.0
+     */
+    public Optional<String> preReleaseVersion() {
+        return Optional.ofNullable(joinIdentifiers(preReleaseIds));
+    }
+
+    /**
+     * Returns this {@code Version}'s build metadata in the form of
+     * dot-separated identifiers.
+     *
+     * @return the build metadata label, if present
+     * @since  0.10.0
+     */
+    public Optional<String> buildMetadata() {
+        return Optional.ofNullable(joinIdentifiers(buildIds));
+    }
+
+    /**
      * Checks if this version satisfies the specified SemVer Expression string.
      * <p>
      * This method is a part of the SemVer Expressions API.
@@ -763,60 +811,6 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * Returns the major version number.
-     *
-     * @return the major version number
-     */
-    public long getMajorVersion() {
-        return major;
-    }
-
-    /**
-     * Returns the minor version number.
-     *
-     * @return the minor version number
-     */
-    public long getMinorVersion() {
-        return minor;
-    }
-
-    /**
-     * Returns the patch version number.
-     *
-     * @return the patch version number
-     */
-    public long getPatchVersion() {
-        return patch;
-    }
-
-    /**
-     * Returns the string representation of the normal version.
-     *
-     * @return the string representation of the normal version
-     */
-    public String getNormalVersion() {
-        return String.format(Locale.ROOT, "%d.%d.%d", major, minor, patch);
-    }
-
-    /**
-     * Returns the string representation of the pre-release version.
-     *
-     * @return the string representation of the pre-release version
-     */
-    public String getPreReleaseVersion() {
-        return String.join(IDENTIFIER_SEPARATOR, preReleaseIds);
-    }
-
-    /**
-     * Returns the string representation of the build metadata.
-     *
-     * @return the string representation of the build metadata
-     */
-    public String getBuildMetadata() {
-        return String.join(IDENTIFIER_SEPARATOR, buildIds);
-    }
-
-    /**
      * Checks if this {@code Version} represents a stable version.
      * <p>
      * Pre-release versions are considered unstable. (SemVer p.9)
@@ -826,7 +820,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @since  0.10.0
      */
     public boolean isStable() {
-        return preReleaseIds.length == 0;
+        return !preReleaseVersion().isPresent();
     }
 
     /**
@@ -1030,13 +1024,14 @@ public class Version implements Comparable<Version>, Serializable {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(getNormalVersion());
-        if (!getPreReleaseVersion().isEmpty()) {
-            sb.append(PRE_RELEASE_PREFIX).append(getPreReleaseVersion());
-        }
-        if (!getBuildMetadata().isEmpty()) {
-            sb.append(BUILD_PREFIX).append(getBuildMetadata());
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(major);
+        sb.append(IDENTIFIER_SEPARATOR);
+        sb.append(minor);
+        sb.append(IDENTIFIER_SEPARATOR);
+        sb.append(patch);
+        preReleaseVersion().ifPresent(r -> sb.append(PRE_RELEASE_PREFIX).append(r));
+        buildMetadata().ifPresent(b -> sb.append(BUILD_PREFIX).append(b));
         return sb.toString();
     }
 
@@ -1074,6 +1069,10 @@ public class Version implements Comparable<Version>, Serializable {
 
     private static long safeIncrement(long l) {
         return Math.incrementExact(l);
+    }
+
+    private static String joinIdentifiers(String... ids) {
+        return ids.length == 0 ? null : String.join(IDENTIFIER_SEPARATOR, ids);
     }
 
     private static String[] incrementIdentifiers(String[] ids) {
@@ -1204,6 +1203,54 @@ public class Version implements Comparable<Version>, Serializable {
     @Deprecated
     public static Version forIntegers(int major, int minor, int patch) {
         return Version.of(major, minor, patch);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0
+     */
+    @Deprecated
+    public String getNormalVersion() {
+        return String.format(Locale.ROOT, "%d.%d.%d", major, minor, patch);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #majorVersion()}
+     */
+    @Deprecated
+    public long getMajorVersion() {
+        return majorVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #minorVersion()}
+     */
+    @Deprecated
+    public long getMinorVersion() {
+        return minorVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #patchVersion()}
+     */
+    @Deprecated
+    public long getPatchVersion() {
+        return patchVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #preReleaseVersion()}
+     */
+    @Deprecated
+    public String getPreReleaseVersion() {
+        return preReleaseVersion().orElse("");
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #buildMetadata()}
+     */
+    @Deprecated
+    public String getBuildMetadata() {
+        return buildMetadata().orElse("");
     }
 
     /**
