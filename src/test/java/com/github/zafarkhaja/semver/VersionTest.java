@@ -576,12 +576,14 @@ class VersionTest {
         @Test
         void shouldConsiderPreReleaseVersionsAsUnstable() {
             Version v = Version.of(1, 2, 3, "rc");
+            assertTrue(v.isPreRelease());
             assertFalse(v.isStable());
         }
 
         @Test
         void shouldConsiderNonPreReleaseVersionsAsStable() {
             Version v = Version.of(1, 2, 3);
+            assertFalse(v.isPreRelease());
             assertTrue(v.isStable());
         }
 

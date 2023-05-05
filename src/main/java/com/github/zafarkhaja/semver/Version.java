@@ -811,16 +811,31 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks if this {@code Version} represents a pre-release version.
+     * <p>
+     * This method is opposite of {@link #isStable()}.
+     *
+     * @return {@code true}, if this {@code Version} represents a pre-release
+     *         version; {@code false} otherwise
+     * @see    #isStable()
+     * @since  0.10.0
+     */
+    public boolean isPreRelease() {
+        return preReleaseVersion().isPresent();
+    }
+
+    /**
      * Checks if this {@code Version} represents a stable version.
      * <p>
      * Pre-release versions are considered unstable. (SemVer p.9)
      *
      * @return {@code true}, if this {@code Version} represents a stable
      *         version; {@code false} otherwise
+     * @see    #isPreRelease()
      * @since  0.10.0
      */
     public boolean isStable() {
-        return !preReleaseVersion().isPresent();
+        return !isPreRelease();
     }
 
     /**
