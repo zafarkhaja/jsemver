@@ -93,7 +93,7 @@ class VersionTest {
             Version.Builder b = new Version.Builder();
             b.setMajorVersion(1);
             Version v = b.build();
-            assertEquals(1, v.getMajorVersion());
+            assertEquals(1, v.majorVersion());
         }
 
         @Test
@@ -107,7 +107,7 @@ class VersionTest {
             Version.Builder b = new Version.Builder();
             b.setMinorVersion(2);
             Version v = b.build();
-            assertEquals(2, v.getMinorVersion());
+            assertEquals(2, v.minorVersion());
         }
 
         @Test
@@ -121,7 +121,7 @@ class VersionTest {
             Version.Builder b = new Version.Builder();
             b.setPatchVersion(3);
             Version v = b.build();
-            assertEquals(3, v.getPatchVersion());
+            assertEquals(3, v.patchVersion());
         }
 
         @Test
@@ -135,7 +135,7 @@ class VersionTest {
             Version.Builder b = new Version.Builder();
             b.setPreReleaseVersion("pre", "release");
             Version v = b.build();
-            assertEquals("pre.release", v.getPreReleaseVersion());
+            assertEquals("pre.release", v.preReleaseVersion().get());
         }
 
         @Test
@@ -145,7 +145,7 @@ class VersionTest {
             b.setPreReleaseVersion(ids);
             ids[0] = null;
             Version v = b.build();
-            assertEquals("pre.release", v.getPreReleaseVersion());
+            assertEquals("pre.release", v.preReleaseVersion().get());
         }
 
         @Test
@@ -168,7 +168,7 @@ class VersionTest {
             b.setPreReleaseVersion("pre");
             b.addPreReleaseIdentifiers("release", "1");
             Version v = b.build();
-            assertEquals("pre.release.1", v.getPreReleaseVersion());
+            assertEquals("pre.release.1", v.preReleaseVersion().get());
         }
 
         @Test
@@ -179,7 +179,7 @@ class VersionTest {
             b.addPreReleaseIdentifiers(ids);
             ids[0] = null;
             Version v = b.build();
-            assertEquals("pre.release", v.getPreReleaseVersion());
+            assertEquals("pre.release", v.preReleaseVersion().get());
         }
 
         @Test
@@ -202,7 +202,7 @@ class VersionTest {
             b.setPreReleaseVersion("pre-release");
             b.unsetPreReleaseVersion();
             Version v = b.build();
-            assertEquals("", v.getPreReleaseVersion());
+            assertFalse(v.preReleaseVersion().isPresent());
         }
 
         @Test
@@ -210,7 +210,7 @@ class VersionTest {
             Version.Builder b = new Version.Builder();
             b.setBuildMetadata("build", "metadata");
             Version v = b.build();
-            assertEquals("build.metadata", v.getBuildMetadata());
+            assertEquals("build.metadata", v.buildMetadata().get());
         }
 
         @Test
@@ -220,7 +220,7 @@ class VersionTest {
             b.setBuildMetadata(ids);
             ids[0] = null;
             Version v = b.build();
-            assertEquals("build.metadata", v.getBuildMetadata());
+            assertEquals("build.metadata", v.buildMetadata().get());
         }
 
         @Test
@@ -243,7 +243,7 @@ class VersionTest {
             b.setBuildMetadata("build");
             b.addBuildIdentifiers("metadata", "1");
             Version v = b.build();
-            assertEquals("build.metadata.1", v.getBuildMetadata());
+            assertEquals("build.metadata.1", v.buildMetadata().get());
         }
 
         @Test
@@ -254,7 +254,7 @@ class VersionTest {
             b.addBuildIdentifiers(ids);
             ids[0] = null;
             Version v = b.build();
-            assertEquals("build.metadata", v.getBuildMetadata());
+            assertEquals("build.metadata", v.buildMetadata().get());
         }
 
         @Test
@@ -277,7 +277,7 @@ class VersionTest {
             b.setBuildMetadata("build.metadata");
             b.unsetBuildMetadata();
             Version v = b.build();
-            assertEquals("", v.getBuildMetadata());
+            assertFalse(v.buildMetadata().isPresent());
         }
 
         @Test
@@ -302,21 +302,21 @@ class VersionTest {
         @Test
         void shouldNormallyTakeTheFormXDotYDotZWhereXYZAreNonNegativeIntegers() {
             Version v = Version.parse("1.2.3");
-            assertEquals(1, v.getMajorVersion());
-            assertEquals(2, v.getMinorVersion());
-            assertEquals(3, v.getPatchVersion());
+            assertEquals(1, v.majorVersion());
+            assertEquals(2, v.minorVersion());
+            assertEquals(3, v.patchVersion());
         }
 
         @Test
         void mayHavePreReleaseVersionFollowingPatchVersionPrependedWithHyphen() {
             Version v = Version.parse("1.2.3-pre-release");
-            assertEquals("pre-release", v.getPreReleaseVersion());
+            assertEquals("pre-release", v.preReleaseVersion().get());
         }
 
         @Test
         void mayHaveBuildMetadataFollowingPatchOrPreReleaseVersionPrependedWithPlus() {
             Version v = Version.parse("1.2.3+build.metadata");
-            assertEquals("build.metadata", v.getBuildMetadata());
+            assertEquals("build.metadata", v.buildMetadata().get());
         }
 
         @Test
@@ -368,6 +368,28 @@ class VersionTest {
         }
 
         @Test
+        void shouldHaveGetters() {
+            Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
+            assertEquals(1, v.majorVersion());
+            assertEquals(2, v.minorVersion());
+            assertEquals(3, v.patchVersion());
+            assertEquals("pre-release", v.preReleaseVersion().get());
+            assertEquals("build.metadata", v.buildMetadata().get());
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalIfPreReleaseVersionIsNotSet() {
+            Version v = Version.of(0, 0, 1, null);
+            assertFalse(v.preReleaseVersion().isPresent());
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalIfBuildMetadataIsNotSet() {
+            Version v = Version.of(0, 0, 1, null, null);
+            assertFalse(v.buildMetadata().isPresent());
+        }
+
+        @Test
         void shouldProvideIncrementMajorVersionMethod() {
             Version v = Version.of(1, 2, 3);
             Version incrementedMajor = v.incrementMajorVersion();
@@ -378,9 +400,9 @@ class VersionTest {
         void shouldResetMinorAndPatchWhenMajorIsIncremented() {
             Version v = Version.of(1, 2, 3);
             Version incremented = v.incrementMajorVersion();
-            assertEquals(2, incremented.getMajorVersion());
-            assertEquals(0, incremented.getMinorVersion());
-            assertEquals(0, incremented.getPatchVersion());
+            assertEquals(2, incremented.majorVersion());
+            assertEquals(0, incremented.minorVersion());
+            assertEquals(0, incremented.patchVersion());
         }
 
         @Test
@@ -401,9 +423,9 @@ class VersionTest {
         void shouldResetPatchWhenMinorIsIncremented() {
             Version v = Version.of(1, 2, 3);
             Version incremented = v.incrementMinorVersion();
-            assertEquals(1, incremented.getMajorVersion());
-            assertEquals(3, incremented.getMinorVersion());
-            assertEquals(0, incremented.getPatchVersion());
+            assertEquals(1, incremented.majorVersion());
+            assertEquals(3, incremented.minorVersion());
+            assertEquals(0, incremented.patchVersion());
         }
 
         @Test
@@ -493,7 +515,7 @@ class VersionTest {
         void shouldAppendNumericIdentifierToBuildMetadataToBeIncrementedIfLastOneIsDigits() {
             Version v1 = Version.of(0, 0, 1, null, "build.01");
             Version v2 = v1.incrementBuildMetadata();
-            assertEquals("build.01.1", v2.getBuildMetadata());
+            assertEquals("build.01.1", v2.buildMetadata().get());
         }
 
         @Test
@@ -531,18 +553,6 @@ class VersionTest {
         }
 
         @Test
-        void shouldReturnEmptyStringOnGetPreReleaseVersionIfEmpty() {
-            Version v = Version.of(0, 0, 1, null);
-            assertTrue(v.getPreReleaseVersion().isEmpty());
-        }
-
-        @Test
-        void shouldReturnEmptyStringOnGetBuildMetadataIfEmpty() {
-            Version v = Version.of(0, 0, 1, null, null);
-            assertTrue(v.getBuildMetadata().isEmpty());
-        }
-
-        @Test
         void shouldProvideIncrementPreReleaseVersionMethod() {
             Version v1 = Version.of(1, 0, 0, "beta.1");
             Version v2 = v1.incrementPreReleaseVersion();
@@ -553,7 +563,7 @@ class VersionTest {
         void shouldAppendNumericIdentifierToPreReleaseVersionToBeIncrementedIfAbsent() {
             Version v1 = Version.of(0, 0, 1, "alpha");
             Version v2 = v1.incrementPreReleaseVersion();
-            assertEquals("alpha.1", v2.getPreReleaseVersion());
+            assertEquals("alpha.1", v2.preReleaseVersion().get());
         }
 
         @Test
