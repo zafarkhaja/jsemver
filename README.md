@@ -104,67 +104,22 @@ Version v2 = v1.toBuilder()  // 1.1.0-beta.1
 ~~~
 
 ### Incrementing Versions ###
-Because the `Version` class is immutable, the _incrementors_ return a new
-instance of `Version` rather than modifying the given one. Each of the normal
-version incrementors has an overloaded method that takes a pre-release version
-as an argument.
+The `Version` class provides "incrementor" methods for incrementing normal and
+pre-release versions. Due to its nature as metadata, incrementing build metadata
+is not supported.
 
 ~~~ java
-Version v1 = Version.parse("1.2.3");
-
-// Incrementing the major version
-Version v2 = v1.incrementMajorVersion();        // "2.0.0"
-Version v2 = v1.incrementMajorVersion("alpha"); // "2.0.0-alpha"
-
-// Incrementing the minor version
-Version v3 = v1.incrementMinorVersion();        // "1.3.0"
-Version v3 = v1.incrementMinorVersion("alpha"); // "1.3.0-alpha"
-
-// Incrementing the patch version
-Version v4 = v1.incrementPatchVersion();        // "1.2.4"
-Version v4 = v1.incrementPatchVersion("alpha"); // "1.2.4-alpha"
-
-// Original Version is still the same
-String str = v1.toString(); // "1.2.3"
+Version v = Version.of(0, 1, 0)      // 0.1.0
+  .nextPatchVersion()                // 0.1.1
+  .nextMinorVersion()                // 0.2.0
+  .withBuildMetadata("abcdefg")      // 0.2.0+abcdefg
+  .nextMajorVersion("beta")          // 1.0.0-beta
+  .nextPreReleaseVersion()           // 1.0.0-beta.1
+  .nextPreReleaseVersion("rc", "1")  // 1.0.0-rc.1
+  .nextPreReleaseVersion()           // 1.0.0-rc.2
+  .toStableVersion()                 // 1.0.0
+;
 ~~~
-
-There are also incrementor methods for the pre-release version and the build
-metadata.
-
-~~~ java
-// Incrementing the pre-release version
-Version v1 = Version.parse("1.2.3-rc");          // considered as "rc.0"
-Version v2 = v1.incrementPreReleaseVersion();    // "1.2.3-rc.1"
-Version v3 = v2.incrementPreReleaseVersion();    // "1.2.3-rc.2"
-
-// Incrementing the build metadata
-Version v1 = Version.parse("1.2.3-rc+build");    // considered as "build.0"
-Version v2 = v1.incrementBuildMetadata();        // "1.2.3-rc+build.1"
-Version v3 = v2.incrementBuildMetadata();        // "1.2.3-rc+build.2"
-~~~
-
-When incrementing the normal or pre-release versions the build metadata is
-always dropped.
-
-~~~ java
-Version v1 = Version.parse("1.2.3-beta+build");
-
-// Incrementing the normal version
-Version v2 = v1.incrementMajorVersion();        // "2.0.0"
-Version v2 = v1.incrementMajorVersion("alpha"); // "2.0.0-alpha"
-
-Version v3 = v1.incrementMinorVersion();        // "1.3.0"
-Version v3 = v1.incrementMinorVersion("alpha"); // "1.3.0-alpha"
-
-Version v4 = v1.incrementPatchVersion();        // "1.2.4"
-Version v4 = v1.incrementPatchVersion("alpha"); // "1.2.4-alpha"
-
-// Incrementing the pre-release version
-Version v2 = v1.incrementPreReleaseVersion();   // "1.2.3-beta.1"
-~~~
-**NOTE**: The discussion page https://github.com/mojombo/semver/issues/60 might
-be of good use in better understanding some of the decisions made regarding the
-incrementor methods.
 
 ### Comparing Versions ###
 The recommended way to determine version precedence is to use "comparator" methods

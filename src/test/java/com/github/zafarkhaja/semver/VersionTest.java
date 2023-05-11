@@ -390,180 +390,489 @@ class VersionTest {
         }
 
         @Test
-        void shouldProvideIncrementMajorVersionMethod() {
+        void shouldObtainNextMajorVersion() {
+            Version v1 = Version.of(1);
+            Version v2 = v1.nextMajorVersion(3);
+            assertEquals(3, v2.majorVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeMajorVersion() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.nextMajorVersion(-2));
+        }
+
+        @Test
+        void shouldNotAllowToObtainLowerNextMajorVersion() {
+            Version v = Version.of(3);
+            assertThrows(IllegalStateException.class, () -> v.nextMajorVersion(2));
+        }
+
+        @Test
+        void shouldNotAllowToObtainEquivalentNextMajorVersion() {
+            Version v = Version.of(3);
+            assertThrows(IllegalStateException.class, () -> v.nextMajorVersion(3));
+        }
+
+        @Test
+        void shouldResetMinorVersionWhenIncreasingMajorVersion() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = v1.nextMajorVersion(4);
+            assertEquals(0, v2.minorVersion());
+        }
+
+        @Test
+        void shouldResetPatchVersionWhenIncreasingMajorVersion() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = v1.nextMajorVersion(4);
+            assertEquals(0, v2.patchVersion());
+        }
+
+        @Test
+        void shouldDropPreReleaseVersionWhenIncreasingMajorVersion() {
+            Version v1 = Version.of(1, "pre-release");
+            Version v2 = v1.nextMajorVersion(2);
+            assertFalse(v2.preReleaseVersion().isPresent());
+        }
+
+        @Test
+        void shouldDropBuildMetadataWhenIncreasingMajorVersion() {
+            Version v1 = Version.of(1, null, "build.metadata");
+            Version v2 = v1.nextMajorVersion(3);
+            assertFalse(v2.buildMetadata().isPresent());
+        }
+
+        @Test
+        void shouldSpecifyPreReleaseVersionWhenObtainingNextMajorVersion() {
+            Version v1 = Version.of(1);
+            Version v2 = v1.nextMajorVersion(2, "pre-release");
+            assertEquals("pre-release", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldAcceptSeparateIdentifiersWhenIncreasingMajorVersion() {
+            Version v1 = Version.of(1);
+            Version v2 = v1.nextMajorVersion(3, "pre", "release");
+            assertEquals("pre.release", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldNotAcceptNullPreReleaseVersionForNextMajorVersion() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.nextMajorVersion(2, (String[]) null));
+        }
+
+        @Test
+        void shouldNotAcceptNullIdentifiersForNextMajorVersion() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.nextMajorVersion(2, (String) null));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"01", "rc.", ".rc", "rc!"})
+        void shouldNotAcceptInvalidIdentifiersForNextMajorVersion(String id) {
+            Version v = Version.of(1);
+            assertThrows(ParseException.class, () -> v.nextMajorVersion(2, id));
+        }
+
+        @Test
+        void shouldIncrementMajorVersionByOne() {
+            Version v1 = Version.of(1);
+            Version v2 = v1.nextMajorVersion();
+            assertEquals(2, v2.majorVersion());
+        }
+
+        @Test
+        void shouldNotAllowMajorVersionNumberToOverflow() {
+            Version v = Version.of(Long.MAX_VALUE);
+            assertThrows(ArithmeticException.class, v::nextMajorVersion);
+        }
+
+        @Test
+        void shouldObtainNextMinorVersion() {
+            Version v1 = Version.of(1, 2);
+            Version v2 = v1.nextMinorVersion(4);
+            assertEquals(4, v2.minorVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNegativeMinorVersion() {
+            Version v = Version.of(1, 2);
+            assertThrowsIllegalArgumentException(() -> v.nextMinorVersion(-3));
+        }
+
+        @Test
+        void shouldNotAllowToObtainLowerNextMinorVersion() {
+            Version v = Version.of(3, 2);
+            assertThrows(IllegalStateException.class, () -> v.nextMinorVersion(1));
+        }
+
+        @Test
+        void shouldNotAllowToObtainEquivalentNextMinorVersion() {
+            Version v = Version.of(3, 2);
+            assertThrows(IllegalStateException.class, () -> v.nextMinorVersion(2));
+        }
+
+        @Test
+        void shouldNotChangeMajorVersionWhenIncreasingMinorVersion() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = v1.nextMinorVersion(3);
+            assertEquals(v1.majorVersion(), v2.majorVersion());
+        }
+
+        @Test
+        void shouldResetPatchVersionWhenIncreasingMinorVersion() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = v1.nextMinorVersion(3);
+            assertEquals(0, v2.patchVersion());
+        }
+
+        @Test
+        void shouldDropPreReleaseVersionWhenIncreasingMinorVersion() {
+            Version v1 = Version.of(1, 2, "pre-release");
+            Version v2 = v1.nextMinorVersion(3);
+            assertFalse(v2.preReleaseVersion().isPresent());
+        }
+
+        @Test
+        void shouldDropBuildMetadataWhenIncreasingMinorVersion() {
+            Version v1 = Version.of(1, 2, null, "build.metadata");
+            Version v2 = v1.nextMinorVersion(4);
+            assertFalse(v2.buildMetadata().isPresent());
+        }
+
+        @Test
+        void shouldSpecifyPreReleaseVersionWhenObtainingNextMinorVersion() {
+            Version v1 = Version.of(1, 2);
+            Version v2 = v1.nextMinorVersion(3, "pre-release");
+            assertEquals("pre-release", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldAcceptSeparateIdentifiersWhenIncreasingMinorVersion() {
+            Version v1 = Version.of(1, 2);
+            Version v2 = v1.nextMinorVersion(3, "pre", "release");
+            assertEquals("pre.release", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldNotAcceptNullPreReleaseVersionForNextMinorVersion() {
+            Version v = Version.of(1, 2);
+            assertThrowsIllegalArgumentException(() -> v.nextMinorVersion(3, (String[]) null));
+        }
+
+        @Test
+        void shouldNotAcceptNullIdentifiersForNextMinorVersion() {
+            Version v = Version.of(1, 2);
+            assertThrowsIllegalArgumentException(() -> v.nextMinorVersion(3, (String) null));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"01", "rc.", ".rc", "rc!"})
+        void shouldNotAcceptInvalidIdentifiersForNextMinorVersion(String id) {
+            Version v = Version.of(1, 2);
+            assertThrows(ParseException.class, () -> v.nextMinorVersion(3, id));
+        }
+
+        @Test
+        void shouldIncrementMinorVersionByOne() {
+            Version v1 = Version.of(1, 2);
+            Version v2 = v1.nextMinorVersion();
+            assertEquals(3, v2.minorVersion());
+        }
+
+        @Test
+        void shouldNotAllowMinorVersionNumberToOverflow() {
+            Version v = Version.of(0, Long.MAX_VALUE);
+            assertThrows(ArithmeticException.class, v::nextMinorVersion);
+        }
+
+        @Test
+        void shouldObtainNextPatchVersion() {
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = v1.nextPatchVersion(5);
+            assertEquals(5, v2.patchVersion());
+        }
+
+        @Test
+        void shouldNotAcceptNegativePatchVersion() {
             Version v = Version.of(1, 2, 3);
-            Version incrementedMajor = v.incrementMajorVersion();
-            assertEquals("2.0.0", incrementedMajor.toString());
+            assertThrowsIllegalArgumentException(() -> v.nextPatchVersion(-4));
         }
 
         @Test
-        void shouldResetMinorAndPatchWhenMajorIsIncremented() {
+        void shouldNotAllowToObtainLowerNextPatchVersion() {
+            Version v = Version.of(3, 2, 1);
+            assertThrows(IllegalStateException.class, () -> v.nextPatchVersion(0));
+        }
+
+        @Test
+        void shouldNotAllowToObtainEquivalentNextPatchVersion() {
+            Version v = Version.of(3, 2, 1);
+            assertThrows(IllegalStateException.class, () -> v.nextPatchVersion(1));
+        }
+
+        @Test
+        void shouldNotChangeMajorVersionWhenIncreasingPatchVersion() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = v1.nextPatchVersion(2);
+            assertEquals(v1.majorVersion(), v2.majorVersion());
+        }
+
+        @Test
+        void shouldNotChangeMinorVersionWhenIncreasingPatchVersion() {
+            Version v1 = Version.of(3, 2, 1);
+            Version v2 = v1.nextPatchVersion(2);
+            assertEquals(v1.minorVersion(), v2.minorVersion());
+        }
+
+        @Test
+        void shouldDropPreReleaseVersionWhenIncreasingPatchVersion() {
+            Version v1 = Version.of(1, 2, 3, "pre-release");
+            Version v2 = v1.nextPatchVersion(4);
+            assertFalse(v2.preReleaseVersion().isPresent());
+        }
+
+        @Test
+        void shouldDropBuildMetadataWhenIncreasingPatchVersion() {
+            Version v1 = Version.of(1, 2, 3, null, "build.metadata");
+            Version v2 = v1.nextPatchVersion(5);
+            assertFalse(v2.buildMetadata().isPresent());
+        }
+
+        @Test
+        void shouldSpecifyPreReleaseVersionWhenObtainingNextPatchVersion() {
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = v1.nextPatchVersion(4, "pre-release");
+            assertEquals("pre-release", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldAcceptSeparateIdentifiersWhenIncreasingPatchVersion() {
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = v1.nextPatchVersion(4, "pre", "release");
+            assertEquals("pre.release", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldNotAcceptNullPreReleaseVersionForNextPatchVersion() {
             Version v = Version.of(1, 2, 3);
-            Version incremented = v.incrementMajorVersion();
-            assertEquals(2, incremented.majorVersion());
-            assertEquals(0, incremented.minorVersion());
-            assertEquals(0, incremented.patchVersion());
+            assertThrowsIllegalArgumentException(() -> v.nextPatchVersion(4, (String[]) null));
         }
 
         @Test
-        void shouldIncrementMajorVersionWithPreReleaseIfProvided() {
+        void shouldNotAcceptNullIdentifiersForNextPatchVersion() {
             Version v = Version.of(1, 2, 3);
-            Version incrementedMajor = v.incrementMajorVersion("beta");
-            assertEquals("2.0.0-beta", incrementedMajor.toString());
+            assertThrowsIllegalArgumentException(() -> v.nextPatchVersion(4, (String) null));
         }
 
-        @Test
-        void shouldProvideIncrementMinorVersionMethod() {
+        @ParameterizedTest
+        @ValueSource(strings = {"01", "rc.", ".rc", "rc!"})
+        void shouldNotAcceptInvalidIdentifiersForNextPatchVersion(String id) {
             Version v = Version.of(1, 2, 3);
-            Version incrementedMinor = v.incrementMinorVersion();
-            assertEquals("1.3.0", incrementedMinor.toString());
+            assertThrows(ParseException.class, () -> v.nextPatchVersion(4, id));
         }
 
         @Test
-        void shouldResetPatchWhenMinorIsIncremented() {
-            Version v = Version.of(1, 2, 3);
-            Version incremented = v.incrementMinorVersion();
-            assertEquals(1, incremented.majorVersion());
-            assertEquals(3, incremented.minorVersion());
-            assertEquals(0, incremented.patchVersion());
+        void shouldIncrementPatchVersionByOne() {
+            Version v1 = Version.of(1, 2, 3);
+            Version v2 = v1.nextPatchVersion();
+            assertEquals(4, v2.patchVersion());
         }
 
         @Test
-        void shouldIncrementMinorVersionWithPreReleaseIfProvided() {
-            Version v = Version.of(1, 2, 3);
-            Version incrementedMinor = v.incrementMinorVersion("alpha");
-            assertEquals("1.3.0-alpha", incrementedMinor.toString());
+        void shouldNotAllowPatchVersionNumberToOverflow() {
+            Version v = Version.of(0, 0, Long.MAX_VALUE);
+            assertThrows(ArithmeticException.class, v::nextPatchVersion);
         }
 
         @Test
-        void shouldProvideIncrementPatchVersionMethod() {
-            Version v = Version.of(1, 2, 3);
-            Version incrementedPatch = v.incrementPatchVersion();
-            assertEquals("1.2.4", incrementedPatch.toString());
+        void shouldObtainNextPreReleaseVersion() {
+            Version v1 = Version.of(1, "alpha");
+            Version v2 = v1.nextPreReleaseVersion("beta");
+            assertEquals("beta", v2.preReleaseVersion().get());
         }
 
         @Test
-        void shouldIncrementPatchVersionWithPreReleaseIfProvided() {
-            Version v = Version.of(1, 2, 3);
-            Version incrementedPatch = v.incrementPatchVersion("rc");
-            assertEquals("1.2.4-rc", incrementedPatch.toString());
+        void shouldNotAllowToObtainNextPreReleaseVersionOfStableVersion() {
+            Version v = Version.of(1);
+            assertThrows(IllegalStateException.class, () -> v.nextPreReleaseVersion("alpha"));
         }
 
         @Test
-        void shouldRaiseErrorIfIncrementCausesOverflow() {
-            Version v = Version.of(
-                Long.MAX_VALUE,
-                Long.MAX_VALUE,
-                Long.MAX_VALUE,
-                String.valueOf(Long.MAX_VALUE),
-                String.valueOf(Long.MAX_VALUE)
-            );
-            assertThrows(ArithmeticException.class, v::incrementMajorVersion);
-            assertThrows(ArithmeticException.class, v::incrementMinorVersion);
-            assertThrows(ArithmeticException.class, v::incrementPatchVersion);
-            assertThrows(ArithmeticException.class, v::incrementPreReleaseVersion);
-            assertThrows(ArithmeticException.class, v::incrementBuildMetadata);
+        void shouldNotAcceptNullForNextPreReleaseVersion() {
+            Version v = Version.of(1, "pre-release");
+            assertThrowsIllegalArgumentException(() -> v.nextPreReleaseVersion((String[]) null));
         }
 
         @Test
-        void shouldDropBuildMetadataWhenIncrementing() {
-            Version v = Version.of(1, 2, 3, "alpha", "build");
+        void shouldNotAcceptNullIdentifiersForNextPreReleaseVersion() {
+            Version v = Version.of(1, "pre-release");
+            assertThrowsIllegalArgumentException(() -> v.nextPreReleaseVersion((String) null));
+        }
 
-            Version major1 = v.incrementMajorVersion();
-            assertEquals("2.0.0", major1.toString());
-            Version major2 = v.incrementMajorVersion("beta");
-            assertEquals("2.0.0-beta", major2.toString());
-
-            Version minor1 = v.incrementMinorVersion();
-            assertEquals("1.3.0", minor1.toString());
-            Version minor2 = v.incrementMinorVersion("beta");
-            assertEquals("1.3.0-beta", minor2.toString());
-
-            Version patch1 = v.incrementPatchVersion();
-            assertEquals("1.2.4", patch1.toString());
-            Version patch2 = v.incrementPatchVersion("beta");
-            assertEquals("1.2.4-beta", patch2.toString());
+        @ParameterizedTest
+        @ValueSource(strings = {"01", "rc.", ".rc", "rc!"})
+        void shouldNotAcceptInvalidIdentifiersForNextPreReleaseVersion(String id) {
+            Version v = Version.of(1, "pre-release");
+            assertThrows(ParseException.class, () -> v.nextPreReleaseVersion(id));
         }
 
         @Test
-        void shouldThrowExceptionWhenIncrementingEmptyPreReleaseVersion() {
-            Version v1 = Version.of(1, 0, 0);
-            assertThrows(IllegalStateException.class, v1::incrementPreReleaseVersion);
+        void shouldNotAllowToObtainLowerNextPreReleaseVersion() {
+            Version v = Version.of(1, "beta");
+            assertThrows(IllegalStateException.class, () -> v.nextPreReleaseVersion("alpha"));
         }
 
         @Test
-        void shouldDropBuildMetadataWhenIncrementingPreReleaseVersion() {
-            Version v1 = Version.of(1, 0, 0, "beta.1", "build");
-            Version v2 = v1.incrementPreReleaseVersion();
-            assertEquals("1.0.0-beta.2", v2.toString());
+        void shouldNotAllowToObtainEquivalentNextPreReleaseVersion() {
+            Version v = Version.of(1, "beta");
+            assertThrows(IllegalStateException.class, () -> v.nextPreReleaseVersion("beta"));
         }
 
         @Test
-        void shouldProvideIncrementBuildMetadataMethod() {
-            Version v1 = Version.of(1, 0, 0, null, "build.1");
-            Version v2 = v1.incrementBuildMetadata();
-            assertEquals("1.0.0+build.2", v2.toString());
+        void shouldNotChangeVersionCoreWhenPreReleaseVersionIsIncreased() {
+            Version v1 = Version.of(1, 2, 3, "alpha");
+            Version v2 = v1.nextPreReleaseVersion("beta");
+            assertEquals(v1.majorVersion(), v2.majorVersion());
+            assertEquals(v1.minorVersion(), v2.minorVersion());
+            assertEquals(v1.patchVersion(), v2.patchVersion());
         }
 
         @Test
-        void shouldThrowExceptionWhenIncrementingEmptyBuildMetadata() {
-            Version v1 = Version.of(1, 0, 0);
-            assertThrows(IllegalStateException.class, v1::incrementBuildMetadata);
+        void shouldDropBuildMetadataWhenPreReleaseVersionIsIncreased() {
+            Version v1 = Version.of(1, "alpha", "build.metadata");
+            Version v2 = v1.nextPreReleaseVersion("beta");
+            assertFalse(v2.buildMetadata().isPresent());
         }
 
         @Test
-        void shouldAppendNumericIdentifierToBuildMetadataToBeIncrementedIfLastOneIsDigits() {
-            Version v1 = Version.of(0, 0, 1, null, "build.01");
-            Version v2 = v1.incrementBuildMetadata();
-            assertEquals("build.01.1", v2.buildMetadata().get());
+        void shouldIncrementPreReleaseVersionByOne() {
+            Version v1 = Version.of(1, "pre-release.1");
+            Version v2 = v1.nextPreReleaseVersion();
+            assertEquals("pre-release.2", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldAddNumericIdentifierToPreReleaseVersionIfNeededWhenIncrementing() {
+            Version v1 = Version.of(1, "pre-release");
+            Version v2 = v1.nextPreReleaseVersion();
+            assertEquals("pre-release.1", v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldNotAllowPreReleaseNumericIdentifierToOverflow() {
+            Version v = Version.of(1, String.valueOf(Long.MAX_VALUE));
+            assertThrows(ArithmeticException.class, v::nextPreReleaseVersion);
+        }
+
+        @Test
+        void shouldPromotePreReleaseVersionToStableVersion() {
+            Version v1 = Version.of(1, 2, 3, "pre-release");
+            Version v2 = v1.toStableVersion();
+            assertTrue(v2.isStable());
+        }
+
+        @Test
+        void shouldNotChangeVersionCoreWhenPromotingToStableVersion() {
+            Version v1 = Version.of(1, 2, 3, "pre-release");
+            Version v2 = v1.toStableVersion();
+            assertEquals(v1.majorVersion(), v2.majorVersion());
+            assertEquals(v1.minorVersion(), v2.minorVersion());
+            assertEquals(v1.patchVersion(), v2.patchVersion());
+        }
+
+        @Test
+        void shouldDropBuildMetadataWhenPromotingToStableVersion() {
+            Version v1 = Version.of(1, "pre-release", "build.metadata");
+            Version v2 = v1.toStableVersion();
+            assertFalse(v2.buildMetadata().isPresent());
+        }
+
+        @Test
+        void shouldSetBuildMetadata() {
+            Version v1 = Version.of(1);
+            Version v2 = v1.withBuildMetadata("build", "metadata");
+            assertEquals("build.metadata", v2.buildMetadata().get());
+        }
+
+        @Test
+        void shouldNotChangeVersionCoreWhenSettingBuildMetadata() {
+            Version v1 = Version.of(1, 2, 3, "pre-release");
+            Version v2 = v1.withBuildMetadata("build.metadata");
+            assertEquals(v1.majorVersion(), v2.majorVersion());
+            assertEquals(v1.minorVersion(), v2.minorVersion());
+            assertEquals(v1.patchVersion(), v2.patchVersion());
+        }
+
+        @Test
+        void shouldNotChangePreReleaseVersionWhenSettingBuildMetadata() {
+            Version v1 = Version.of(1, "pre-release");
+            Version v2 = v1.withBuildMetadata("build.metadata");
+            assertEquals(v1.preReleaseVersion().get(), v2.preReleaseVersion().get());
+        }
+
+        @Test
+        void shouldNotAcceptNullForBuildMetadata() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.withBuildMetadata((String[]) null));
+        }
+
+        @Test
+        void shouldNotAcceptEmptyBuildMetadata() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.withBuildMetadata((new String[0])));
+        }
+
+        @Test
+        void shouldNotAcceptNullIdentifiersForBuildMetadata() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.withBuildMetadata((String) null));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"build.", ".build", "build!"})
+        void shouldNotAcceptInvalidIdentifiersForBuildMetadata(String id) {
+            Version v = Version.of(1);
+            assertThrows(ParseException.class, () -> v.withBuildMetadata(id));
+        }
+
+        @Test
+        void shouldDropBuildMetadata() {
+            Version v1 = Version.of(1, null, "build.metadata");
+            Version v2 = v1.withoutBuildMetadata();
+            assertFalse(v2.buildMetadata().isPresent());
+        }
+
+        @Test
+        void shouldNotChangeVersionCoreWhenDroppingBuildMetadata() {
+            Version v1 = Version.of(1, 2, 3, null, "build.metadata");
+            Version v2 = v1.withoutBuildMetadata();
+            assertEquals(v1.majorVersion(), v2.majorVersion());
+            assertEquals(v1.minorVersion(), v2.minorVersion());
+            assertEquals(v1.patchVersion(), v2.patchVersion());
+        }
+
+        @Test
+        void shouldNotChangePreReleaseVersionWhenDroppingBuildMetadata() {
+            Version v1 = Version.of(1, "pre-release", "build.metadata");
+            Version v2 = v1.withoutBuildMetadata();
+            assertEquals(v1.preReleaseVersion().get(), v2.preReleaseVersion().get());
         }
 
         @Test
         void shouldBeImmutable() {
-            Version v = Version.of(1, 2, 3, "alpha.1", "build.1");
-
-            assertNotEquals(v, v.incrementMajorVersion());
-            assertNotEquals(v, v.incrementMinorVersion());
-            assertNotEquals(v, v.incrementPatchVersion());
-            assertNotEquals(v, v.incrementPreReleaseVersion());
-            assertNotEquals(v, v.setPreReleaseVersion("alpha.2"));
-            assertNotEquals(v.toString(), v.incrementBuildMetadata().toString());
-            assertNotEquals(v.toString(), v.setBuildMetadata("build.2").toString());
-        }
-
-        @Test
-        void shouldProvideSetPreReleaseVersionMethod() {
-            Version v1 = Version.of(1, 0, 0);
-            Version v2 = v1.setPreReleaseVersion("alpha");
-            assertEquals("1.0.0-alpha", v2.toString());
-        }
-
-        @Test
-        void shouldDropBuildMetadataWhenSettingPreReleaseVersion() {
-            Version v1 = Version.of(1, 0, 0, "alpha", "build");
-            Version v2 = v1.setPreReleaseVersion("beta");
-            assertEquals("1.0.0-beta", v2.toString());
-        }
-
-        @Test
-        void shouldProvideSetBuildMetadataMethod() {
-            Version v1 = Version.of(1, 0, 0);
-            Version v2 = v1.setBuildMetadata("build");
-            assertEquals("1.0.0+build", v2.toString());
-        }
-
-        @Test
-        void shouldProvideIncrementPreReleaseVersionMethod() {
-            Version v1 = Version.of(1, 0, 0, "beta.1");
-            Version v2 = v1.incrementPreReleaseVersion();
-            assertEquals("1.0.0-beta.2", v2.toString());
-        }
-
-        @Test
-        void shouldAppendNumericIdentifierToPreReleaseVersionToBeIncrementedIfAbsent() {
-            Version v1 = Version.of(0, 0, 1, "alpha");
-            Version v2 = v1.incrementPreReleaseVersion();
-            assertEquals("alpha.1", v2.preReleaseVersion().get());
+            Version v = Version.of(1, 2, 3, "alpha", "test");
+            assertNotEquals(v, v.nextMajorVersion());
+            assertNotEquals(v, v.nextMajorVersion("beta"));
+            assertNotEquals(v, v.nextMinorVersion());
+            assertNotEquals(v, v.nextMinorVersion("gamma"));
+            assertNotEquals(v, v.nextPatchVersion());
+            assertNotEquals(v, v.nextPatchVersion("delta"));
+            assertNotEquals(v, v.nextPreReleaseVersion());
+            assertNotEquals(v, v.nextPreReleaseVersion("epsilon"));
+            assertNotEquals(v, v.withBuildMetadata("build.metadata"));
+            assertNotEquals(v, v.withoutBuildMetadata());
         }
 
         @Test
@@ -679,6 +988,37 @@ class VersionTest {
             Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
             Version.Builder b = v.toBuilder();
             assertEquals(b.build(), v);
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldSetPreReleaseVersion() {
+            Version v1 = Version.of(1, 0, 0);
+            Version v2 = v1.setPreReleaseVersion("pre-release");
+            assertEquals("1.0.0-pre-release", v2.toString());
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldDropBuildMetadataWhenSettingPreReleaseVersion() {
+            Version v1 = Version.of(1, 0, 0, "alpha", "build.metadata");
+            Version v2 = v1.setPreReleaseVersion("beta");
+            assertEquals("1.0.0-beta", v2.toString());
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldIncrementBuildMetadata() {
+            Version v1 = Version.of(1, 0, 0, null, "build.metadata.1");
+            Version v2 = v1.incrementBuildMetadata();
+            assertEquals("1.0.0+build.metadata.2", v2.toString());
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldNotAllowToIncrementEmptyBuildMetadata() {
+            Version v = Version.of(1, 0, 0);
+            assertThrows(IllegalStateException.class, v::incrementBuildMetadata);
         }
     }
 

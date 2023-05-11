@@ -235,20 +235,20 @@ public class ExpressionParser implements Parser<Expression> {
         long major = consumeNextNumeric();
         if (!tokens.positiveLookahead(DOT)) {
             Version lo = Version.of(major);
-            Version hi = lo.incrementMajorVersion();
+            Version hi = lo.nextMajorVersion();
             return gte(lo).and(lt(hi));
         }
         consumeNextToken(DOT);
         long minor = consumeNextNumeric();
         if (!tokens.positiveLookahead(DOT)) {
             Version lo = Version.of(major, minor);
-            Version hi = lo.incrementMinorVersion();
+            Version hi = lo.nextMinorVersion();
             return gte(lo).and(lt(hi));
         }
         consumeNextToken(DOT);
         long patch = consumeNextNumeric();
         Version lo = Version.of(major, minor, patch);
-        Version hi = lo.incrementMinorVersion();
+        Version hi = lo.nextMinorVersion();
         return gte(lo).and(lt(hi));
     }
 
@@ -268,14 +268,14 @@ public class ExpressionParser implements Parser<Expression> {
         long major = consumeNextNumeric();
         if (!tokens.positiveLookahead(DOT)) {
             Version lo = Version.of(major);
-            Version hi = lo.incrementMajorVersion();
+            Version hi = lo.nextMajorVersion();
             return gte(lo).and(lt(hi));
         }
         consumeNextToken(DOT);
         long minor = consumeNextNumeric();
         if (!tokens.positiveLookahead(DOT)) {
             Version lo = Version.of(major, minor);
-            Version hi = major > 0 ? lo.incrementMajorVersion() : lo.incrementMinorVersion();
+            Version hi = major > 0 ? lo.nextMajorVersion() : lo.nextMinorVersion();
             return gte(lo).and(lt(hi));
         }
         consumeNextToken(DOT);
@@ -283,11 +283,11 @@ public class ExpressionParser implements Parser<Expression> {
         Version lo = Version.of(major, minor, patch);
         CompositeExpression gte = gte(lo);
         if (major > 0) {
-            return gte.and(lt(lo.incrementMajorVersion()));
+            return gte.and(lt(lo.nextMajorVersion()));
         } else if (minor > 0) {
-            return gte.and(lt(lo.incrementMinorVersion()));
+            return gte.and(lt(lo.nextMinorVersion()));
         } else if (patch > 0) {
-            return gte.and(lt(lo.incrementPatchVersion()));
+            return gte.and(lt(lo.nextPatchVersion()));
         }
         return eq(lo);
     }
@@ -330,7 +330,7 @@ public class ExpressionParser implements Parser<Expression> {
         if (tokens.positiveLookahead(WILDCARD)) {
             tokens.consume();
             Version lo = Version.of(major);
-            Version hi = lo.incrementMajorVersion();
+            Version hi = lo.nextMajorVersion();
             return gte(lo).and(lt(hi));
         }
 
@@ -338,7 +338,7 @@ public class ExpressionParser implements Parser<Expression> {
         consumeNextToken(DOT);
         consumeNextToken(WILDCARD);
         Version lo = Version.of(major, minor);
-        Version hi = lo.incrementMinorVersion();
+        Version hi = lo.nextMinorVersion();
         return gte(lo).and(lt(hi));
     }
 
@@ -402,13 +402,13 @@ public class ExpressionParser implements Parser<Expression> {
         long major = consumeNextNumeric();
         if (!tokens.positiveLookahead(DOT)) {
             Version lo = Version.of(major);
-            Version hi = lo.incrementMajorVersion();
+            Version hi = lo.nextMajorVersion();
             return gte(lo).and(lt(hi));
         }
         consumeNextToken(DOT);
         long minor = consumeNextNumeric();
         Version lo = Version.of(major, minor);
-        Version hi = lo.incrementMinorVersion();
+        Version hi = lo.nextMinorVersion();
         return gte(lo).and(lt(hi));
     }
 
