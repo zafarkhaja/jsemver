@@ -34,6 +34,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
+import static com.github.zafarkhaja.semver.Version.Validators.*;
+import static com.github.zafarkhaja.semver.VersionParser.parseBuild;
+import static com.github.zafarkhaja.semver.VersionParser.parsePreRelease;
 
 /**
  * The {@code Version} class is the main class of the Java SemVer library.
@@ -119,7 +122,7 @@ public class Version implements Comparable<Version>, Serializable {
          * @since  0.10.0
          */
         public Builder setMajorVersion(long major) {
-            this.major = requireNonNegative(major, "major");
+            this.major = nonNegative(major, "major");
             return this;
         }
 
@@ -132,7 +135,7 @@ public class Version implements Comparable<Version>, Serializable {
          * @since  0.10.0
          */
         public Builder setMinorVersion(long minor) {
-            this.minor = requireNonNegative(minor, "minor");
+            this.minor = nonNegative(minor, "minor");
             return this;
         }
 
@@ -145,7 +148,7 @@ public class Version implements Comparable<Version>, Serializable {
          * @since  0.10.0
          */
         public Builder setPatchVersion(long patch) {
-            this.patch = requireNonNegative(patch, "patch");
+            this.patch = nonNegative(patch, "patch");
             return this;
         }
 
@@ -160,7 +163,7 @@ public class Version implements Comparable<Version>, Serializable {
          * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
          */
         public Builder setPreReleaseVersion(String... ids) {
-            preReleaseIds = requireNonNullStrings(ids, "ids").clone();
+            preReleaseIds = oneOrMoreNonNulls(ids, "ids").clone();
             return this;
         }
 
@@ -184,7 +187,7 @@ public class Version implements Comparable<Version>, Serializable {
                 return setPreReleaseVersion(ids);
             }
 
-            preReleaseIds = concatArrays(preReleaseIds, requireNonNullStrings(ids, "ids"));
+            preReleaseIds = concatArrays(preReleaseIds, oneOrMoreNonNulls(ids, "ids"));
             return this;
         }
 
@@ -210,7 +213,7 @@ public class Version implements Comparable<Version>, Serializable {
          * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
          */
         public Builder setBuildMetadata(String... ids) {
-            buildIds = requireNonNullStrings(ids, "ids").clone();
+            buildIds = oneOrMoreNonNulls(ids, "ids").clone();
             return this;
         }
 
@@ -234,7 +237,7 @@ public class Version implements Comparable<Version>, Serializable {
                 return setBuildMetadata(ids);
             }
 
-            buildIds = concatArrays(buildIds, requireNonNullStrings(ids, "ids"));
+            buildIds = concatArrays(buildIds, oneOrMoreNonNulls(ids, "ids"));
             return this;
         }
 
@@ -266,22 +269,6 @@ public class Version implements Comparable<Version>, Serializable {
             );
         }
 
-        private static String[] requireNonEmpty(String[] arg, String name) {
-            if (requireNonNull(arg, name).length == 0) {
-                throw new IllegalArgumentException(name + " must not be empty");
-            }
-            return arg;
-        }
-
-        private static String[] requireNonNullStrings(String[] arg, String name) {
-            for (String s : requireNonEmpty(arg, name)) {
-                if (s == null) {
-                    throw new IllegalArgumentException(name + " must not contain null");
-                }
-            }
-            return arg;
-        }
-
         private static String[] concatArrays(String[] ids1, String[] ids2) {
             String[] ids = new String[ids1.length + ids2.length];
             System.arraycopy(ids1, 0, ids, 0, ids1.length);
@@ -303,7 +290,7 @@ public class Version implements Comparable<Version>, Serializable {
         @Deprecated
         @SuppressWarnings("DeprecatedIsStillUsed")
         public Builder setNormalVersion(String normal) {
-            String[] parts = requireNonNull(normal, "normal").split("\\" + IDENTIFIER_SEPARATOR);
+            String[] parts = nonNull(normal, "normal").split("\\" + IDENTIFIER_SEPARATOR);
             return setVersionCore(
                 Long.parseLong(parts[0]),
                 parts.length > 1 ? Long.parseLong(parts[1]) : 0,
@@ -378,11 +365,11 @@ public class Version implements Comparable<Version>, Serializable {
      *         or if any of the reference-type arguments is null
      */
     Version(long major, long minor, long patch, String[] preReleaseIds, String[] buildIds) {
-        this.major = requireNonNegative(major, "major");
-        this.minor = requireNonNegative(minor, "minor");
-        this.patch = requireNonNegative(patch, "patch");
-        this.preReleaseIds = requireNonNull(preReleaseIds, "preReleaseIds").clone();
-        this.buildIds = requireNonNull(buildIds, "buildIds").clone();
+        this.major = nonNegative(major, "major");
+        this.minor = nonNegative(minor, "minor");
+        this.patch = nonNegative(patch, "patch");
+        this.preReleaseIds = nonNull(preReleaseIds, "preReleaseIds").clone();
+        this.buildIds = nonNull(buildIds, "buildIds").clone();
     }
 
     /**
@@ -395,7 +382,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @since  0.10.0
      */
     public static Version parse(String version) {
-        return VersionParser.parseValidSemVer(requireNonNull(version, "version"));
+        return VersionParser.parseValidSemVer(nonNull(version, "version"));
     }
 
     /**
@@ -580,8 +567,8 @@ public class Version implements Comparable<Version>, Serializable {
             major,
             minor,
             patch,
-            preRelease == null ? new String[0] : VersionParser.parsePreRelease(preRelease),
-            build == null ? new String[0] : VersionParser.parseBuild(build)
+            preRelease == null ? new String[0] : parsePreRelease(preRelease),
+            build == null ? new String[0] : parseBuild(build)
         );
     }
 
@@ -638,6 +625,245 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Obtains the next {@code Version} by incrementing the major version number
+     * by one, with an optional pre-release version label.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  preReleaseIds zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws ArithmeticException if the major version number overflows
+     * @throws IllegalArgumentException if {@code preReleaseIds} is null or contains null
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextMajorVersion(String... preReleaseIds) {
+        return nextMajorVersion(safeIncrement(major), preReleaseIds);
+    }
+
+    /**
+     * Obtains the next {@code Version} of the specified major version number,
+     * with an optional pre-release version label.
+     * <p>
+     * The specified major version number must be higher than this {@code Version}'s
+     * major version.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  major the next major version number, non-negative
+     * @param  preReleaseIds zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code major} is negative, or if
+     *         {@code preReleaseIds} is null or contains null
+     * @throws IllegalStateException if {@code major} is lower than or equivalent
+     *         to this {@code Version}'s major version
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextMajorVersion(long major, String... preReleaseIds) {
+        if (this.major >= nonNegative(major, "major")) {
+            throw new IllegalStateException("This major version is higher or equivalent");
+        }
+
+        String preRelease = joinIdentifiers(zeroOrMoreNonNulls(preReleaseIds, "preReleaseIds"));
+        return Version.of(major, 0, 0, preRelease);
+    }
+
+    /**
+     * Obtains the next {@code Version} by incrementing the minor version number
+     * by one, with an optional pre-release version label.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  preReleaseIds zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws ArithmeticException if the minor version number overflows
+     * @throws IllegalArgumentException if {@code preReleaseIds} is null or contains null
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextMinorVersion(String... preReleaseIds) {
+        return nextMinorVersion(safeIncrement(minor), preReleaseIds);
+    }
+
+    /**
+     * Obtains the next {@code Version} of the specified minor version number,
+     * with an optional pre-release version label.
+     * <p>
+     * The specified minor version number must be higher than this {@code Version}'s
+     * minor version.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  minor the next minor version number, non-negative
+     * @param  preReleaseIds zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code minor} is negative, or if
+     *         {@code preReleaseIds} is null or contains null
+     * @throws IllegalStateException if {@code minor} is lower than or equivalent
+     *         to this {@code Version}'s minor version
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextMinorVersion(long minor, String... preReleaseIds) {
+        if (this.minor >= nonNegative(minor, "minor")) {
+            throw new IllegalStateException("This minor version is higher or equivalent");
+        }
+
+        String preRelease = joinIdentifiers(zeroOrMoreNonNulls(preReleaseIds, "preReleaseIds"));
+        return Version.of(major, minor, 0, preRelease);
+    }
+
+    /**
+     * Obtains the next {@code Version} by incrementing the patch version number
+     * by one, with an optional pre-release version label.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  preReleaseIds zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws ArithmeticException if the patch version number overflows
+     * @throws IllegalArgumentException if {@code preReleaseIds} is null or contains null
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextPatchVersion(String... preReleaseIds) {
+        return nextPatchVersion(safeIncrement(patch), preReleaseIds);
+    }
+
+    /**
+     * Obtains the next {@code Version} of the specified patch version number,
+     * with an optional pre-release version label.
+     * <p>
+     * The specified patch version number must be higher than this {@code Version}'s
+     * patch version.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  patch the next patch version number, non-negative
+     * @param  preReleaseIds zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code patch} is negative, or if
+     *         {@code preReleaseIds} is null or contains null
+     * @throws IllegalStateException if {@code patch} is lower than or equivalent
+     *         to this {@code Version}'s patch version
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextPatchVersion(long patch, String... preReleaseIds) {
+        if (this.patch >= nonNegative(patch, "patch")) {
+            throw new IllegalStateException("This patch version is higher or equivalent");
+        }
+
+        String preRelease = joinIdentifiers(zeroOrMoreNonNulls(preReleaseIds, "preReleaseIds"));
+        return Version.of(major, minor, patch, preRelease);
+    }
+
+    /**
+     * Obtains the next {@code Version} by incrementing or replacing the
+     * pre-release version.
+     * <p>
+     * If no pre-release identifiers are specified, the current pre-release
+     * version's last numeric identifier is incremented. If the current
+     * pre-release version's last identifier is not numeric, a new numeric
+     * identifier of value "0" is appended for this operation. If specified,
+     * however, the pre-release identifiers replace the current pre-release
+     * version. The new pre-release version must be higher than this
+     * {@code Version}'s pre-release version.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @param  ids zero or more pre-release identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws ArithmeticException if the incremented numeric identifier overflows
+     * @throws IllegalArgumentException if {@code ids} is null or contains null
+     * @throws IllegalStateException if invoked on a stable {@code Version}, or
+     *         if the specified pre-release version is lower than or equivalent
+     *         to this {@code Version}'s pre-release version
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version nextPreReleaseVersion(String... ids) {
+        if (!isPreRelease()) {
+            throw new IllegalStateException("Not a pre-release version");
+        }
+
+        zeroOrMoreNonNulls(ids, "ids");
+
+        String[] newPreReleaseIds;
+        if (ids.length > 0) {
+            newPreReleaseIds = parsePreRelease(joinIdentifiers(ids));
+            if (compareIdentifierArrays(preReleaseIds, newPreReleaseIds) >= 0) {
+                throw new IllegalStateException("This pre-release version is higher or equivalent");
+            }
+        } else {
+            newPreReleaseIds = incrementIdentifiers(preReleaseIds);
+        }
+
+        return new Version(major, minor, patch, newPreReleaseIds);
+    }
+
+    /**
+     * Obtains the next {@code Version} by dropping the pre-release version.
+     * <p>
+     * This method drops the build metadata, if present.
+     *
+     * @return a {@code Version} instance
+     * @since  0.10.0
+     */
+    public Version toStableVersion() {
+        return isStable() ? this : new Version(major, minor, patch);
+    }
+
+    /**
+     * Obtains a new {@code Version} with the specified build identifiers.
+     * <p>
+     * Multiple identifiers can be specified in a single argument joined with
+     * dots, or in separate arguments, or both.
+     *
+     * @param  ids one or more build identifiers, non-null
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code ids} is null/empty or contains null
+     * @throws ParseException if any of the specified identifiers can't be parsed
+     * @since  0.10.0
+     */
+    public Version withBuildMetadata(String... ids) {
+        String[] newBuildIds = parseBuild(joinIdentifiers(oneOrMoreNonNulls(ids, "ids")));
+        return new Version(major, minor, patch, preReleaseIds, newBuildIds);
+    }
+
+    /**
+     * Obtains a (new) {@code Version} without build metadata.
+     *
+     * @return a {@code Version} instance
+     * @since  0.10.0
+     */
+    public Version withoutBuildMetadata() {
+        return !buildMetadata().isPresent() ? this : new Version(major, minor, patch, preReleaseIds);
+    }
+
+    /**
      * Checks if this version satisfies the specified SemVer Expression string.
      * <p>
      * This method is a part of the SemVer Expressions API.
@@ -667,147 +893,6 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public boolean satisfies(Expression expr) {
         return expr.interpret(this);
-    }
-
-    /**
-     * Increments the major version.
-     *
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the major version number overflows
-     */
-    public Version incrementMajorVersion() {
-        return new Version(safeIncrement(major), 0, 0);
-    }
-
-    /**
-     * Increments the major version and appends the pre-release version.
-     *
-     * @param preRelease the pre-release version to append
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the major version number overflows
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
-     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
-     */
-    public Version incrementMajorVersion(String preRelease) {
-        return new Version(
-            safeIncrement(major),
-            0,
-            0,
-            VersionParser.parsePreRelease(preRelease)
-        );
-    }
-
-    /**
-     * Increments the minor version.
-     *
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the minor version number overflows
-     */
-    public Version incrementMinorVersion() {
-        return new Version(major, safeIncrement(minor), 0);
-    }
-
-    /**
-     * Increments the minor version and appends the pre-release version.
-     *
-     * @param preRelease the pre-release version to append
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the minor version number overflows
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
-     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
-     */
-    public Version incrementMinorVersion(String preRelease) {
-        return new Version(
-            major,
-            safeIncrement(minor),
-            0,
-            VersionParser.parsePreRelease(preRelease)
-        );
-    }
-
-    /**
-     * Increments the patch version.
-     *
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the patch version number overflows
-     */
-    public Version incrementPatchVersion() {
-        return new Version(major, minor, safeIncrement(patch));
-    }
-
-    /**
-     * Increments the patch version and appends the pre-release version.
-     *
-     * @param preRelease the pre-release version to append
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the patch version number overflows
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
-     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
-     */
-    public Version incrementPatchVersion(String preRelease) {
-        return new Version(
-            major,
-            minor,
-            safeIncrement(patch),
-            VersionParser.parsePreRelease(preRelease)
-        );
-    }
-
-    /**
-     * Increments the pre-release version.
-     *
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the numeric identifier overflows
-     * @throws IllegalStateException if the pre-release version is empty
-     */
-    public Version incrementPreReleaseVersion() {
-        if (preReleaseIds.length == 0) {
-            throw new IllegalStateException("Pre-release version empty");
-        }
-        return new Version(major, minor, patch, incrementIdentifiers(preReleaseIds));
-    }
-
-    /**
-     * Increments the build metadata.
-     *
-     * @return a new instance of the {@code Version} class
-     * @throws ArithmeticException if the numeric identifier overflows
-     * @throws IllegalStateException if the build metadata is empty
-     */
-    public Version incrementBuildMetadata() {
-        if (buildIds.length == 0) {
-            throw new IllegalStateException("Build metadata empty");
-        }
-        return new Version(major, minor, patch, preReleaseIds, incrementIdentifiers(buildIds));
-    }
-
-    /**
-     * Sets the pre-release version.
-     *
-     * @param preRelease the pre-release version to set
-     * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
-     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
-     */
-    public Version setPreReleaseVersion(String preRelease) {
-        return new Version(major, minor, patch, VersionParser.parsePreRelease(preRelease));
-    }
-
-    /**
-     * Sets the build metadata.
-     *
-     * @param build the build metadata to set
-     * @return a new instance of the {@code Version} class
-     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
-     * @throws ParseException when invalid version string is provided
-     * @throws UnexpectedCharacterException is a special case of {@code ParseException}
-     */
-    public Version setBuildMetadata(String build) {
-        return new Version(major, minor, patch, preReleaseIds, VersionParser.parseBuild(build));
     }
 
     /**
@@ -984,7 +1069,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @since  0.10.0
      */
     public int compareToIgnoreBuildMetadata(Version other) {
-        requireNonNull(other, "other");
+        nonNull(other, "other");
         long result = major - other.major;
         if (result == 0) {
             result = minor - other.minor;
@@ -1068,20 +1153,6 @@ public class Version implements Comparable<Version>, Serializable {
         ;
     }
 
-    private static long requireNonNegative(long arg, String name) {
-        if (arg < 0) {
-            throw new IllegalArgumentException(name + " must not be negative");
-        }
-        return arg;
-    }
-
-    private static <T> T requireNonNull(T arg, String name) {
-        if (arg == null) {
-            throw new IllegalArgumentException(name + " must not be null");
-        }
-        return arg;
-    }
-
     private static long safeIncrement(long l) {
         return Math.incrementExact(l);
     }
@@ -1148,6 +1219,48 @@ public class Version implements Comparable<Version>, Serializable {
             return false;
         }
         return id.chars().allMatch(Character::isDigit);
+    }
+
+    static class Validators {
+
+        static long nonNegative(long arg, String name) {
+            if (arg < 0) {
+                throw new IllegalArgumentException(name + " must not be negative");
+            }
+            return arg;
+        }
+
+        static <T> T nonNull(T arg, String name) {
+            return nonNullOrThrow(arg, name + " must not be null");
+        }
+
+        static <T> T[] nonEmpty(T[] arg, String name) {
+            if (nonNull(arg, name).length == 0) {
+                throw new IllegalArgumentException(name + " must not be empty");
+            }
+            return arg;
+        }
+
+        static <T> T[] zeroOrMoreNonNulls(T[] arg, String name) {
+            for (T t : nonNull(arg, name)) {
+                nonNullOrThrow(t, name + " must not contain null");
+            }
+            return arg;
+        }
+
+        static <T> T[] oneOrMoreNonNulls(T[] arg, String name) {
+            for (T t : nonEmpty(arg, name)) {
+                nonNullOrThrow(t, name + " must not contain null");
+            }
+            return arg;
+        }
+
+        private static <T> T nonNullOrThrow(T arg, String msg) {
+            if (arg == null) {
+                throw new IllegalArgumentException(msg);
+            }
+            return arg;
+        }
     }
 
     private static class SerializationProxy implements Serializable {
@@ -1266,6 +1379,91 @@ public class Version implements Comparable<Version>, Serializable {
     @Deprecated
     public String getBuildMetadata() {
         return buildMetadata().orElse("");
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, consider using {@link #nextPreReleaseVersion(String...)}
+     */
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    public Version setPreReleaseVersion(String preRelease) {
+        return new Version(major, minor, patch, parsePreRelease(preRelease));
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #withBuildMetadata(String...)}
+     */
+    @Deprecated
+    public Version setBuildMetadata(String build) {
+        return withBuildMetadata(build);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextMajorVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementMajorVersion() {
+        return nextMajorVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextMajorVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementMajorVersion(String preRelease) {
+        return nextMajorVersion(preRelease);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextMinorVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementMinorVersion() {
+        return nextMinorVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextMinorVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementMinorVersion(String preRelease) {
+        return nextMinorVersion(preRelease);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextPatchVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementPatchVersion() {
+        return nextPatchVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextPatchVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementPatchVersion(String preRelease) {
+        return nextPatchVersion(preRelease);
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0, use {@link #nextPreReleaseVersion(String...)}
+     */
+    @Deprecated
+    public Version incrementPreReleaseVersion() {
+        return nextPreReleaseVersion();
+    }
+
+    /**
+     * @deprecated forRemoval since 0.10.0
+     */
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    public Version incrementBuildMetadata() {
+        if (!buildMetadata().isPresent()) {
+            throw new IllegalStateException("Build metadata empty");
+        }
+        return new Version(major, minor, patch, preReleaseIds, incrementIdentifiers(buildIds));
     }
 
     /**
