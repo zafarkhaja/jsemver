@@ -909,6 +909,15 @@ class VersionTest {
         }
 
         @Test
+        void shouldCheckIfTwoVersionsAreCompatibleInTermsOfPublicApi() {
+            Version v1 = Version.of(1, 1, 1);
+            Version v2 = Version.of(1, 2, 3);
+            Version v3 = Version.of(0, 1, 2);
+            assertTrue(v1.isPublicApiCompatibleWith(v2));
+            assertFalse(v1.isPublicApiCompatibleWith(v3));
+        }
+
+        @Test
         void shouldCheckIfTwoVersionsAreSimilarInTermsOfMajorVersions() {
             Version v1 = Version.of(1, 1, 1);
             Version v2 = Version.of(1, 2, 3);
