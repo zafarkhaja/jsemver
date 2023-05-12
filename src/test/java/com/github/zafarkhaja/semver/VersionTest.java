@@ -909,6 +909,51 @@ class VersionTest {
         }
 
         @Test
+        void shouldCheckIfTwoVersionsAreSimilarInTermsOfMajorVersions() {
+            Version v1 = Version.of(1, 1, 1);
+            Version v2 = Version.of(1, 2, 3);
+            Version v3 = Version.of(2, 2, 2);
+            assertTrue(v1.isSameMajorVersionAs(v2));
+            assertFalse(v1.isSameMajorVersionAs(v3));
+        }
+
+        @Test
+        void shouldCheckForNullsWhenComparingMajorVersions() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.isSameMajorVersionAs(null));
+        }
+
+        @Test
+        void shouldCheckIfTwoVersionsAreSimilarInTermsOfMajorAndMinorVersions() {
+            Version v1 = Version.of(1, 1, 1);
+            Version v2 = Version.of(1, 1, 2);
+            Version v3 = Version.of(1, 2, 3);
+            assertTrue(v1.isSameMinorVersionAs(v2));
+            assertFalse(v1.isSameMinorVersionAs(v3));
+        }
+
+        @Test
+        void shouldCheckForNullsWhenComparingMajorAndMinorVersions() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.isSameMinorVersionAs(null));
+        }
+
+        @Test
+        void shouldCheckIfTwoVersionsAreSimilarInTermsOfMajorMinorAndPatchVersions() {
+            Version v1 = Version.of(1, 1, 1);
+            Version v2 = Version.of(1, 1, 1);
+            Version v3 = Version.of(1, 1, 2);
+            assertTrue(v1.isSamePatchVersionAs(v2));
+            assertFalse(v1.isSamePatchVersionAs(v3));
+        }
+
+        @Test
+        void shouldCheckForNullsWhenComparingMajorMinorAndPatchVersions() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.isSamePatchVersionAs(null));
+        }
+
+        @Test
         void shouldDetermineIfItsPrecedenceIsHigherThanThatOfOthers() {
             Version v1 = Version.of(3, 2, 1);
             Version v2 = Version.of(1, 2, 3);

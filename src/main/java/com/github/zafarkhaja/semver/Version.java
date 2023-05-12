@@ -938,6 +938,51 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks if two {@code Version} instances are similar in terms of their
+     * major versions.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if the versions are similar in terms of major
+     *         versions; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isSameMajorVersionAs(Version other) {
+        nonNull(other, "other");
+        return major == other.major;
+    }
+
+    /**
+     * Checks if two {@code Version} instances are similar in terms of their
+     * major and minor versions.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if the versions are similar in terms of major and
+     *         minor versions; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isSameMinorVersionAs(Version other) {
+        nonNull(other, "other");
+        return major == other.major && minor == other.minor;
+    }
+
+    /**
+     * Checks if two {@code Version} instances are similar in terms of their
+     * major, minor and patch versions.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if the versions are similar in terms of major,
+     *         minor and patch versions; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isSamePatchVersionAs(Version other) {
+        nonNull(other, "other");
+        return major == other.major && minor == other.minor && patch == other.patch;
+    }
+
+    /**
      * Determines if this {@code Version} has a higher precedence compared with
      * the specified {@code Version}.
      *
