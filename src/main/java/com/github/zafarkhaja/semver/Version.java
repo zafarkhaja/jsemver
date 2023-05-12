@@ -946,6 +946,25 @@ public class Version implements Comparable<Version>, Serializable {
 
     /**
      * Checks if this {@code Version} is compatible with the specified {@code Version}
+     * in terms of their public API.
+     * <p>
+     * Two versions are compatible in terms of public API iff they have the
+     * same major version of 1 or higher. Being public API compatible doesn't
+     * necessarily mean both versions have the same set of public API units.
+     * It only means that the versions are interchangeable.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if the versions are compatible in terms of public API;
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isPublicApiCompatibleWith(Version other) {
+        return isPublicApiStable() && isSameMajorVersionAs(other);
+    }
+
+    /**
+     * Checks if this {@code Version} is compatible with the specified {@code Version}
      * in terms of their major versions.
      *
      * @param  other the {@code Version} to compare with, non-null
