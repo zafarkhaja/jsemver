@@ -24,6 +24,7 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
+import java.util.function.Predicate;
 
 /**
  * The {@code Expression} interface is to be implemented
@@ -33,7 +34,7 @@ import com.github.zafarkhaja.semver.Version;
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  * @since 0.7.0
  */
-public interface Expression {
+public interface Expression extends Predicate<Version> {
 
     /**
      * Interprets the expression.
@@ -42,4 +43,8 @@ public interface Expression {
      * @return the result of the expression interpretation
      */
     boolean interpret(Version version);
+
+    default boolean test(Version version) {
+        return interpret(version);
+    }
 }

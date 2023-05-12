@@ -28,13 +28,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.gte;
-import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.lt;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -876,10 +875,29 @@ class VersionTest {
         }
 
         @Test
-        void shouldCheckIfVersionSatisfiesExpression() {
+        void shouldCheckIfVersionSatisfiesPredicates() {
             Version v = Version.of(2, 0, 0, "beta");
-            assertTrue(v.satisfies(gte("1.0.0").and(lt("2.0.0"))));
-            assertFalse(v.satisfies(gte("2.0.0").and(lt("3.0.0"))));
+            assertFalse(v.satisfies(Version::isStable));
+            assertTrue(v.satisfies(Version::isPublicApiStable));
+        }
+
+        @Test
+        void shouldRaiseErrorIfPredicateIsNull() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.satisfies((Predicate<Version>) null));
+        }
+
+        @Test
+        void shouldCheckIfVersionSatisfiesRangeExpressions() {
+            Version v = Version.of(2, 0, 0, "beta");
+            assertTrue(v.satisfies(">=1.0.0 & <3.0.0"));
+            assertFalse(v.satisfies(">=2.0.0 & <3.0.0"));
+        }
+
+        @Test
+        void shouldRaiseErrorIfRangeExpressionIsNull() {
+            Version v = Version.of(1);
+            assertThrowsIllegalArgumentException(() -> v.satisfies((String) null));
         }
 
         @Test

@@ -25,8 +25,6 @@ package com.github.zafarkhaja.semver;
 
 import com.github.zafarkhaja.semver.expr.Expression;
 import com.github.zafarkhaja.semver.expr.ExpressionParser;
-import com.github.zafarkhaja.semver.expr.LexerException;
-import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -34,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Predicate;
 import static com.github.zafarkhaja.semver.Version.Validators.*;
 import static com.github.zafarkhaja.semver.VersionParser.parseBuild;
 import static com.github.zafarkhaja.semver.VersionParser.parsePreRelease;
@@ -864,35 +863,31 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * Checks if this version satisfies the specified SemVer Expression string.
-     * <p>
-     * This method is a part of the SemVer Expressions API.
+     * Checks if this {@code Version} satisfies the specified predicate.
      *
-     * @param expr the SemVer Expression string
-     * @return {@code true} if this version satisfies the specified
-     *         SemVer Expression or {@code false} otherwise
-     * @throws ParseException in case of a general parse error
-     * @throws LexerException when encounters an illegal character
-     * @throws UnexpectedTokenException when comes across an unexpected token
-     * @since 0.7.0
+     * @param  predicate a predicate to test, non-null
+     * @return {@code true}, if this {@code Version} satisfies the predicate;
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if {@code predicate} is null
+     * @since  0.10.0
      */
-    public boolean satisfies(String expr) {
-        Parser<Expression> parser = ExpressionParser.newInstance();
-        return satisfies(parser.parse(expr));
+    public boolean satisfies(Predicate<Version> predicate) {
+        return nonNull(predicate, "predicate").test(this);
     }
 
     /**
-     * Checks if this version satisfies the specified SemVer Expression.
-     * <p>
-     * This method is a part of the SemVer Expressions API.
+     * Checks if this {@code Version} satisfies the specified range expression.
      *
-     * @param expr the SemVer Expression
-     * @return {@code true} if this version satisfies the specified
-     *         SemVer Expression or {@code false} otherwise
-     * @since 0.9.0
+     * @param  expr a SemVer Expression string, non-null
+     * @return {@code true}, if this {@code Version} satisfies the specified
+     *         expression; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code expr} is null
+     * @throws ParseException if {@code expr} can't be parsed
+     * @since  0.7.0
      */
-    public boolean satisfies(Expression expr) {
-        return expr.interpret(this);
+    public boolean satisfies(String expr) {
+        Parser<Expression> parser = ExpressionParser.newInstance();
+        return satisfies(parser.parse(nonNull(expr, "expr")));
     }
 
     /**
