@@ -945,6 +945,51 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Checks if this {@code Version} is compatible with the specified {@code Version}
+     * in terms of their major versions.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if both versions have the same major version;
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isSameMajorVersionAs(Version other) {
+        nonNull(other, "other");
+        return major == other.major;
+    }
+
+    /**
+     * Checks if this {@code Version} is compatible with the specified {@code Version}
+     * in terms of their major and minor versions.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if both versions have the same major and minor versions;
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isSameMinorVersionAs(Version other) {
+        nonNull(other, "other");
+        return major == other.major && minor == other.minor;
+    }
+
+    /**
+     * Checks if this {@code Version} is compatible with the specified {@code Version}
+     * in terms of their major, minor and patch versions.
+     *
+     * @param  other the {@code Version} to compare with, non-null
+     * @return {@code true}, if both versions have the same major, minor and patch
+     *         versions; {@code false} otherwise
+     * @throws IllegalArgumentException if {@code other} is null
+     * @since  0.10.0
+     */
+    public boolean isSamePatchVersionAs(Version other) {
+        nonNull(other, "other");
+        return major == other.major && minor == other.minor && patch == other.patch;
+    }
+
+    /**
      * Determines if this {@code Version} has a higher precedence compared with
      * the specified {@code Version}.
      *
