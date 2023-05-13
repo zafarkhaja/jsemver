@@ -24,6 +24,8 @@
 package com.github.zafarkhaja.semver;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -97,17 +99,29 @@ class VersionParserTest {
     @Test
     void shouldParseValidSemVer() {
         VersionParser parser = new VersionParser("1.0.0-rc.2+build.05");
-        Version version = parser.parse(null);
-        assertEquals(
-            new Version(
-                1,
-                0,
-                0,
-                new String[] {"rc", "2"},
-                new String[] {"build", "05"}
-            ),
-            version
-        );
+        Version v = parser.parse(null);
+        assertEquals(Version.of(1, 0, 0, "rc.2", "build.05"), v);
+    }
+
+    @Test
+    void shouldParseShortVersionCoresWithMajorAndMinorVersionsInLenientMode() {
+        VersionParser parser = new VersionParser("1.2-rc.2+build.05", false);
+        Version v = parser.parse(null);
+        assertEquals(Version.of(1, 2, 0, "rc.2", "build.05"), v);
+    }
+
+    @Test
+    void shouldParseShortVersionCoresWithMajorVersionInLenientMode() {
+        VersionParser parser = new VersionParser("1-rc.2+build.05", false);
+        Version v = parser.parse(null);
+        assertEquals(Version.of(1, 0, 0, "rc.2", "build.05"), v);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "1.2"})
+    void shouldNotAllowShortVersionCoresInStrictMode(String s) {
+        VersionParser parser = new VersionParser(s, true);
+        assertThrows(ParseException.class, () -> parser.parse(null));
     }
 
     @Test

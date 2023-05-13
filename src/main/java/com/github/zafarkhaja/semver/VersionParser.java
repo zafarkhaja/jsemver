@@ -146,6 +146,11 @@ class VersionParser implements Parser<Version> {
     }
 
     /**
+     * Indicates if the parser is in strict mode.
+     */
+    private final boolean isStrictModeOn;
+
+    /**
      * The stream of characters.
      */
     private final Stream<Character> chars;
@@ -158,6 +163,18 @@ class VersionParser implements Parser<Version> {
      * @throws IllegalArgumentException if the input string is {@code NULL} or empty
      */
     VersionParser(String input) {
+        this(input, true);
+    }
+
+    /**
+     * Constructs a {@code VersionParser} instance with an input string to parse.
+     *
+     * @param input an input string to parse
+     * @param strictModeOn a switch to turn the strict parsing mode on and off
+     */
+    VersionParser(String input, boolean strictModeOn) {
+        isStrictModeOn = strictModeOn;
+
         if (input == null || input.isEmpty()) {
             throw new IllegalArgumentException("Input string is NULL or empty");
         }
@@ -191,7 +208,21 @@ class VersionParser implements Parser<Version> {
      * @throws UnexpectedCharacterException when encounters an unexpected character type
      */
     static Version parseValidSemVer(String version) {
-        VersionParser parser = new VersionParser(version);
+        return parseValidSemVer(version, true);
+    }
+
+    /**
+     * Parses the whole version including pre-release version and build metadata.
+     *
+     * @param version a version string to parse
+     * @param strictModeOn a switch to turn the strict parsing mode on and off
+     * @return a valid version instance
+     * @throws IllegalArgumentException if the input string is {@code NULL} or empty
+     * @throws ParseException when there is a grammar error
+     * @throws UnexpectedCharacterException when encounters an unexpected character type
+     */
+    static Version parseValidSemVer(String version, boolean strictModeOn) {
+        VersionParser parser = new VersionParser(version, strictModeOn);
         return parser.parseValidSemVer();
     }
 
@@ -286,10 +317,19 @@ class VersionParser implements Parser<Version> {
      */
     private long[] parseVersionCore() {
         long major = numericIdentifier();
-        consumeNextCharacter(DOT);
-        long minor = numericIdentifier();
-        consumeNextCharacter(DOT);
-        long patch = numericIdentifier();
+
+        long minor = 0;
+        if (isStrictModeOn || chars.positiveLookahead(DOT)) {
+            consumeNextCharacter(DOT);
+            minor = numericIdentifier();
+        }
+
+        long patch = 0;
+        if (isStrictModeOn || chars.positiveLookahead(DOT)) {
+            consumeNextCharacter(DOT);
+            patch = numericIdentifier();
+        }
+
         return new long[] {major, minor, patch};
     }
 

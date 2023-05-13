@@ -319,7 +319,7 @@ class VersionTest {
         }
 
         @Test
-        void shouldParseFullSemVerCompliantVersionStrings() {
+        void shouldParseFullSemVerCompliantVersionStringsInStrictMode() {
             Version v = Version.parse("1.2.3-pre-release+build.metadata");
             assertEquals(Version.of(1, 2, 3, "pre-release", "build.metadata"), v);
         }
@@ -329,16 +329,46 @@ class VersionTest {
             assertThrows(IllegalArgumentException.class, () -> Version.parse(null));
         }
 
+        @ParameterizedTest
+        @ValueSource(strings = {"1", "1.2"})
+        void shouldNotAcceptShortVersionCoresInStrictMode(String s) {
+            assertThrows(ParseException.class, () -> Version.parse(s));
+        }
+
         @Test
-        void shouldTryToParseVersionStringsIfValid() {
+        void shouldParseShortVersionCoresWithMajorAndMinorVersionsInLenientMode() {
+            Version v = Version.parse("1.2-pre-release+build.metadata", false);
+            assertEquals(Version.of(1, 2, 0, "pre-release", "build.metadata"), v);
+        }
+
+        @Test
+        void shouldParseShortVersionCoresWithMajorVersionInLenientMode() {
+            Version v = Version.parse("1-pre-release+build.metadata", false);
+            assertEquals(Version.of(1, 0, 0, "pre-release", "build.metadata"), v);
+        }
+
+        @Test
+        void shouldTryToParseVersionStringsInStrictMode() {
             assertTrue(Version.tryParse("1.2.3-rc+abcdefg").isPresent());
             assertFalse(Version.tryParse("1.2.3+rc+abcdefg").isPresent());
         }
 
+        @ParameterizedTest
+        @ValueSource(strings = {"1", "1.2"})
+        void shouldTryToParseShortVersionCoresInLenientMode(String s) {
+            assertTrue(Version.tryParse(s, false).isPresent());
+        }
+
         @Test
-        void shouldCheckValidityOfVersionStrings() {
+        void shouldCheckValidityOfVersionStringsInStrictMode() {
             assertTrue(Version.isValid("1.2.3-pre-release+build.metadata"));
             assertFalse(Version.isValid("1.2.3-pre+release+build.metadata"));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"1", "1.2"})
+        void shouldCheckValidityOfShortVersionCoresInLenientMode(String s) {
+            assertTrue(Version.isValid(s, false));
         }
 
         @Test
