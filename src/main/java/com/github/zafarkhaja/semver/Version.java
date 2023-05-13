@@ -372,36 +372,76 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * Obtains a {@code Version} instance by parsing the specified string.
+     * Obtains a {@code Version} instance by parsing the specified string in
+     * strict mode, which ensures full compliance with the specification.
      *
      * @param  version a string representing a SemVer version, non-null
      * @return a {@code Version} instance
      * @throws IllegalArgumentException if {@code version} is null
      * @throws ParseException if {@code version} can't be parsed
+     * @see    #parse(String, boolean)
      * @since  0.10.0
      */
     public static Version parse(String version) {
-        return VersionParser.parseValidSemVer(nonNull(version, "version"));
+        return parse(version, true);
     }
 
     /**
-     * Tries to obtain a {@code Version} instance by parsing the specified string.
+     * Obtains a {@code Version} instance by parsing the specified string.
+     * <p>
+     * This method provides a way to parse the specified string in lenient mode,
+     * which accepts shorter version cores, such as "1" or "1.2".
+     *
+     * @param  version a string representing a SemVer version, non-null
+     * @param  strictly whether to parse the specified string in strict mode
+     * @return a {@code Version} instance
+     * @throws IllegalArgumentException if {@code version} is null
+     * @throws ParseException if {@code version} can't be parsed
+     * @see    #parse(String)
+     * @since  0.10.0
+     */
+    public static Version parse(String version, boolean strictly) {
+        return VersionParser.parseValidSemVer(nonNull(version, "version"), strictly);
+    }
+
+    /**
+     * Tries to obtain a {@code Version} instance by parsing the specified string
+     * in strict mode, which ensures full compliance with the specification.
      *
      * @param  version a string representing a SemVer version, nullable
      * @return an {@code Optional} with a {@code Version} instance, if the
      *         specified string can be parsed; empty {@code Optional} otherwise
+     * @see    #tryParse(String, boolean)
      * @since  0.10.0
      */
     public static Optional<Version> tryParse(String version) {
+        return tryParse(version, true);
+    }
+
+    /**
+     * Tries to obtain a {@code Version} instance by parsing the specified string.
+     * <p>
+     * This method provides a way to parse the specified string in lenient mode,
+     * which accepts shorter version cores, such as "1" or "1.2".
+     *
+     * @param  version a string representing a SemVer version, nullable
+     * @param  strictly whether to parse the specified string in strict mode
+     * @return an {@code Optional} with a {@code Version} instance, if the
+     *         specified string can be parsed; empty {@code Optional} otherwise
+     * @see    #tryParse(String)
+     * @since  0.10.0
+     */
+    public static Optional<Version> tryParse(String version, boolean strictly) {
         try {
-            return Optional.of(Version.parse(version));
+            return Optional.of(Version.parse(version, strictly));
         } catch (RuntimeException e) {
             return Optional.empty();
         }
     }
 
     /**
-     * Checks validity of the specified SemVer version string.
+     * Checks validity of the specified SemVer version string in strict mode,
+     * which ensures full compliance with the specification.
      * <p>
      * Note that internally this method makes use of {@link #parse(String)} and
      * suppresses any exceptions, so using it to avoid dealing with exceptions
@@ -420,10 +460,28 @@ public class Version implements Comparable<Version>, Serializable {
      * @param  version a string representing a SemVer version, nullable
      * @return {@code true}, if the specified string is a valid SemVer version;
      *         {@code false} otherwise
+     * @see    #isValid(String, boolean)
      * @since  0.10.0
      */
     public static boolean isValid(String version) {
-        return tryParse(version).isPresent();
+        return isValid(version, true);
+    }
+
+    /**
+     * Checks validity of the specified SemVer version string.
+     * <p>
+     * This method provides a way to parse the specified string in lenient mode,
+     * which accepts shorter version cores, such as "1" or "1.2".
+     *
+     * @param  version a string representing a SemVer version, nullable
+     * @param  strictly whether to parse the specified string in strict mode
+     * @return {@code true}, if the specified string is a valid SemVer version;
+     *         {@code false} otherwise
+     * @see    #isValid(String)
+     * @since  0.10.0
+     */
+    public static boolean isValid(String version, boolean strictly) {
+        return tryParse(version, strictly).isPresent();
     }
 
     /**
