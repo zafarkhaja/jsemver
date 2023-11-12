@@ -54,6 +54,9 @@ To install the Java SemVer library add the following dependency to your project
 (https://oss.sonatype.org/content/repositories/snapshots/) to your build
 configuration file.
 
+Find published versions on [mvnrepository.com][mvncentral].
+
+[mvncentral]: https://mvnrepository.com/artifact/com.github.zafarkhaja/java-semver
 
 ## Common Use Cases ##
 The Java SemVer library is built around the `Version` class which represents
