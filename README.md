@@ -54,6 +54,9 @@ project.
 **NOTE**: To use the development version you need to add the SNAPSHOT repository
 to your `pom.xml` file: http://oss.sonatype.org/content/repositories/snapshots/.
 
+Find published versions on [mvnrepository.com][mvncentral].
+
+[mvncentral]: https://mvnrepository.com/artifact/com.github.zafarkhaja/java-semver
 
 ## Common Use Cases ##
 Below are some common use cases for the Java SemVer library.
