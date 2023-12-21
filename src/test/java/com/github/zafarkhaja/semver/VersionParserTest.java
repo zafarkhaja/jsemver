@@ -23,84 +23,79 @@
  */
 package com.github.zafarkhaja.semver;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class VersionParserTest {
+class VersionParserTest {
 
     @Test
-    public void shouldParseNormalVersion() {
+    void shouldParseNormalVersion() {
         NormalVersion version = VersionParser.parseVersionCore("1.0.0");
         assertEquals(new NormalVersion(1, 0, 0), version);
     }
 
     @Test
-    public void shouldRaiseErrorIfNumericIdentifierHasLeadingZeroes() {
-        try {
-            VersionParser.parseVersionCore("01.1.0");
-        } catch (ParseException e) {
-            return;
-        }
-        fail("Numeric identifier MUST NOT contain leading zeroes");
+    void shouldRaiseErrorIfNumericIdentifierHasLeadingZeroes() {
+        assertThrows(
+            ParseException.class,
+            () -> VersionParser.parseVersionCore("01.1.0"),
+            "Numeric identifier MUST NOT contain leading zeroes"
+        );
     }
 
     @Test
-    public void shouldParsePreReleaseVersion() {
+    void shouldParsePreReleaseVersion() {
         MetadataVersion preRelease = VersionParser.parsePreRelease("beta-1.1");
         assertEquals(new MetadataVersion(new String[] {"beta-1", "1"}), preRelease);
     }
 
     @Test
-    public void shouldNotAllowDigitsInPreReleaseVersion() {
-        try {
-            VersionParser.parsePreRelease("alpha.01");
-        } catch (ParseException e) {
-            return;
-        }
-        fail("Should not allow digits in pre-release version");
+    void shouldNotAllowDigitsInPreReleaseVersion() {
+        assertThrows(
+            ParseException.class,
+            () -> VersionParser.parsePreRelease("alpha.01"),
+            "Should not allow digits in pre-release version"
+        );
     }
 
     @Test
-    public void shouldRaiseErrorForEmptyPreReleaseIdentifier() {
-        try {
-            VersionParser.parsePreRelease("beta-1..1");
-        } catch (ParseException e) {
-            return;
-        }
-        fail("Identifiers MUST NOT be empty");
+    void shouldRaiseErrorForEmptyPreReleaseIdentifier() {
+        assertThrows(
+            ParseException.class,
+            () -> VersionParser.parsePreRelease("beta-1..1"),
+            "Identifiers MUST NOT be empty"
+        );
     }
 
     @Test
-    public void shouldParseBuildMetadata() {
+    void shouldParseBuildMetadata() {
         MetadataVersion build = VersionParser.parseBuild("build.1");
         assertEquals(new MetadataVersion(new String[] {"build", "1"}), build);
     }
 
     @Test
-    public void shouldAllowDigitsInBuildMetadata() {
-        try {
-            VersionParser.parseBuild("build.01");
-        } catch (ParseException e) {
-            fail("Should allow digits in build metadata");
-        }
+    void shouldAllowDigitsInBuildMetadata() {
+        assertDoesNotThrow(
+            () -> VersionParser.parseBuild("build.01"),
+            "Should allow digits in build metadata"
+        );
     }
 
     @Test
-    public void shouldRaiseErrorForEmptyBuildIdentifier() {
-        try {
-            VersionParser.parseBuild(".build.01");
-        } catch (ParseException e) {
-            return;
-        }
-        fail("Identifiers MUST NOT be empty");
+    void shouldRaiseErrorForEmptyBuildIdentifier() {
+        assertThrows(
+            ParseException.class,
+            () -> VersionParser.parseBuild(".build.01"),
+            "Identifiers MUST NOT be empty"
+        );
     }
 
     @Test
-    public void shouldParseValidSemVer() {
+    void shouldParseValidSemVer() {
         VersionParser parser = new VersionParser("1.0.0-rc.2+build.05");
         Version version = parser.parse(null);
         assertEquals(
@@ -114,14 +109,13 @@ public class VersionParserTest {
     }
 
     @Test
-    public void shouldRaiseErrorForIllegalInputString() {
+    void shouldRaiseErrorForIllegalInputString() {
         for (String illegal : new String[] { "", null }) {
-            try {
-                new VersionParser(illegal);
-            } catch (IllegalArgumentException e) {
-                continue;
-            }
-            fail("Should raise error for illegal input string");
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> new VersionParser(illegal),
+                "Should raise error for illegal input string"
+            );
         }
     }
 }

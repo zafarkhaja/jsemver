@@ -24,24 +24,24 @@
 package com.github.zafarkhaja.semver.util;
 
 import java.util.Iterator;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class StreamTest {
+class StreamTest {
 
     @Test
-    public void shouldBeBackedByArray() {
+    void shouldBeBackedByArray() {
         Character[] input = {'a', 'b', 'c'};
         Stream<Character> stream = new Stream<>(input);
         assertArrayEquals(input, stream.toArray());
     }
 
     @Test
-    public void shouldImplementIterable() {
+    void shouldImplementIterable() {
         Character[] input = {'a', 'b', 'c'};
         Stream<Character> stream = new Stream<>(input);
         Iterator<Character> it = stream.iterator();
@@ -52,7 +52,7 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldNotReturnRealElementsArray() {
+    void shouldNotReturnRealElementsArray() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         Character[] charArray = stream.toArray();
         charArray[0] = Character.valueOf('z');
@@ -61,7 +61,7 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldReturnArrayOfElementsThatAreLeftInStream() {
+    void shouldReturnArrayOfElementsThatAreLeftInStream() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         stream.consume();
         stream.consume();
@@ -70,7 +70,7 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldConsumeElementsOneByOne() {
+    void shouldConsumeElementsOneByOne() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertEquals(Character.valueOf('a'), stream.consume());
         assertEquals(Character.valueOf('b'), stream.consume());
@@ -78,25 +78,24 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldRaiseErrorWhenUnexpectedElementConsumed() {
+    void shouldRaiseErrorWhenUnexpectedElementConsumed() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
-        try {
-            stream.consume(element -> false);
-        } catch (UnexpectedElementException e) {
-            return;
-        }
-        fail("Should raise error when unexpected element type is consumed");
+        assertThrows(
+            UnexpectedElementException.class,
+            () -> stream.consume(element -> false),
+            "Should raise error when unexpected element type is consumed"
+        );
     }
 
     @Test
-    public void shouldLookaheadWithoutConsuming() {
+    void shouldLookaheadWithoutConsuming() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertEquals(Character.valueOf('a'), stream.lookahead());
         assertEquals(Character.valueOf('a'), stream.lookahead());
     }
 
     @Test
-    public void shouldLookaheadArbitraryNumberOfElements() {
+    void shouldLookaheadArbitraryNumberOfElements() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertEquals(Character.valueOf('a'), stream.lookahead(1));
         assertEquals(Character.valueOf('b'), stream.lookahead(2));
@@ -104,14 +103,14 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldCheckIfLookaheadIsOfExpectedTypes() {
+    void shouldCheckIfLookaheadIsOfExpectedTypes() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertTrue(stream.positiveLookahead(element -> element == 'a'));
         assertFalse(stream.positiveLookahead(element -> element == 'c'));
     }
 
     @Test
-    public void shouldCheckIfElementOfExpectedTypesExistBeforeGivenType() {
+    void shouldCheckIfElementOfExpectedTypesExistBeforeGivenType() {
         Stream<Character> stream = new Stream<>(new Character[] {'1', '.', '0', '.', '0'});
         assertTrue(stream.positiveLookaheadBefore(
             element -> element == '.',
@@ -124,14 +123,14 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldCheckIfElementOfExpectedTypesExistUntilGivenPosition() {
+    void shouldCheckIfElementOfExpectedTypesExistUntilGivenPosition() {
         Stream<Character> stream = new Stream<>(new Character[] {'1', '.', '0', '.', '0'});
         assertTrue(stream.positiveLookaheadUntil(3, element -> element == '0'));
         assertFalse(stream.positiveLookaheadUntil(3, element -> element == 'a'));
     }
 
     @Test
-    public void shouldPushBackOneElementAtATime() {
+    void shouldPushBackOneElementAtATime() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertEquals(Character.valueOf('a'), stream.consume());
         stream.pushBack();
@@ -139,7 +138,7 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldStopPushingBackWhenThereAreNoElements() {
+    void shouldStopPushingBackWhenThereAreNoElements() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertEquals(Character.valueOf('a'), stream.consume());
         assertEquals(Character.valueOf('b'), stream.consume());
@@ -152,7 +151,7 @@ public class StreamTest {
     }
 
     @Test
-    public void shouldKeepTrackOfCurrentOffset() {
+    void shouldKeepTrackOfCurrentOffset() {
         Stream<Character> stream = new Stream<>(new Character[] {'a', 'b', 'c'});
         assertEquals(0, stream.currentOffset());
         stream.consume();

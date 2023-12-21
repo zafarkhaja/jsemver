@@ -26,48 +26,33 @@ package com.github.zafarkhaja.semver.expr;
 import com.github.zafarkhaja.semver.expr.Lexer.Token;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Parameterized.class)
-public class ParserErrorHandlingTest {
+class ParserErrorHandlingTest {
 
-    private final String invalidExpr;
-    private final Token unexpected;
-    private final Token.Type[] expected;
-
-    public ParserErrorHandlingTest(
+    @ParameterizedTest
+    @MethodSource("parameters")
+    void shouldCorrectlyHandleParseErrors(
         String invalidExpr,
         Token unexpected,
         Token.Type[] expected
     ) {
-        this.invalidExpr = invalidExpr;
-        this.unexpected  = unexpected;
-        this.expected    = expected;
+        UnexpectedTokenException e = assertThrows(
+            UnexpectedTokenException.class,
+            () -> ExpressionParser.newInstance().parse(invalidExpr)
+        );
+        assertEquals(unexpected, e.getUnexpectedToken());
+        assertArrayEquals(expected, e.getExpectedTokenTypes());
     }
 
-    @Test
-    public void shouldCorrectlyHandleParseErrors() {
-        try {
-            ExpressionParser.newInstance().parse(invalidExpr);
-        } catch (UnexpectedTokenException e) {
-            assertEquals(unexpected, e.getUnexpectedToken());
-            assertArrayEquals(expected, e.getExpectedTokenTypes());
-            return;
-        }
-        fail("Uncaught exception");
-    }
-
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> parameters() {
+    static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             { "1)",           new Token(RIGHT_PAREN, ")", 1),  new Token.Type[] { EOI } },
             { "(>1.0.1",      new Token(EOI, null, 7),         new Token.Type[] { RIGHT_PAREN } },

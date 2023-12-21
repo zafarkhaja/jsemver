@@ -23,17 +23,17 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class NotTest {
+class NotTest {
 
     @Test
-    public void shouldRevertBooleanResultOfExpression() {
+    void shouldRevertBooleanResultOfExpression() {
         Expression expr1 = version -> false;
         Expression expr2 = version -> true;
         Not not;

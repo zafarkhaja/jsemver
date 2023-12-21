@@ -24,17 +24,17 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class EqualTest {
+class EqualTest {
 
     @Test
-    public void shouldCheckIfVersionIsEqualToParsedVersion() {
+    void shouldCheckIfVersionIsEqualToParsedVersion() {
         Version parsed = Version.valueOf("1.2.3");
         Equal eq = new Equal(parsed);
         assertTrue(eq.interpret(Version.valueOf("1.2.3")));

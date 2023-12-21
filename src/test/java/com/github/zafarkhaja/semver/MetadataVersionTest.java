@@ -23,22 +23,21 @@
  */
 package com.github.zafarkhaja.semver;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Enclosed.class)
-public class MetadataVersionTest {
+class MetadataVersionTest {
 
-    public static class CoreFunctionalityTest {
+    @Nested
+    class CoreFunctionality {
 
         @Test
-        public void mustCompareEachIdentifierSeparately() {
+        void mustCompareEachIdentifierSeparately() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"beta", "2", "abc"}
             );
@@ -49,7 +48,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldCompareIdentifiersCountIfCommonIdentifiersAreEqual() {
+        void shouldCompareIdentifiersCountIfCommonIdentifiersAreEqual() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"beta", "abc"}
             );
@@ -60,7 +59,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldComapareDigitsOnlyIdentifiersNumerically() {
+        void shouldComapareDigitsOnlyIdentifiersNumerically() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -71,7 +70,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldCompareMixedIdentifiersLexicallyInAsciiSortOrder() {
+        void shouldCompareMixedIdentifiersLexicallyInAsciiSortOrder() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"beta", "abc"}
             );
@@ -82,14 +81,14 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldReturnNegativeWhenComparedToNullMetadataVersion() {
+        void shouldReturnNegativeWhenComparedToNullMetadataVersion() {
             MetadataVersion v1 = new MetadataVersion(new String[] {});
             MetadataVersion v2 = MetadataVersion.NULL;
             assertTrue(0 > v1.compareTo(v2));
         }
 
         @Test
-        public void shouldOverrideEqualsMethod() {
+        void shouldOverrideEqualsMethod() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -104,7 +103,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldProvideIncrementMethod() {
+        void shouldProvideIncrementMethod() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "1"}
             );
@@ -113,7 +112,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldAppendOneAsLastIdentifierIfLastOneIsAlphaNumericWhenIncrementing() {
+        void shouldAppendOneAsLastIdentifierIfLastOneIsAlphaNumericWhenIncrementing() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha"}
             );
@@ -122,7 +121,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldBeImmutable() {
+        void shouldBeImmutable() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "1"}
             );
@@ -131,22 +130,23 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class NullMetadataVersionTest {
+    @Nested
+    class NullMetadataVersion {
 
         @Test
-        public void shouldReturnEmptyStringOnToString() {
+        void shouldReturnEmptyStringOnToString() {
             MetadataVersion v = MetadataVersion.NULL;
             assertTrue(v.toString().isEmpty());
         }
 
         @Test
-        public void shouldReturnZeroOnHashCode() {
+        void shouldReturnZeroOnHashCode() {
             MetadataVersion v = MetadataVersion.NULL;
             assertEquals(0, v.hashCode());
         }
 
         @Test
-        public void shouldBeEqualOnlyToItsType() {
+        void shouldBeEqualOnlyToItsType() {
             MetadataVersion v1 = MetadataVersion.NULL;
             MetadataVersion v2 = MetadataVersion.NULL;
             MetadataVersion v3 = new MetadataVersion(new String[] {});
@@ -156,34 +156,34 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldReturnPositiveWhenComparedToNonNullMetadataVersion() {
+        void shouldReturnPositiveWhenComparedToNonNullMetadataVersion() {
             MetadataVersion v1 = MetadataVersion.NULL;
             MetadataVersion v2 = new MetadataVersion(new String[] {});
             assertTrue(0 < v1.compareTo(v2));
         }
 
         @Test
-        public void shouldReturnZeroWhenComparedToNullMetadataVersion() {
+        void shouldReturnZeroWhenComparedToNullMetadataVersion() {
             MetadataVersion v1 = MetadataVersion.NULL;
             MetadataVersion v2 = MetadataVersion.NULL;
             assertTrue(0 == v1.compareTo(v2));
         }
 
         @Test
-        public void shouldThrowNullPointerExceptionIfIncremented() {
-            try {
-                MetadataVersion.NULL.increment();
-            } catch (NullPointerException e) {
-                return;
-            }
-            fail("Should throw NullPointerException when incremented");
+        void shouldThrowNullPointerExceptionIfIncremented() {
+            assertThrows(
+                NullPointerException.class,
+                MetadataVersion.NULL::increment,
+                "Should throw NullPointerException when incremented"
+            );
         }
     }
 
-    public static class EqualsMethodTest {
+    @Nested
+    class EqualsMethod {
 
         @Test
-        public void shouldBeReflexive() {
+        void shouldBeReflexive() {
             MetadataVersion v = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -191,7 +191,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldBeSymmetric() {
+        void shouldBeSymmetric() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -203,7 +203,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldBeTransitive() {
+        void shouldBeTransitive() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -219,7 +219,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldBeConsistent() {
+        void shouldBeConsistent() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -232,7 +232,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
+        void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
             MetadataVersion v = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -240,7 +240,7 @@ public class MetadataVersionTest {
         }
 
         @Test
-        public void shouldReturnFalseIfOtherVersionIsNull() {
+        void shouldReturnFalseIfOtherVersionIsNull() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -249,10 +249,11 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class HashCodeMethodTest {
+    @Nested
+    class HashCodeMethod {
 
         @Test
-        public void shouldReturnSameHashCodeIfVersionsAreEqual() {
+        void shouldReturnSameHashCodeIfVersionsAreEqual() {
             MetadataVersion v1 = new MetadataVersion(
                 new String[] {"alpha", "123"}
             );
@@ -264,10 +265,11 @@ public class MetadataVersionTest {
         }
     }
 
-    public static class ToStringMethodTest {
+    @Nested
+    class ToStringMethod {
 
         @Test
-        public void shouldReturnStringRepresentation() {
+        void shouldReturnStringRepresentation() {
             String value = "beta.abc.def";
             MetadataVersion v = new MetadataVersion(value.split("\\."));
             assertEquals(value, v.toString());

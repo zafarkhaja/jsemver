@@ -24,18 +24,18 @@
 package com.github.zafarkhaja.semver;
 
 import com.github.zafarkhaja.semver.VersionParser.CharType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class VersionParserCharTypeTest {
+class VersionParserCharTypeTest {
 
     @Test
-    public void shouldBeMatchedByDigit() {
+    void shouldBeMatchedByDigit() {
         assertTrue(DIGIT.isMatchedBy('0'));
         assertTrue(DIGIT.isMatchedBy('9'));
         assertFalse(DIGIT.isMatchedBy('a'));
@@ -43,7 +43,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldBeMatchedByLetter() {
+    void shouldBeMatchedByLetter() {
         assertTrue(LETTER.isMatchedBy('a'));
         assertTrue(LETTER.isMatchedBy('A'));
         assertFalse(LETTER.isMatchedBy('0'));
@@ -51,7 +51,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldBeMatchedByDot() {
+    void shouldBeMatchedByDot() {
         assertTrue(DOT.isMatchedBy('.'));
         assertFalse(DOT.isMatchedBy('-'));
         assertFalse(DOT.isMatchedBy('0'));
@@ -59,7 +59,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldBeMatchedByHyphen() {
+    void shouldBeMatchedByHyphen() {
         assertTrue(HYPHEN.isMatchedBy('-'));
         assertFalse(HYPHEN.isMatchedBy('+'));
         assertFalse(HYPHEN.isMatchedBy('a'));
@@ -67,7 +67,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldBeMatchedByPlus() {
+    void shouldBeMatchedByPlus() {
         assertTrue(PLUS.isMatchedBy('+'));
         assertFalse(PLUS.isMatchedBy('-'));
         assertFalse(PLUS.isMatchedBy('a'));
@@ -75,7 +75,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldBeMatchedByEol() {
+    void shouldBeMatchedByEol() {
         assertTrue(EOI.isMatchedBy(null));
         assertFalse(EOI.isMatchedBy('-'));
         assertFalse(EOI.isMatchedBy('a'));
@@ -83,7 +83,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldBeMatchedByIllegal() {
+    void shouldBeMatchedByIllegal() {
         assertTrue(ILLEGAL.isMatchedBy('!'));
         assertFalse(ILLEGAL.isMatchedBy('-'));
         assertFalse(ILLEGAL.isMatchedBy('a'));
@@ -91,7 +91,7 @@ public class VersionParserCharTypeTest {
     }
 
     @Test
-    public void shouldReturnCharTypeForCharacter() {
+    void shouldReturnCharTypeForCharacter() {
         assertEquals(DIGIT,   CharType.forCharacter('1'));
         assertEquals(LETTER,  CharType.forCharacter('a'));
         assertEquals(DOT,     CharType.forCharacter('.'));

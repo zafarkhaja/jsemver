@@ -24,29 +24,28 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.expr.Lexer.Token;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Enclosed.class)
-public class LexerTokenTest {
+class LexerTokenTest {
 
-    public static class EqualsMethodTest {
+    @Nested
+    class EqualsMethod {
 
         @Test
-        public void shouldBeReflexive() {
+        void shouldBeReflexive() {
             Token token = new Token(NUMERIC, "1", 0);
             assertTrue(token.equals(token));
         }
 
         @Test
-        public void shouldBeSymmetric() {
+        void shouldBeSymmetric() {
             Token t1 = new Token(EQUAL, "=", 0);
             Token t2 = new Token(EQUAL, "=", 0);
             assertTrue(t1.equals(t2));
@@ -54,7 +53,7 @@ public class LexerTokenTest {
         }
 
         @Test
-        public void shouldBeTransitive() {
+        void shouldBeTransitive() {
             Token t1 = new Token(GREATER, ">", 0);
             Token t2 = new Token(GREATER, ">", 0);
             Token t3 = new Token(GREATER, ">", 0);
@@ -64,7 +63,7 @@ public class LexerTokenTest {
         }
 
         @Test
-        public void shouldBeConsistent() {
+        void shouldBeConsistent() {
             Token t1 = new Token(HYPHEN, "-", 0);
             Token t2 = new Token(HYPHEN, "-", 0);
             assertTrue(t1.equals(t2));
@@ -73,44 +72,45 @@ public class LexerTokenTest {
         }
 
         @Test
-        public void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
+        void shouldReturnFalseIfOtherVersionIsOfDifferentType() {
             Token t1 = new Token(DOT, ".", 0);
             assertFalse(t1.equals(new String(".")));
         }
 
         @Test
-        public void shouldReturnFalseIfOtherVersionIsNull() {
+        void shouldReturnFalseIfOtherVersionIsNull() {
             Token t1 = new Token(AND, "&", 0);
             Token t2 = null;
             assertFalse(t1.equals(t2));
         }
 
         @Test
-        public void shouldReturnFalseIfTypesAreDifferent() {
+        void shouldReturnFalseIfTypesAreDifferent() {
             Token t1 = new Token(EQUAL, "=", 0);
             Token t2 = new Token(NOT_EQUAL, "!=", 0);
             assertFalse(t1.equals(t2));
         }
 
         @Test
-        public void shouldReturnFalseIfLexemesAreDifferent() {
+        void shouldReturnFalseIfLexemesAreDifferent() {
             Token t1 = new Token(NUMERIC, "1", 0);
             Token t2 = new Token(NUMERIC, "2", 0);
             assertFalse(t1.equals(t2));
         }
 
         @Test
-        public void shouldReturnFalseIfPositionsAreDifferent() {
+        void shouldReturnFalseIfPositionsAreDifferent() {
             Token t1 = new Token(NUMERIC, "1", 1);
             Token t2 = new Token(NUMERIC, "1", 2);
             assertFalse(t1.equals(t2));
         }
     }
 
-    public static class HashCodeMethodTest {
+    @Nested
+    class HashCodeMethod {
 
         @Test
-        public void shouldReturnSameHashCodeIfTokensAreEqual() {
+        void shouldReturnSameHashCodeIfTokensAreEqual() {
             Token t1 = new Token(NUMERIC, "1", 0);
             Token t2 = new Token(NUMERIC, "1", 0);
             assertTrue(t1.equals(t2));

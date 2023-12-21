@@ -25,18 +25,18 @@ package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.expr.Lexer.*;
 import com.github.zafarkhaja.semver.util.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static com.github.zafarkhaja.semver.expr.Lexer.Token.Type.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class LexerTest {
+class LexerTest {
 
     @Test
-    public void shouldTokenizeVersionString() {
+    void shouldTokenizeVersionString() {
         Token[] expected = {
             new Token(GREATER, ">",  0),
             new Token(NUMERIC, "1",  1),
@@ -52,7 +52,7 @@ public class LexerTest {
     }
 
     @Test
-    public void shouldSkipWhitespaces() {
+    void shouldSkipWhitespaces() {
         Token[] expected = {
             new Token(GREATER, ">",  0),
             new Token(NUMERIC, "1",  2),
@@ -64,7 +64,7 @@ public class LexerTest {
     }
 
     @Test
-    public void shouldEndWithEol() {
+    void shouldEndWithEol() {
         Token[] expected = {
             new Token(NUMERIC, "1",  0),
             new Token(DOT,     ".",  1),
@@ -79,13 +79,12 @@ public class LexerTest {
     }
 
     @Test
-    public void shouldRaiseErrorOnIllegalCharacter() {
+    void shouldRaiseErrorOnIllegalCharacter() {
         Lexer lexer = new Lexer();
-        try {
-            lexer.tokenize("@1.0.0");
-        } catch (LexerException e) {
-            return;
-        }
-        fail("Should raise error on illegal character");
+        assertThrows(
+            LexerException.class,
+            () -> lexer.tokenize("@1.0.0"),
+            "Should raise error on illegal character"
+        );
     }
 }

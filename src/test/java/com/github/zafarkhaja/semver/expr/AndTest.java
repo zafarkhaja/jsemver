@@ -23,17 +23,17 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class AndTest {
+class AndTest {
 
     @Test
-    public void shouldCheckIfBothExpressionsEvaluateToTrue() {
+    void shouldCheckIfBothExpressionsEvaluateToTrue() {
         Expression left = version -> true;
         Expression right = version -> true;
         And and = new And(left, right);

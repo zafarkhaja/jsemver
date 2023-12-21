@@ -26,39 +26,25 @@ package com.github.zafarkhaja.semver;
 import com.github.zafarkhaja.semver.VersionParser.CharType;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import static com.github.zafarkhaja.semver.VersionParser.CharType.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-@RunWith(Parameterized.class)
-public class ParserErrorHandlingTest {
+class ParserErrorHandlingTest {
 
-    private final String invalidVersion;
-    private final Character unexpected;
-    private final int position;
-    private final CharType[] expected;
-
-    public ParserErrorHandlingTest(
+    @ParameterizedTest
+    @MethodSource("parameters")
+    void shouldCorrectlyHandleParseErrors(
         String invalidVersion,
         Character unexpected,
         int position,
         CharType[] expected
     ) {
-        this.invalidVersion = invalidVersion;
-        this.unexpected = unexpected;
-        this.position = position;
-        this.expected = expected;
-    }
-
-    @Test
-    public void shouldCorrectlyHandleParseErrors() {
         try {
             VersionParser.parseValidSemVer(invalidVersion);
         } catch (UnexpectedCharacterException e) {
@@ -78,8 +64,7 @@ public class ParserErrorHandlingTest {
         fail("Uncaught exception");
     }
 
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> parameters() {
+    static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             { "1",            null, 1,  new CharType[] { DOT } },
             { "1 ",           ' ',  1,  new CharType[] { DOT } },

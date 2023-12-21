@@ -24,17 +24,17 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class LessTest {
+class LessTest {
 
     @Test
-    public void shouldCheckIfVersionIsLessThanParsedVersion() {
+    void shouldCheckIfVersionIsLessThanParsedVersion() {
         Version parsed = Version.valueOf("2.0.0");
         Less lt = new Less(parsed);
         assertTrue(lt.interpret(Version.valueOf("1.2.3")));

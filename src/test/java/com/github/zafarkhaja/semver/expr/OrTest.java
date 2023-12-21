@@ -23,17 +23,17 @@
  */
 package com.github.zafarkhaja.semver.expr;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class OrTest {
+class OrTest {
 
     @Test
-    public void shouldCheckIfOneOfTwoExpressionsEvaluateToTrue() {
+    void shouldCheckIfOneOfTwoExpressionsEvaluateToTrue() {
         Expression left = version -> false;
         Expression right = version -> true;
         Or or = new Or(left, right);

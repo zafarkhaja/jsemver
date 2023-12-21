@@ -24,17 +24,17 @@
 package com.github.zafarkhaja.semver.expr;
 
 import com.github.zafarkhaja.semver.Version;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
  */
-public class GreaterTest {
+class GreaterTest {
 
     @Test
-    public void shouldCheckIfVersionIsGreaterThanParsedVersion() {
+    void shouldCheckIfVersionIsGreaterThanParsedVersion() {
         Version parsed = Version.valueOf("2.0.0");
         Greater gt = new Greater(parsed);
         assertTrue(gt.interpret(Version.valueOf("3.2.1")));
