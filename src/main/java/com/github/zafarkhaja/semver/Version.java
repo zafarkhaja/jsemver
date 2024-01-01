@@ -38,13 +38,12 @@ import static com.github.zafarkhaja.semver.VersionParser.parseBuild;
 import static com.github.zafarkhaja.semver.VersionParser.parsePreRelease;
 
 /**
- * The {@code Version} class is the main class of the Java SemVer library.
+ * A representation of version as defined by the SemVer Specification.
  * <p>
- * This class implements the Facade design pattern.
- * It is also immutable, which makes the class thread-safe.
+ * The {@code Version} class is immutable and thread-safe.
  *
  * @author Zafar Khaja {@literal <zafarkhaja@gmail.com>}
- * @since 0.1.0
+ * @since  0.1.0
  */
 @SuppressWarnings("serial")
 public class Version implements Comparable<Version>, Serializable {
