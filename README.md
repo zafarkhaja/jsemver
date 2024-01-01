@@ -168,40 +168,34 @@ v1.compareTo(v2);       // < 0
 
 
 ## Range Expressions ##
-Java SemVer supports the SemVer Expressions API which is implemented as both
-internal DSL and external DSL. The entry point for the API are
-the `Version.satisfies` methods.
+Java SemVer supports Range Expressions with an opinionated
+[BNF grammar](https://github.com/zafarkhaja/jsemver/issues/1).
 
-### Internal DSL ###
-The internal DSL is implemented by the `CompositeExpression` class using fluent
-interface. For convenience, it also provides the `Helper` class with static
-helper methods.
+**NOTE**: The Java SemVer Range Expressions are not fully compatible with the
+`node-semver` ranges.
+
+~~~ java
+Version v = Version.of(1, 2, 3, "pre-release");
+v.satisfies(">=1.0.0 & <2.0.0");  // false
+~~~
+
+The following is the list of supported notations and their interpretations:
+* Wildcard Ranges (`*`|`X`|`x`): `1.*` interpreted as `>=1.0.0 & <2.0.0`
+* Tilde Ranges (`~`): `~1.5` interpreted as `>=1.5.0 & <1.6.0`
+* Hyphen Ranges (`-`): `1.0-2.0` interpreted as `>=1.0.0 & <=2.0.0`
+* Caret Ranges (`^`): `^0.2.3` interpreted as `>=0.2.3 & <0.3.0`
+* Partial Version Ranges: `1` interpreted as `1.x` or `>=1.0.0 & <2.0.0`
+* Negation operator: `!(1.x)` interpreted as `<1.0.0 & >=2.0.0`
+* Parenthesized expressions: `~1.3 | (1.4.* & !=1.4.5) | ~2`
+
+There is also an internal DSL available just in case...
 
 ~~~ java
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.*;
 
-Version v = Version.parse("1.0.0-beta");
-boolean result = v.satisfies(gte("1.0.0").and(lt("2.0.0")));  // false
+Version v = Version.of(1, "beta");
+v.satisfies(gte(Version.of(1)).and(lt(Version.of(2))));  // false
 ~~~
-
-### External DSL ###
-The BNF grammar for the external DSL can be found in the corresponding
-[issue](https://github.com/zafarkhaja/jsemver/issues/1).
-
-~~~ java
-Version v = Version.parse("1.0.0-beta");
-boolean result = v.satisfies(">=1.0.0 & <2.0.0");  // false
-~~~
-
-Below are examples of some common use cases, as well as syntactic sugar and some
-other interesting capabilities of the SemVer Expressions external DSL.
-* Wildcard Ranges (`*`|`X`|`x`) - `1.*` which is equivalent to `>=1.0.0 & <2.0.0`
-* Tilde Ranges (`~`) - `~1.5` which is equivalent to `>=1.5.0 & <1.6.0`
-* Hyphen Ranges (`-`) - `1.0-2.0` which is equivalent to `>=1.0.0 & <=2.0.0`
-* Caret Ranges (`^`) - `^0.2.3` which is equivalent to `>=0.2.3 & <0.3.0`
-* Partial Version Ranges - `1` which is equivalent to `1.X` or `>=1.0.0 & <2.0.0`
-* Negation operator - `!(1.x)` which is equivalent to `<1.0.0 & >=2.0.0`
-* Parenthesized expressions - `~1.3 | (1.4.* & !=1.4.5) | ~2`
 
 
 ## Exception Handling ##
