@@ -176,17 +176,17 @@ Java SemVer supports Range Expressions with an opinionated
 
 ~~~ java
 Version v = Version.of(1, 2, 3, "pre-release");
-v.satisfies(">=1.0.0 & <2.0.0");  // false
+v.satisfies(">=1.0.0 && <2.0.0");  // false
 ~~~
 
 The following is the list of supported notations and their interpretations:
-* Wildcard Ranges (`*`|`X`|`x`): `1.*` interpreted as `>=1.0.0 & <2.0.0`
-* Tilde Ranges (`~`): `~1.5` interpreted as `>=1.5.0 & <1.6.0`
-* Hyphen Ranges (`-`): `1.0-2.0` interpreted as `>=1.0.0 & <=2.0.0`
-* Caret Ranges (`^`): `^0.2.3` interpreted as `>=0.2.3 & <0.3.0`
-* Partial Version Ranges: `1` interpreted as `1.x` or `>=1.0.0 & <2.0.0`
-* Negation operator: `!(1.x)` interpreted as `<1.0.0 & >=2.0.0`
-* Parenthesized expressions: `~1.3 | (1.4.* & !=1.4.5) | ~2`
+* Wildcard Ranges (`*`|`X`|`x`): `1.*` interpreted as `>=1.0.0 && <2.0.0`
+* Tilde Ranges (`~`): `~1.5` interpreted as `>=1.5.0 && <1.6.0`
+* Hyphen Ranges (`-`): `1.0-2.0` interpreted as `>=1.0.0 && <=2.0.0`
+* Caret Ranges (`^`): `^0.2.3` interpreted as `>=0.2.3 && <0.3.0`
+* Partial Version Ranges: `1` interpreted as `1.x` or `>=1.0.0 && <2.0.0`
+* Negation operator: `!(1.x)` interpreted as `<1.0.0 && >=2.0.0`
+* Parenthesized expressions: `~1.3 || (1.4.* && !=1.4.5) || ~2`
 
 There is also an internal DSL available just in case...
 
