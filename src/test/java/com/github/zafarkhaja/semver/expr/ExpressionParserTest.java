@@ -227,7 +227,7 @@ class ExpressionParserTest {
     @Test
     void shouldParseMultipleRangesJoinedWithAnd() {
         ExpressionParser parser = new ExpressionParser(new Lexer());
-        Expression and = parser.parse(">=1.0.0 & <2.0.0");
+        Expression and = parser.parse(">=1.0.0 && <2.0.0");
         assertTrue(and.interpret(Version.of(1, 2, 3)));
         assertFalse(and.interpret(Version.of(3, 2, 1)));
     }
@@ -235,7 +235,7 @@ class ExpressionParserTest {
     @Test
     void shouldParseMultipleRangesJoinedWithOr() {
         ExpressionParser parser = new ExpressionParser(new Lexer());
-        Expression or = parser.parse("1.* | =2.0.0");
+        Expression or = parser.parse("1.* || =2.0.0");
         assertTrue(or.interpret(Version.of(1, 2, 3)));
         assertFalse(or.interpret(Version.of(2, 1, 0)));
     }
@@ -282,7 +282,7 @@ class ExpressionParserTest {
     @Test
     void shouldParseComplexExpressions() {
         ExpressionParser parser = new ExpressionParser(new Lexer());
-        Expression expr = parser.parse("((>=1.0.1 & <2) | (>=3.0 & <4)) & ((1-1.5) & (~1.5))");
+        Expression expr = parser.parse("((>=1.0.1 && <2) || (>=3.0 && <4)) && ((1-1.5) && (~1.5))");
         assertTrue(expr.interpret(Version.of(1, 5, 0)));
         assertFalse(expr.interpret(Version.of(2, 5, 0)));
     }
