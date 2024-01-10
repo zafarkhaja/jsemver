@@ -1,6 +1,38 @@
 Java SemVer Changelog
 =====================
 
+## v0.10.0 (Jan 10, 2024) ##
+* Made `Version` serializable ([#47](https://github.com/zafarkhaja/jsemver/issues/47))
+* Enhanced `Version.Builder` class
+* Widened numeric identifiers to `long`
+* Replaced `Version`'s static factory methods with `Version.parse()` and `Version.of()`
+* Created `Version.tryParse()` method which returns `Optional<Version>`
+* Created `Version.isValid()` method ([#26](https://github.com/zafarkhaja/jsemver/issues/26))
+* Updated version parser to accept partial versions, such as `1` or `1.2` ([#15](https://github.com/zafarkhaja/jsemver/issues/15))
+* Renamed and enhanced `Version`'s getter methods
+* Renamed and enhanced `Version`'s "incrementor" methods
+* Changed `Version.satisfies(Expression)`'s parameter to `Predicate<Version>`
+* Created `Version.isPreRelease()` method
+* Created `Version.isStable()` method
+* Created `Version.isPublicApiStable()` method
+* Created `Version.isPublicApiCompatibleWith(Version)` method
+* Created methods to check versions' compatibility ([#21](https://github.com/zafarkhaja/jsemver/issues/21))
+* Refactored `Version`'s comparators and "comparator" methods
+* Deprecated `Version.BUILD_AWARE_ORDER` comparator
+* Updated Range Expressions parser to support double-symbol `&&` and `||` operators ([#23](https://github.com/zafarkhaja/jsemver/issues/23))
+* Fixed Exceptions' `getMessage()` method ([#38](https://github.com/zafarkhaja/jsemver/issues/38))
+* Performed major code and documentation improvements
+* Fixed various bugs and warnings, improved stability
+* Added `Automatic-Module-Name` to MANIFEST for JPMS support
+* Upgraded Java support to 1.8
+* Migrated to JUnit 5
+* Added `CONTRIBUTING.md`
+* Added `.editorconfig` file
+* Included `LICENSE` in the JAR artifact ([#44](https://github.com/zafarkhaja/jsemver/issues/44))
+* Improved deployment support
+* Updated project dependencies
+* Removed Travis CI integration
+
 ## v0.9.0 (Mar 19, 2015) ##
 * Implemented internal DSL for SemVer Expressions ([#6](https://github.com/zafarkhaja/jsemver/issues/6))
 * Added support for Caret (^) and X-Ranges to SemVer Expressions ([#18](https://github.com/zafarkhaja/jsemver/pull/18))
