@@ -1,5 +1,5 @@
-Java SemVer v0.10.0 (SemVer 2)
-==============================
+Java SemVer v0.11.0-SNAPSHOT (SemVer 2)
+=======================================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
 (http://semver.org/).
@@ -31,16 +31,20 @@ Library Usage
 
 
 ## Installation ##
-To use the latest stable version add the following dependency to your project
+To try the current development version add the following to your build configuration file
 
 ~~~ xml
+<repository>
+  <id>ossrh-snapshots</id>
+  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</repository>
+
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.10.0</version>
+  <version>0.11.0-SNAPSHOT</version>
 </dependency>
 ~~~
-
 
 ## Common Use Cases ##
 The Java SemVer library is built around the `Version` class which represents
