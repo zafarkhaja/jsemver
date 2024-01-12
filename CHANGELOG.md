@@ -1,6 +1,9 @@
 Java SemVer Changelog
 =====================
 
+## v0.10.1 (Jan 12, 2024) ##
+* Fixed backward compatibility of `Version`'s getters
+
 ## v0.10.0 (Jan 10, 2024) ##
 * Made `Version` serializable ([#47](https://github.com/zafarkhaja/jsemver/issues/47))
 * Enhanced `Version.Builder` class
