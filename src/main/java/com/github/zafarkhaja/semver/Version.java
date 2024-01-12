@@ -1492,8 +1492,12 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the major version number
      */
     @Deprecated
-    public long getMajorVersion() {
-        return majorVersion();
+    public int getMajorVersion() {
+        long major = majorVersion();
+        if (major > Integer.MAX_VALUE) {
+            throw new RuntimeException("major > Integer.MAX_VALUE");
+        }
+        return (int) major;
     }
 
     /**
@@ -1502,8 +1506,12 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the minor version number
      */
     @Deprecated
-    public long getMinorVersion() {
-        return minorVersion();
+    public int getMinorVersion() {
+        long minor = minorVersion();
+        if (minor > Integer.MAX_VALUE) {
+            throw new RuntimeException("minor > Integer.MAX_VALUE");
+        }
+        return (int) minor;
     }
 
     /**
@@ -1512,8 +1520,12 @@ public class Version implements Comparable<Version>, Serializable {
      * @return the patch version number
      */
     @Deprecated
-    public long getPatchVersion() {
-        return patchVersion();
+    public int getPatchVersion() {
+        long patch = patchVersion();
+        if (patch > Integer.MAX_VALUE) {
+            throw new RuntimeException("patch > Integer.MAX_VALUE");
+        }
+        return (int) patch;
     }
 
     /**
