@@ -1,4 +1,4 @@
-Java SemVer v0.10.1 (SemVer 2)
+Java SemVer v0.10.2 (SemVer 2)
 ==============================
 
 Java SemVer is a Java implementation of the Semantic Versioning Specification
@@ -37,7 +37,7 @@ To use the latest stable version add the following dependency to your project
 <dependency>
   <groupId>com.github.zafarkhaja</groupId>
   <artifactId>java-semver</artifactId>
-  <version>0.10.1</version>
+  <version>0.10.2</version>
 </dependency>
 ~~~
 

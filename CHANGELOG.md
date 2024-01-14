@@ -1,6 +1,9 @@
 Java SemVer Changelog
 =====================
 
+## v0.10.2 (Jan 14, 2024) ##
+* Fixed `Version.toBuilder()` bug ([#68](https://github.com/zafarkhaja/jsemver/issues/68))
+
 ## v0.10.1 (Jan 12, 2024) ##
 * Fixed backward compatibility of `Version`'s getters
 
