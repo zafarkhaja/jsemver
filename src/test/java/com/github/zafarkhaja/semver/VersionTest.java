@@ -1093,6 +1093,18 @@ class VersionTest {
         }
 
         @Test
+        void shouldNotFailToConvertToBuilderWithoutPreReleaseVersion() {
+            Version v = Version.of(1, 2, 3, null, "build.metadata");
+            assertDoesNotThrow(v::toBuilder);
+        }
+
+        @Test
+        void shouldNotFailToConvertToBuilderWithoutBuildMetadata() {
+            Version v = Version.of(1, 2, 3, "pre-release");
+            assertDoesNotThrow(v::toBuilder);
+        }
+
+        @Test
         @SuppressWarnings("deprecation")
         void shouldSetPreReleaseVersion() {
             Version v1 = Version.of(1, 0, 0);

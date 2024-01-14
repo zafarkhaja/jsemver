@@ -1269,11 +1269,11 @@ public class Version implements Comparable<Version>, Serializable {
      * @since  0.10.0
      */
     public Builder toBuilder() {
-        return new Builder()
-            .setVersionCore(major, minor, patch)
-            .setPreReleaseVersion(preReleaseIds)
-            .setBuildMetadata(buildIds)
-        ;
+        Builder b = new Builder();
+        b.setVersionCore(major, minor, patch);
+        preReleaseVersion().ifPresent(b::setPreReleaseVersion);
+        buildMetadata().ifPresent(b::setBuildMetadata);
+        return b;
     }
 
     private static long safeIncrement(long l) {
