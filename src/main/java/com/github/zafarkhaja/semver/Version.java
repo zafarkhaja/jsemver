@@ -378,6 +378,19 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * Provides a newly instantiated {@code Builder} instance.
+     * <p>
+     * This is just a convenience method which makes it easier to use the
+     * {@code Builder} class without explicit importing or instantiating.
+     *
+     * @return a new {@code Builder} instance
+     * @since  0.11.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Obtains a {@code Version} instance by parsing the specified string in
      * strict mode, which ensures full compliance with the specification.
      *

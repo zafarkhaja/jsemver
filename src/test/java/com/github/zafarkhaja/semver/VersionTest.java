@@ -299,6 +299,17 @@ class VersionTest {
     class CoreFunctionality {
 
         @Test
+        void shouldProvideBuilderForConvenience() {
+            Version v = Version.builder()
+                .setVersionCore(1, 2, 3)
+                .setPreReleaseVersion("pre-release")
+                .setBuildMetadata("build.metadata")
+                .build()
+            ;
+            assertEquals(Version.of(1, 2, 3, "pre-release", "build.metadata"), v);
+        }
+
+        @Test
         void shouldNormallyTakeTheFormXDotYDotZWhereXYZAreNonNegativeIntegers() {
             Version v = Version.parse("1.2.3");
             assertEquals(1, v.majorVersion());

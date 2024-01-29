@@ -76,7 +76,7 @@ Version v = Version.of(1, 2, 3, "pre-release", "build.metadata");
 
 3. by using the `Version.Builder` class
 ~~~ java
-Version v1 = new Version.Builder()  // 0.0.0
+Version v1 = Version.builder()      // 0.0.0
   .setVersionCore(0, 1)             // 0.1.0
   .setMajorVersion(1)               // 1.1.0
   .setPreReleaseVersion("beta")     // 1.1.0-beta
