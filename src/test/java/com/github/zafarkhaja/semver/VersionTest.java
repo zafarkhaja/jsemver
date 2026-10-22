@@ -793,6 +793,13 @@ class VersionTest {
             assertEquals("pre-release.2", v2.preReleaseVersion().get());
         }
 
+        @ParameterizedTest
+        @ValueSource(strings = {"0", "pre-release.0"})
+        void shouldIncrementZeroPreReleaseIdentifier(String id) {
+            Version v = Version.of(1, id).nextPreReleaseVersion();
+            assertEquals(id.substring(0, id.length() - 1) + "1", v.preReleaseVersion().get());
+        }
+
         @Test
         void shouldAddNumericIdentifierToPreReleaseVersionIfNeededWhenIncrementing() {
             Version v1 = Version.of(1, "pre-release");
@@ -1137,6 +1144,21 @@ class VersionTest {
             Version v1 = Version.of(1, 0, 0, null, "build.metadata.1");
             Version v2 = v1.incrementBuildMetadata();
             assertEquals("1.0.0+build.metadata.2", v2.toString());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"0", "build.0"})
+        @SuppressWarnings("deprecation")
+        void shouldIncrementZeroBuildIdentifier(String id) {
+            Version v = Version.of(1, null, id).incrementBuildMetadata();
+            assertEquals(id.substring(0, id.length() - 1) + "1", v.buildMetadata().get());
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void shouldNotTreatBuildIdentifierWithLeadingZeroAsNumeric() {
+            Version v = Version.of(1, null, "00").incrementBuildMetadata();
+            assertEquals("00.1", v.buildMetadata().get());
         }
 
         @Test
