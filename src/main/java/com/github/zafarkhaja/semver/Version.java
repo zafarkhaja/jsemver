@@ -1351,7 +1351,7 @@ public class Version implements Comparable<Version>, Serializable {
 
     private static boolean isNumeric(String id) {
         // filters out <digits>
-        if (id.startsWith("0")) {
+        if (id.length() > 1 && id.startsWith("0")) {
             return false;
         }
         return id.chars().allMatch(Character::isDigit);
